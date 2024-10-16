@@ -23,14 +23,10 @@ def task2(s):
 
 def task3(s):
     print('Слова, в которых встречается строго одна гласная буква:')
-    s = re.split(r'\W|\d', s)
-    s = list(filter(None, s)) #Убираем пыстые строки
+    s = re.finditer(r'\b[бвгджзйклмнпрстфхцчшщъь]*([аеёиоуюыэя])[бвгджзйклмнпрстфхцчшщъь]*(?:[бвгджзйклмнпрстфхцчшщъь]*\1[бвгджзйклмнпрстфхцчшщъь]*)*\b', s)
     words = []
-    for i in range(len(s)):
-        buf = s[i].lower()
-        glasn = set(re.findall(r'[аеёиоуыэюя]', buf))
-        if len(glasn) == 1:
-            words.append([len(s[i]), s[i]])
+    for i in s:
+        words.append([len(i[0]), i[0]])
 
     words.sort()
     for i in words:
