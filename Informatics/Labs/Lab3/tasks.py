@@ -5,24 +5,16 @@ def task1(s):
     print('Количество эмодзи вида "[<)" = ' + str(len(s)))
 
 def task2(s):
-    print('Все слова, в которых две гласные стоят подряд, а после слова идёт слово, в котором не больше 3 согласных:')
-    buf = s.lower()
-    buf = re.split(r'\W|\d', buf)
+    print('Все слова, в которых 2 гласные стоят подряд, а после слова идёт слово, в котором не больше 3 согласных:')
     s = re.split(r'\W|\d', s)
-    i = 0
-    while i < len(s):
-        if s[i] == '':
-            s.remove(s[i])
-            buf.remove(buf[i])
-        else:
-            i += 1
+    s = list(filter(None, s)) #Убираем пыстые строки
     answ = []
     for i in range(0, len(s) - 1):
-        flag_first_word = re.findall(r'[аеёиоуыэюя]{2}', buf[i])
-        if len(flag_first_word) != 0:
-            flag_second_word = re.findall(r'[бвгджзйклмнпрстфхцчшщ]', buf[i + 1])
-            if len(flag_second_word) <= 3:
-                answ.append(s[i])
+        flag_first_word = bool(re.fullmatch(r'\w*[аеёиоуыэюя]{2}\w*', s[i], flags=re.IGNORECASE))
+        flag_second_word = bool(re.fullmatch(r'(\w*[бвгджзйклмнпрстфхцчшщ]\w*){4,}', s[i + 1], flags=re.IGNORECASE))
+        if flag_first_word and not flag_second_word:
+            answ.append(s[i])
+
     for i in answ:
         print(i)
     if len(answ) == 0:
@@ -31,13 +23,12 @@ def task2(s):
 
 def task3(s):
     print('Слова, в которых встречается строго одна гласная буква:')
-    buf = s.lower()
-    buf = re.split(r'\W|\d', buf)
     s = re.split(r'\W|\d', s)
+    s = list(filter(None, s)) #Убираем пыстые строки
     words = []
     for i in range(len(s)):
         flag = True
-        glasn = re.findall(r'[аеёиоуыэюя]', buf[i])
+        glasn = re.findall(r'[аеёиоуыэюя]', s[i], flags=re.IGNORECASE)
         if len(glasn) >= 2:
             for j in range(len(glasn) - 1):
                 if glasn[j] != glasn[j + 1]:
