@@ -5,13 +5,13 @@ def task1(s):
     print('Количество эмодзи вида "[<)" = ' + str(len(s)))
 
 def task2(s):
-    print('Все слова, в которых 2 гласные стоят подряд, а после слова идёт слово, в котором не больше 3 согласных:')
+    print('Все слова, в которых 2 гласные стоят подряд, а после идёт слово, в котором не больше 3 согласных:')
     s = re.split(r'\W|\d', s)
     s = list(filter(None, s)) #Убираем пыстые строки
     answ = []
-    for i in range(0, len(s) - 1):
+    for i in range(len(s) - 1):
         flag_first_word = bool(re.fullmatch(r'\w*[аеёиоуыэюя]{2}\w*', s[i], flags=re.IGNORECASE))
-        flag_second_word = bool(re.fullmatch(r'(\w*[бвгджзйклмнпрстфхцчшщ]\w*){4,}', s[i + 1], flags=re.IGNORECASE))
+        flag_second_word = bool(re.fullmatch(r'(?:\w*[бвгджзйклмнпрстфхцчшщ]\w*){4,}', s[i + 1], flags=re.IGNORECASE))
         if flag_first_word and not flag_second_word:
             answ.append(s[i])
 
@@ -28,7 +28,7 @@ def task3(s):
     words = []
     for i in range(len(s)):
         buf = s[i].lower()
-        glasn = set(re.findall(r'[аеёиоуыэюя]', buf, flags=re.IGNORECASE))
+        glasn = set(re.findall(r'[аеёиоуыэюя]', buf))
         if len(glasn) == 1:
             words.append([len(s[i]), s[i]])
 
