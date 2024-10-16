@@ -27,13 +27,9 @@ def task3(s):
     s = list(filter(None, s)) #Убираем пыстые строки
     words = []
     for i in range(len(s)):
-        flag = True
-        glasn = re.findall(r'[аеёиоуыэюя]', s[i], flags=re.IGNORECASE)
-        if len(glasn) >= 2:
-            for j in range(len(glasn) - 1):
-                if glasn[j] != glasn[j + 1]:
-                    flag = False
-        if flag and len(glasn) > 0:
+        buf = s[i].lower()
+        glasn = set(re.findall(r'[аеёиоуыэюя]', buf, flags=re.IGNORECASE))
+        if len(glasn) == 1:
             words.append([len(s[i]), s[i]])
 
     words.sort()
