@@ -4,7 +4,7 @@ import ru.ifmo.se.pokemon.*;
 
 public class Flatter extends StatusMove{
     public Flatter() {
-        super(Type.DARK, 0, 100);
+        super(Type.DARK, 0, 1);
     }
     @Override
     protected void applyOppEffects(Pokemon p){
