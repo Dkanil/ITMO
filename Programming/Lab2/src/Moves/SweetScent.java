@@ -1,4 +1,4 @@
-package Moves.StatusMoves;
+package Moves;
 
 import ru.ifmo.se.pokemon.*;
 
