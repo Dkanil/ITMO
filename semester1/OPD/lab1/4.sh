@@ -1,7 +1,8 @@
 mkdir tmp
 cd lab0
 echo -e "\nAnswer 4.1:"
-wc -c *6 */*6 2>../tmp/errors | sort
+touch /tmp/466217
+wc -c *6 */*6 2>/tmp/466217 | sort
 echo -e "\nAnswer 4.2:"
 ls -R bagon4 2>&1 | sort -k 9 | grep -v '^$'
 echo -e "\nAnswer 4.3:"
