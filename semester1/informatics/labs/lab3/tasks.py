@@ -7,10 +7,13 @@ def task1(s):
 def task2(s):
     #print('Все слова, в которых 2 гласные стоят подряд, а после идёт слово, в котором не больше 3 согласных:')
     answ = re.findall(r'\w*[аеёиоуыэюя]{2}\w*\b(?![\d\W]*(?:\w*[бвгджзйклмнпрстфхцчшщ]\w*){4,}\b)', s, flags=re.IGNORECASE)
+
     if len(answ) != 0:
-        print(answ)
+        for i in answ:
+            print(i, end=' ')
     else:
         print("Ни одно слово не подходит")
+    print()
 
 def task3(s):
     print('Слова, в которых встречается строго одна гласная буква:')
