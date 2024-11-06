@@ -1,3 +1,6 @@
 .venv
 .idea
 __pycache__
+*.pyc
+/semester1/informatics/labs/lab3/__pycache__
+semester1/informatics/labs/lab3/__pycache__/tasks.cpython-312.pyc
