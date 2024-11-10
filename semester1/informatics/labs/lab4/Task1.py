@@ -23,10 +23,13 @@ for lines in range(1, len(s)):
     day_name = ''
     if line.find('day name=') > 0:
         day_name = line[line.index('"') + 1:line.index('>') - 1]
-        new_line = new_line.replace(f'day name="{day_name}":', f'- day:\n        \'@name\': {day_name}')
-
+        new_line = new_line.replace(f'    day name="{day_name}":', f'- day:\n        \'@name\': {day_name}')
     if new_line.find('lesson') > 0:
-        new_line = new_line.replace('lesson:','- lesson:')
+        new_line = new_line.replace('    lesson:','- lesson:')
+
+    #Уменьшение табуляции в два раза
+    new_line = new_line.replace('  ', '%^')
+    new_line = new_line.replace('%^', ' ')
 
     if new_line.count(' ') != len(new_line):
         timetableYAML.write(new_line + '\n')
