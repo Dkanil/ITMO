@@ -20,11 +20,15 @@ def XML_to_obj(XML_file):
         if tags[i][1] == "starting_tag":
             stck.append(tags[i])
         else:
-            new_obj = s[stck[-1][2]:tags[i][2]]
-            ma[stck[-1][0]] = new_obj
-            print(stck[-1][0] + ': ', new_obj)
-            stck.pop()
+            text = s[stck[-1][2]:tags[i][2]]
+            #Если тег содержит дочерние теги, то изменим его
+            if re.search(r'(?:<[^/].+?>)|(?:</.+?>)', text) is not None:
+                text = re.findall(r'(?<=<)(.+?)(?=>)[\w\W]*?(?<=</)\1(?=>)', text)
 
+            ma[stck[-1][0]] = text
+            print(stck[-1][0] + ': ', text)
+            stck.pop()
+    print()
     print(ma)
 
     return ma
