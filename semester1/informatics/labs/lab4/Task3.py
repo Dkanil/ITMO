@@ -1,29 +1,33 @@
 import re
+from inspect import stack
 
 def XML_to_obj(XML_file):
     s = XML_file.read()
-    start_tags_iters = re.finditer(r'<[^?/].+?>', s)
-    end_tags_iters = re.finditer(r'</[^?].+?>', s)
-    obj = []
+    tags_iters = re.finditer(r'(?:<[^?/].+?>)|(?:</[^?].+?>)', s)
 
     #переведём из итераторов в многомерные массивы
-    start_tags = []
-    for i in start_tags_iters:
-        start_tags.append([i.group(), i.start(), i.end()])
-    end_tags = []
-    for i in end_tags_iters:
-        end_tags.append([i.group(), i.start(), i.end()])
+    tags = []
+    for i in tags_iters:
+        if re.fullmatch(r'<[^?/].+?>', i.group()):
+            tags.append([i.group()[1:-1], "starting_tag", i.end()])
+        else:
+            tags.append([i.group()[2:-1], "ending_tag", i.start()])
 
-    for i in range(len(start_tags)):
-        j = len(start_tags) - 1 - i
-        #print(end_tags[i])
-        #new_obj = re.findall(fr'(?<=<{start_tags[i][2]}>).*?(?=</{end_tags[i][1]}>)', s, flags=re.MULTILINE)
-        new_obj = s[start_tags[i][2]:end_tags[j][1]]
-        obj.append(new_obj)
-        print(str(i) + ': ', new_obj)
-    print(obj)
+    #Соберём данные в словарь
+    stck = []
+    ma = {}
+    for i in range(len(tags)):
+        if tags[i][1] == "starting_tag":
+            stck.append(tags[i])
+        else:
+            new_obj = s[stck[-1][2]:tags[i][2]]
+            ma[stck[-1][0]] = new_obj
+            print(stck[-1][0] + ': ', new_obj)
+            stck.pop()
 
-    return obj
+    print(ma)
+
+    return ma
 
 def obj_to_YAML(obj, YAML_file):
     obj = '0'
