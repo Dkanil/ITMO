@@ -1,4 +1,6 @@
 import re
+from math import trunc
+
 
 def XML_to_obj(XML_file):
     s = XML_file.read()
@@ -16,7 +18,6 @@ def XML_to_obj(XML_file):
         else:
             tags.append([i.group()[2:-1], "ending_tag", i.start()])
 
-    print(s)
     #Соберём данные в словарь
     stck = []
     parent_map = {}
@@ -42,18 +43,28 @@ def XML_to_obj(XML_file):
                 child_map = {}
             else:
                 parent_map[stck[-1][0]] = text
-
-            print(stck[-1][0] + ':', text)
             stck.pop()
-    print()
     print(parent_map)
+    return parent_map
 
+def child_obj(parent_map, YAML_file, k):
+    if not isinstance(parent_map, str):
+        for map_object in parent_map:
+            for i in map_object.keys():
+                k += 1
+                YAML_file.write(str(k) + k * '  ' + i + ': ' + str(child_obj(map_object[i], YAML_file, k)) + '\n')
+    # else:
+    #     for i in parent_map.keys():
+    #         YAML_file.write(i + ': ' + str(child_obj(parent_map[i], YAML_file)) + '\n')
     return parent_map
 
 def obj_to_YAML(obj, YAML_file):
-    obj = '0'
-    s = obj
-    YAML_file.write(s)
+    z = 0
+    while z == 0:
+        for i in obj.keys():
+            YAML_file.write(i + ': ' + str(child_obj(obj[i], YAML_file, 1)) + '\n')
+        z = 1
+
 
 timetableXML = open("src/Timetable.xml", mode="r", encoding="utf-8")
 timetableYAML = open("src/Timetable_task3.yaml", mode="w", encoding="utf-8")
