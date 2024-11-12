@@ -1,5 +1,4 @@
 import re
-from math import trunc
 
 
 def XML_to_obj(XML_file):
@@ -10,13 +9,13 @@ def XML_to_obj(XML_file):
     tags = []
     for i in tags_iters:
         if re.fullmatch(r'<[^?/].+?>', i.group()):
-            tags.append([i.group()[1:-1], "starting_tag", i.end()])
+            tags.append([i.group()[1:-1], "starting_tag", i.end(), []])
             if re.search(r'".*?"', tags[-1][0]) is not None:
                 attributes = re.findall(r'\b\S+?=".*?"', tags[-1][0])
                 tags[-1][0] = re.search(r'.+?(?= \b\S*="\S+")', tags[-1][0]).group()
-                tags[-1].append(attributes)
+                tags[-1][3] = attributes
         else:
-            tags.append([i.group()[2:-1], "ending_tag", i.start()])
+            tags.append([i.group()[2:-1], "ending_tag", i.start(), []])
 
     #Соберём данные в словарь
     stck = []
@@ -27,9 +26,25 @@ def XML_to_obj(XML_file):
             stck.append(tags[i])
         else:
             text = s[stck[-1][2]:tags[i][2]]
+            #Проверим на наличие атрибутов и добавим их в качестве объекта
+            if len(stck[-1][3]) > 0:
+                attributes = ''
+                for i in stck[-1][3]:
+                    buf_tag = re.search(r'\b\w+(?==)', i).group()
+                    buf_inf = re.search(r'(?<=").*?(?=")', i).group()
+                    attributes += '<' + buf_tag + '>' + buf_inf + '</' + buf_tag + '>'
+
             #Если элемент содержит дочерние элементы, то переложим его
             if re.search(r'(?:<[^/].+?>)|(?:</.+?>)', text) is not None:
-                text = set(re.findall(r'(?<=<)(.+?)(?: \b\S+?=\".*?\")*(?=>)[\w\W]*?(?<=</)\1(?=>)', text))
+                text = re.findall(r'(?<=<)(.+?)(?: \b\S+?=\".*?\")*(?=>)[\w\W]*?(?<=</)\1(?=>)', text)
+                text_set = set()
+                j = 0
+                while j < len(text):
+                    if text[j] in text_set:
+                        text.remove(text[j])
+                    else:
+                        text_set.add(text[j])
+                        j += 1
 
                 # Создадим словарь со всеми дочерними объектами
                 for child_tag in text:
@@ -44,26 +59,33 @@ def XML_to_obj(XML_file):
             else:
                 parent_map[stck[-1][0]] = text
             stck.pop()
-    print(parent_map)
     return parent_map
 
-def child_obj(parent_map, YAML_file, k):
-    if not isinstance(parent_map, str):
+new_file_str = ''
+def child_obj(parent_key, parent_map, YAML_file, tab):
+    global new_file_str
+    if isinstance(parent_map, str):
+        tab += 1
+        new_file_str += tab * '  ' + parent_key + ': ' + parent_map + '\n'
+        tab -= 1
+    else:
+        tab += 1
         for map_object in parent_map:
+
+            if len(parent_map) > 1:
+                new_file_str += (tab - 1) * '  ' + '- ' + parent_key + ':\n'
+            else:
+                new_file_str += tab * '  ' + parent_key + ':\n'
+
             for i in map_object.keys():
-                k += 1
-                YAML_file.write(str(k) + k * '  ' + i + ': ' + str(child_obj(map_object[i], YAML_file, k)) + '\n')
-    # else:
-    #     for i in parent_map.keys():
-    #         YAML_file.write(i + ': ' + str(child_obj(parent_map[i], YAML_file)) + '\n')
+                child_obj(i, map_object[i], YAML_file, tab)
+    YAML_file.write(new_file_str)
+    new_file_str = ''
     return parent_map
 
 def obj_to_YAML(obj, YAML_file):
-    z = 0
-    while z == 0:
-        for i in obj.keys():
-            YAML_file.write(i + ': ' + str(child_obj(obj[i], YAML_file, 1)) + '\n')
-        z = 1
+    for i in obj.keys():
+        child_obj(i, obj[i], YAML_file, -1)
 
 
 timetableXML = open("src/Timetable.xml", mode="r", encoding="utf-8")
