@@ -101,9 +101,9 @@ def obj_to_YAML(obj, YAML_file):
     for i in obj.keys():
         child_obj(i, obj[i], YAML_file, -1)
 
+def convert():
+    timetableXML = open("src/Timetable.xml", mode="r", encoding="utf-8")
+    timetableYAML = open("src/Timetable_task3.yaml", mode="w", encoding="utf-8")
 
-timetableXML = open("src/Timetable.xml", mode="r", encoding="utf-8")
-timetableYAML = open("src/Timetable_task3.yaml", mode="w", encoding="utf-8")
-
-obj = XML_to_obj(timetableXML)
-obj_to_YAML(obj, timetableYAML)
+    obj = XML_to_obj(timetableXML)
+    obj_to_YAML(obj, timetableYAML)
