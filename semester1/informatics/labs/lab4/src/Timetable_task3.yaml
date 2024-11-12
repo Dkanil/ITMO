@@ -1,5 +1,6 @@
 timetable:
 - day:
+    '@name': Среда
     lessons:
     - lesson:
         time: 08:20-09:50
@@ -30,6 +31,7 @@ timetable:
         audience: Гребной клуб «Стрела»
         address: Северная дорога, 25
 - day:
+    '@name': Суббота
     lessons:
     - lesson:
         time: 08:20-09:50
