@@ -19,4 +19,5 @@ def convert():
     s = s[2:]
 
     timetableYAML.write(s)
-convert()
+if __name__ == "__main__":
+    convert()
