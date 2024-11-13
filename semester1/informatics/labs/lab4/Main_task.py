@@ -33,3 +33,5 @@ def convert():
 
         if new_line.count(' ') != len(new_line):
             timetableYAML.write(new_line + '\n')
+if __name__ == "__main__":
+    convert()

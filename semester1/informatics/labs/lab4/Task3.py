@@ -1,4 +1,5 @@
 import re
+from sys import flags
 
 
 def XML_to_obj(XML_file):
@@ -65,6 +66,7 @@ def XML_to_obj(XML_file):
 
             while stck[-1][1] != "starting_tag":
                 parent_map[stck[start_num][0]].insert(-1, ['attribute', stck[-1][0], stck[-1][2]])
+                start_num += 1
                 stck.pop()
             stck.pop()
     return parent_map
@@ -107,3 +109,6 @@ def convert():
 
     obj = XML_to_obj(timetableXML)
     obj_to_YAML(obj, timetableYAML)
+
+if __name__ == "__main__":
+    convert()

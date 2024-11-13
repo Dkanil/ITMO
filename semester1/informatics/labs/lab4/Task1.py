@@ -7,3 +7,5 @@ def convert():
 
     obj = xmlplain.xml_to_obj(timetableXML, strip_space=True, fold_dict=True)
     xmlplain.obj_to_yaml(obj, timetableYAML)
+if __name__ == "__main__":
+    convert()

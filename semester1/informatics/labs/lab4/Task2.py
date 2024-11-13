@@ -19,3 +19,4 @@ def convert():
     s = s[2:]
 
     timetableYAML.write(s)
+convert()
