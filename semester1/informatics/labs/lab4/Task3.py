@@ -24,16 +24,11 @@ def XML_to_obj(XML_file):
     parent_map = {}
     child_map = {}
     for i in range(len(tags)):
-        if tags[i][1] == "starting_tag":
-            stck.append(tags[i])
-        elif tags[i][1] == "attribute":
-            #Добавим атрибуты в общий стек
+        if (tags[i][1] == "starting_tag") or (tags[i][1] == "attribute"):
             stck.append(tags[i])
         else:
             start_num = -1
-            attribute_text = ''
             while stck[start_num][1] == "attribute":
-                attribute_text = '<' + stck[start_num][0] + '>' + stck[start_num][2] + '</' + stck[start_num][0] + '>' + attribute_text
                 start_num -= 1
             text = s[stck[start_num][2]:tags[i][2]]
             #Если элемент содержит дочерние элементы, то переложим его
@@ -72,12 +67,10 @@ def XML_to_obj(XML_file):
 new_file_str = ''
 def child_obj(parent_key, parent_map, YAML_file, tab):
     global new_file_str
+    tab += 1
     if isinstance(parent_map, str):
-        tab += 1
         new_file_str += tab * '  ' + parent_key + ': ' + parent_map + '\n'
-        tab -= 1
     else:
-        tab += 1
         tag_is_printed = False
         for map_object in parent_map:
             if not tag_is_printed:
