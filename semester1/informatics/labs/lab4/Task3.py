@@ -1,6 +1,4 @@
 import re
-from sys import flags
-
 
 def XML_to_obj(XML_file):
     s = XML_file.read()
