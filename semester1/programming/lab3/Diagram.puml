@@ -1,0 +1,79 @@
+@startuml
+Class Main
+package entities{
+    abstract class Entity {
+        {abstract} void Speak()
+    }
+    Class God {
+        + void Help()
+    }
+    abstract Class Human {
+        # name: String
+        # age: int
+        # stat: Stat
+        # items: ArrayList<Item>
+        # location: Location
+        + void Move()
+    }
+    Class Capitan {
+        + String MakeCommand()
+        + string toString()
+    }
+    Class Sailors {
+        # amount: int
+        + void DoCommand()
+        + string toString()
+    }
+    Class Enemies {
+        # amount: int
+        + void Steal()
+        + void Attack()
+        + string toString()
+    }
+    Class Governor {
+        + string toString()
+    }
+    Class MainCharacter {
+        + void Pray()
+        + void Thank()
+        + string toString()
+    }
+    interface Owner{
+        + void getItem()
+    }
+}
+
+package enums{
+    Enum Item{
+        # FOOD
+        # TUKES
+    }
+    Enum Location{
+        # DESERT
+        # SEA
+        # ISLAND
+    }
+    Enum Stat {
+        # DEATH
+        # STRESSED
+        # LONELINESS
+    }
+}
+class Transport <<record>>{
+    # name: String
+    + void move()
+}
+
+Human . Transport: move()
+God <.. MainCharacter: pray()
+God ..> MainCharacter: Help()
+Owner ..> Human
+Entity --|> Human
+Entity --|> God
+Human --|> Capitan
+Human --|> Sailors
+Human --|> Enemies
+Human --|> Governor
+Human --|> MainCharacter
+
+@enduml
