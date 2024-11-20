@@ -2,7 +2,7 @@ import toml
 import re
 
 def XML_to_obj(XML_file):
-    s = XML_file
+    s = XML_file.read()
     tags_iters = re.finditer(r'(?:<[^?/].+?>)|(?:</[^?].+?>)', s)
 
     #переведём из итераторов в многомерные массивы
@@ -61,7 +61,7 @@ def XML_to_obj(XML_file):
             stck.pop()
     return parent_map
 
-timetableXML = open("src/Timetable.xml", mode="r", encoding="utf-8").read()
+timetableXML = open("src/Timetable.xml", mode="r", encoding="utf-8")
 timetableTOML = open("src/Timetable_task5.toml", mode="w", encoding="utf-8")
 
 xml_dict = XML_to_obj(timetableXML)
