@@ -1,7 +1,6 @@
-[timetable]
+[[timetable]]
 [[timetable.day]]
-
-[timetable.day.lessons]
+[[timetable.day.lessons]]
 [[timetable.day.lessons.lesson]]
 time = "08:20-09:50"
 type = "Лекция"
@@ -35,8 +34,7 @@ audience = "Гребной клуб «Стрела»"
 address = "Северная дорога, 25"
 
 [[timetable.day]]
-
-[timetable.day.lessons]
+[[timetable.day.lessons]]
 [[timetable.day.lessons.lesson]]
 time = "08:20-09:50"
 type = "Лекция"
