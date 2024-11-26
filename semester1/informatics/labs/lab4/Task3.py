@@ -1,5 +1,43 @@
 import re
 
+"""
+tags[0] = название тега / аттрибута
+tags[1] = starting_tag / ending_tag / attribute
+tags[2] = индекс тега / информация в аттрибуте
+"""
+
+def parse_attributes(tags):
+    attributes = re.findall(r'\b\S+?=".*?"', tags[-1][0])
+    tags[-1][0] = re.search(r'.+?(?= \b\S*="\S+")', tags[-1][0]).group()
+    for j in attributes:
+        buf_tag = re.search(r'\b\w+(?==)', j).group()
+        buf_inf = re.search(r'(?<=").*?(?=")', j).group()
+        tags.append([buf_tag, "attribute", buf_inf])
+    return tags
+
+def parse_child(parent_map, text, stck, start_num):
+    child_map = {}
+    # Создадим словарь со всеми дочерними объектами
+    for child_tag in text:
+        child_map[child_tag] = parent_map[child_tag]
+        parent_map.pop(child_tag)
+    if stck[start_num][0] in parent_map.keys():
+        parent_map[stck[start_num][0]].append(child_map)
+    else:
+        parent_map[stck[start_num][0]] = [child_map]
+    return parent_map
+
+def remove_repeat(text):
+    text_set = set()
+    j = 0
+    while j < len(text):
+        if text[j] in text_set:
+            text.remove(text[j])
+        else:
+            text_set.add(text[j])
+            j += 1
+    return text
+
 def XML_to_obj(XML_file):
     s = XML_file.read()
     tags_iters = re.finditer(r'(?:<[^?/].+?>)|(?:</[^?].+?>)', s)
@@ -10,12 +48,7 @@ def XML_to_obj(XML_file):
         if re.fullmatch(r'<[^?/].+?>', i.group()):
             tags.append([i.group()[1:-1], "starting_tag", i.end()])
             if re.search(r'".*?"', tags[-1][0]) is not None:
-                attributes = re.findall(r'\b\S+?=".*?"', tags[-1][0])
-                tags[-1][0] = re.search(r'.+?(?= \b\S*="\S+")', tags[-1][0]).group()
-                for j in attributes:
-                    buf_tag = re.search(r'\b\w+(?==)', j).group()
-                    buf_inf = re.search(r'(?<=").*?(?=")', j).group()
-                    tags.append([buf_tag, "attribute", buf_inf])
+                tags = parse_attributes(tags)
         else:
             tags.append([i.group()[2:-1], "ending_tag", i.start()])
 
@@ -35,25 +68,8 @@ def XML_to_obj(XML_file):
             if re.search(r'(?:<[^/].+?>)|(?:</.+?>)', text) is not None:
                 text = re.findall(r'(?<=<)(.+?)(?: \b\S+?=\".*?\")*(?=>)[\w\W]*?(?<=</)\1(?=>)', text)
                 #Удалим повторяющиеся теги
-                text_set = set()
-                j = 0
-                while j < len(text):
-                    if text[j] in text_set:
-                        text.remove(text[j])
-                    else:
-                        text_set.add(text[j])
-                        j += 1
-
-                # Создадим словарь со всеми дочерними объектами
-                for child_tag in text:
-                    child_map[child_tag] = parent_map[child_tag]
-                    parent_map.pop(child_tag)
-
-                if stck[start_num][0] in parent_map.keys():
-                    parent_map[stck[start_num][0]].append(child_map)
-                else:
-                    parent_map[stck[start_num][0]] = [child_map]
-                child_map = {}
+                text = remove_repeat(text)
+                parent_map = parse_child(parent_map, text, stck, start_num)
             else:
                 parent_map[stck[start_num][0]] = text
 
