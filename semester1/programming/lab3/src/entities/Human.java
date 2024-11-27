@@ -1,17 +1,20 @@
 package entities;
 
+import java.util.ArrayList;
 import enums.*;
 
 public abstract class Human extends Entity implements Owner {
     private final String name;
     private final int age;
     private Stat stat;
-    private Item item;
-    public Human(String name, int age, Stat stat, Item item) {
+    private ArrayList<Item> items;
+    private Location location;
+    public Human(String name, int age, Stat stat, ArrayList<Item> items, Location location) {
         this.name = name;
         this.age = age;
         this.stat = stat;
-        this.item = item;
+        this.items = items;
+        this.location = location;
     }
 
     public String getName() {
@@ -30,13 +33,24 @@ public abstract class Human extends Entity implements Owner {
         this.stat = stat;
     }
 
-    public Item getItem() {
-        return item;
+    public ArrayList<Item> getItems() {
+        return items;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setItems(ArrayList<Item> items) {
+        this.items = items;
     }
 
+    public Location getLocation() {
+        return location;
+    }
 
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    @Override
+    public void move(Location location) {
+        Human.this.location = location;
+    }
 }

@@ -3,6 +3,7 @@ Class Main
 package entities{
     abstract class Entity {
         {abstract} void Speak()
+        {abstract} void Move()
     }
     Class God {
         + void Help()
