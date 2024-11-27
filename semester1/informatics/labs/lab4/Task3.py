@@ -55,7 +55,6 @@ def XML_to_obj(XML_file):
     #Соберём данные в словарь
     stck = []
     parent_map = {}
-    child_map = {}
     for i in range(len(tags)):
         if (tags[i][1] == "starting_tag") or (tags[i][1] == "attribute"):
             stck.append(tags[i])
