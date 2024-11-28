@@ -1,32 +1,31 @@
 @startuml
-Class Main
+Class Main{
+    + void Main()
+}
 package entities{
     abstract class Entity {
-        {abstract} void Speak()
-        {abstract} void Move()
-    }
-    Class God {
-        + void Help()
-    }
-    abstract Class Human {
         # name: String
-        # age: int
-        # stat: Stat
         # items: ArrayList<Item>
         # location: Location
+        # stat: Stat
+        + {abstract} void Speak()
         + void Move()
+    }
+    abstract Class People {
+        # amount: int
+    }
+    abstract Class Human {
+        # age: int
     }
     Class Capitan {
         + String MakeCommand()
         + string toString()
     }
     Class Sailors {
-        # amount: int
         + void DoCommand()
         + string toString()
     }
     Class Enemies {
-        # amount: int
         + void Steal()
         + void Attack()
         + string toString()
@@ -36,7 +35,6 @@ package entities{
     }
     Class MainCharacter {
         + void Pray()
-        + void Thank()
         + string toString()
     }
     interface Owner{
@@ -58,6 +56,7 @@ package enums{
         # DEATH
         # STRESSED
         # LONELINESS
+        # NORMAL
     }
 }
 class Transport <<record>>{
@@ -65,16 +64,14 @@ class Transport <<record>>{
     + void move()
 }
 
-Human . Transport: move()
-God <.. MainCharacter: pray()
-God ..> MainCharacter: Help()
-Owner ..> Human
+Owner ..> Entity
+Entity . Transport: move()
 Entity --|> Human
-Entity --|> God
+Entity --|> People
 Human --|> Capitan
-Human --|> Sailors
-Human --|> Enemies
 Human --|> Governor
 Human --|> MainCharacter
-
+People --|> Sailors
+People --|> Enemies
+Capitan <.> Sailors: MakeCommand() DoCommand()
 @enduml
