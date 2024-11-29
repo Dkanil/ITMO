@@ -2,6 +2,7 @@ package entities.people;
 
 import entities.Entity;
 import enums.*;
+import exceptions.NoItems;
 
 import java.util.ArrayList;
 
@@ -19,9 +20,14 @@ public class Sailors extends People {
         super(name, location, stat, amount);
     }
 
-    public void DoCommand(Entity from, Item item, Entity to){
+    public void DoCommand(Entity from, Item item, Entity to) throws NoItems {
         speak("Так точно, капитан!");
-        from.takeItem(item);
-        to.addItem(item);
+        if (from.getItem(false).contains(item)) {
+            from.takeItem(item);
+            to.addItem(item);
+        }
+        else {
+            throw new NoItems("У " + from.getName() + " отсутствует " + item.getTitle());
+        }
     }
 }

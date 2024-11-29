@@ -70,14 +70,22 @@ public abstract class Entity implements Owner {
         System.out.printf("**%s утратил %s**\n", getName(), item.getTitle());
     }
     @Override
-    public void getItem() {
-        System.out.printf("**У %s есть", getName());
-        String output = "";
-        for (Item item : items) {
-            output += item.getTitle() + ", ";
+    public ArrayList<Item> getItem(boolean flag) {
+        if (flag) {
+            if (items.isEmpty()) {
+                System.out.printf("**У %s нет предметов**\n", getName());
+            }
+            else{
+                System.out.printf("**У %s есть", getName());
+                String output = "";
+                for (Item item : items) {
+                    output += item.getTitle() + ", ";
+                }
+                output = output.substring(0, output.length() - 2);
+                System.out.println(output + "**");
+            }
         }
-        output = output.substring(0, output.length() - 2);
-        System.out.println(output + "**");
+        return items;
     }
 
     abstract public void speak(String str);

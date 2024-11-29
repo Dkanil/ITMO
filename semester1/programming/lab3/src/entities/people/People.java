@@ -4,6 +4,7 @@ import entities.Entity;
 import enums.*;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 abstract public class People extends Entity {
     private int amount;

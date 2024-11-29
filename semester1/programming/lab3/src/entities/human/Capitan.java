@@ -3,6 +3,7 @@ package entities.human;
 import entities.Entity;
 import entities.people.Sailors;
 import enums.*;
+import exceptions.NoItems;
 
 import java.util.ArrayList;
 
@@ -32,6 +33,12 @@ public class Capitan extends Human {
         else {
             speak(String.format("%s, выполнить команду передать %s от %s к %s!", sailors.getName(), item.getTitle(), from.getName(), to.getName()));
         }
-        sailors.DoCommand(from, item, to);
+        try {
+            sailors.DoCommand(from, item, to);
+        } catch (NoItems e) {
+            System.out.println(e.getMessage());
+            speak("Отставить приказ!");
+        }
+
     }
 }

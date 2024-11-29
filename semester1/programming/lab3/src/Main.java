@@ -2,6 +2,7 @@ import enums.*;
 import entities.*;
 import entities.human.*;
 import entities.people.*;
+import exceptions.*;
 
 import java.util.ArrayList;
 
@@ -14,8 +15,7 @@ public class Main {
         Sailors matrosses = new Sailors("Матросы", Location.SEA, Stat.HAPPINESS, 12);
         Governor governor = new Governor("Губернатор", Location.ISLAND, Stat.HAPPINESS, 68);
 
-        cap.MakeCommand(cap, Item.TUKES, governor, matrosses);
-
+        cap.MakeCommand(governor, Item.TUKES, governor, matrosses);
         Enemies aborigens = new Enemies("Аборигены", Location.SEA, Stat.HAPPINESS, 12);
         ArrayList<Entity> passengers = new ArrayList<>();
         passengers.add(cap);
