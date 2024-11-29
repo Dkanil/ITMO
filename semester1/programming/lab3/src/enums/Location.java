@@ -3,8 +3,9 @@ package enums;
 public enum Location {
     DESERT ("Пустыня"),
     SEA ("Море"),
+    COAST ("Берег"),
     ISLAND ("Остров");
-    private String title;
+    private final String title;
     Location(String title) {
         this.title = title;
     }
@@ -15,8 +16,6 @@ public enum Location {
 
     @Override
     public String toString() {
-        return "Location{" +
-                "title='" + title + '\'' +
-                '}';
+        return title;
     }
 }

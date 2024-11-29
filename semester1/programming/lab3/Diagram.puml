@@ -1,8 +1,8 @@
 @startuml
-Class Main{
+Class Main {
     + void Main()
 }
-package entities{
+package entities {
     abstract class Entity {
         # name: String
         # items: ArrayList<Item>
@@ -11,31 +11,36 @@ package entities{
         + {abstract} void Speak()
         + void Move()
     }
-    abstract Class People {
-        # amount: int
+    package people {
+        abstract Class People {
+            # amount: int
+        }
+        Class Sailors {
+            + void DoCommand()
+            + string toString()
+        }
+        Class Enemies {
+            + void Steal()
+            + void Attack()
+            + string toString()
+        }
     }
-    abstract Class Human {
-        # age: int
-    }
-    Class Capitan {
-        + String MakeCommand()
-        + string toString()
-    }
-    Class Sailors {
-        + void DoCommand()
-        + string toString()
-    }
-    Class Enemies {
-        + void Steal()
-        + void Attack()
-        + string toString()
-    }
-    Class Governor {
-        + string toString()
-    }
-    Class MainCharacter {
-        + void Pray()
-        + string toString()
+    package human {
+        abstract Class Human {
+            # age: int
+        }
+        Class Capitan {
+            + String MakeCommand()
+            + string toString()
+        }
+
+        Class Governor {
+            + string toString()
+        }
+        Class MainCharacter {
+            + void Pray()
+            + string toString()
+        }
     }
     interface Owner{
         + void getItem()
@@ -73,5 +78,5 @@ Human --|> Governor
 Human --|> MainCharacter
 People --|> Sailors
 People --|> Enemies
-Capitan <.> Sailors: MakeCommand() DoCommand()
+Capitan <.> Sailors: MakeCommand()\nDoCommand()
 @enduml

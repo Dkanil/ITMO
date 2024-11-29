@@ -1,10 +1,10 @@
 package enums;
 
 public enum Stat {
-    DEATH ("Умер"),
-    STRESSED ("Стресс"),
-    LONELINESS ("Одиночество"),
-    NORMAL ("Нормальный");
+    STRESSED("Стресс"),
+    LONELINESS("Одиночество"),
+    HAPPINESS("Счастье"),
+    ANGRY("Злоба");
 
     private final String title;
     Stat(String title) {
@@ -12,6 +12,11 @@ public enum Stat {
     }
 
     public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String toString() {
         return title;
     }
 }
