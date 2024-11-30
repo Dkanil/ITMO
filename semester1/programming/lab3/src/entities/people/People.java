@@ -1,7 +1,8 @@
 package entities.people;
 
-import entities.Entity;
+import entities.*;
 import enums.*;
+import exceptions.*;
 
 import java.util.ArrayList;
 
@@ -10,17 +11,32 @@ abstract public class People extends Entity {
 
     public People(String name, ArrayList<Item> items, Location location, Stat stat, int amount) {
         super(name, items, location, stat);
-        this.amount = amount;
+        if (amount <= 0) {
+            throw new InvalidValue("Число персонажей должно быть положительным");
+        }
+        else {
+            this.amount = amount;
+        }
     }
 
     public People(String name, Item item, Location location, Stat stat, int amount) {
         super(name, item, location, stat);
-        this.amount = amount;
+        if (amount <= 0) {
+            throw new InvalidValue("Число персонажей должно быть положительным");
+        }
+        else {
+            this.amount = amount;
+        }
     }
 
     public People(String name, Location location, Stat stat, int amount) {
         super(name, location, stat);
-        this.amount = amount;
+        if (amount <= 0) {
+            throw new InvalidValue("Число персонажей должно быть положительным");
+        }
+        else {
+            this.amount = amount;
+        }
     }
 
     public int getAmount() {

@@ -3,25 +3,41 @@ package entities.human;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import entities.Entity;
+import entities.*;
 import enums.*;
+import exceptions.*;
 
 public abstract class Human extends Entity {
     private final int age;
 
-    public Human(String name, ArrayList<Item> items, Location location, Stat stat, int age) {
+    public Human(String name, ArrayList<Item> items, Location location, Stat stat, int age) throws InvalidValue {
         super(name, items, location, stat);
-        this.age = age;
+        if ((age <= 0) || (age > 120)) {
+            throw new InvalidValue("Введён неверный возраст");
+        }
+        else {
+            this.age = age;
+        }
     }
 
     public Human(String name, Item item, Location location, Stat stat, int age) {
         super(name, item, location, stat);
-        this.age = age;
+        if ((age <= 0) || (age > 120)) {
+            throw new InvalidValue("Введён неверный возраст");
+        }
+        else {
+            this.age = age;
+        }
     }
 
     public Human(String name, Location location, Stat stat, int age) {
         super(name, location, stat);
-        this.age = age;
+        if ((age <= 0) || (age > 120)) {
+            throw new InvalidValue("Введён неверный возраст");
+        }
+        else {
+            this.age = age;
+        }
     }
 
     public int getAge() {
@@ -40,7 +56,7 @@ public abstract class Human extends Entity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Human human = (Human) o;
-        return (this.getName() == human.getName()) && (age == human.age);
+        return (Objects.equals(this.getName(), human.getName())) && (age == human.age);
     }
     @Override
     public int hashCode() {

@@ -1,12 +1,11 @@
 package entities.people;
 
-import enums.Item;
-import enums.Location;
-import enums.Stat;
-
+import entities.*;
+import enums.*;
 import java.util.ArrayList;
 
 public class Enemies extends People{
+    private final boolean smart = Math.random() * 100 > 95;
     public Enemies(String name, ArrayList<Item> items, Location location, Stat stat, int amount) {
         super(name, items, location, stat, amount);
     }
@@ -19,9 +18,34 @@ public class Enemies extends People{
         super(name, location, stat, amount);
     }
 
+    public boolean isSmart() {
+        return smart;
+    }
+
     @Override
     public void speak(String str) {
-        System.out.printf("%s промычали: У-А-Ы-УНГА-БУНГА\n", getName());
+        if(isSmart()) {
+            super.speak(str);
+        }
+        else {
+            System.out.printf("%s промычали: У-А-Ы-УНГА-БУНГА\n", getName());
+        }
+    }
+
+    public boolean AttackTransport(Transport transport) {
+        System.out.printf("О нет! %s захватили %s!\n", getName(), transport.name());
+        speak("СЕЙЧАС МЫ ВАС СЪЕДИМ");
+        if (isSmart()) {
+            ArrayList<Entity> passengers = new ArrayList<>();
+            passengers.add(this);
+            transport.move(Location.SEA, passengers);
+            System.out.printf("Похоже %s смогли уйти вместе с %s!\n", getName(), transport.name());
+            return true;
+        }
+        else {
+            System.out.printf("%s оказались слишком глупы не поняли, как управлять %s.\n%s освобождён!\n", getName(), transport.name(), transport.name());
+            return false;
+        }
     }
 
 }

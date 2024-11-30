@@ -1,9 +1,9 @@
 package entities.human;
 
-import entities.Entity;
-import entities.people.Sailors;
+import entities.*;
+import entities.people.*;
 import enums.*;
-import exceptions.NoItems;
+import exceptions.*;
 
 import java.util.ArrayList;
 

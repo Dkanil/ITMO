@@ -1,4 +1,5 @@
-import entities.*;
+package entities;
+
 import enums.*;
 
 import java.util.ArrayList;

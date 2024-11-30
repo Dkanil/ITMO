@@ -6,6 +6,6 @@ public class NoItems extends StringIndexOutOfBoundsException {
     }
     @Override
     public String getMessage() {
-        return "!!!Ошибка: приказ не может быть выполнен: " + super.getMessage();
+        return "!!!Error NoItems: " + super.getMessage();
     }
 }

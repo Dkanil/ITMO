@@ -3,8 +3,9 @@ package enums;
 public enum Location {
     DESERT ("Пустыня"),
     SEA ("Море"),
-    COAST ("Берег"),
-    ISLAND ("Остров");
+    COAST ("Побережье"),
+    ISLAND ("Остров"),
+    PORT ("Порт");
     private final String title;
     Location(String title) {
         this.title = title;

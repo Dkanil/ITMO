@@ -1,8 +1,8 @@
 package entities.people;
 
-import entities.Entity;
+import entities.*;
 import enums.*;
-import exceptions.NoItems;
+import exceptions.*;
 
 import java.util.ArrayList;
 
@@ -23,8 +23,9 @@ public class Sailors extends People {
     public void DoCommand(Entity from, Item item, Entity to) throws NoItems {
         speak("Так точно, капитан!");
         if (from.getItem(false).contains(item)) {
-            from.takeItem(item);
-            to.addItem(item);
+            from.giveItem(this, item);
+            this.giveItem(to, item);
+            speak("Приказ успешно выполнен, капитан!");
         }
         else {
             throw new NoItems("У " + from.getName() + " отсутствует " + item.getTitle());

@@ -3,6 +3,7 @@ package entities.human;
 import enums.*;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainCharacter extends Human {
     public MainCharacter(String name, ArrayList<Item> items, Location location, Stat stat, int age) {
@@ -18,14 +19,17 @@ public class MainCharacter extends Human {
     }
 
     public void pray() {
-        speak("Я так устал испытывать " + getStat() + ", прошу, избавь меня от этого чувства");
-        if (Math.random() < 0.9) {
-            speak("Всевышний услышал мои молитвы и избавил меня от " + getStat());
-            setStat(Stat.HAPPINESS);
+        if (!Objects.equals(getStat(), "Счастье")) {
+            speak("Я так устал испытывать " + getStat() + ", прошу, избавь меня от этого чувства");
+            if (Math.random() < 0.9) {
+                speak("Всевышний услышал мои молитвы и избавил меня от " + getStat());
+                setStat(Stat.HAPPINESS);
 
-        }
-        else {
-            System.out.println("Молитвы героя не были услышаны и герой скончался от " + getStat());
+            }
+            else {
+                System.out.println("Молитвы героя не были услышаны и герой скончался от " + getStat());
+                System.exit(0);
+            }
         }
     }
 }

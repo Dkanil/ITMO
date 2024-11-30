@@ -1,8 +1,10 @@
 package entities;
 
 import enums.*;
+import exceptions.*;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public abstract class Entity implements Owner {
     private final String name;
@@ -46,7 +48,7 @@ public abstract class Entity implements Owner {
         return location;
     }
 
-    public void setLocation(Location location) {
+    protected void setLocation(Location location) {
         this.location = location;
     }
 
@@ -60,14 +62,29 @@ public abstract class Entity implements Owner {
         System.out.printf("**У %s больше нет вещей**\n", getName());
     }
     @Override
-    public void addItem(Item item) {
+    public void addItem(Item item, boolean flag) {
         this.items.add(item);
-        System.out.printf("**%s получил %s**\n", getName(), item.getTitle());
+        if (flag) {
+            System.out.printf("**%s получил %s**\n", getName(), item.getTitle());
+        }
     }
     @Override
-    public void takeItem(Item item) {
+    public void takeItem(Item item, boolean flag) {
         this.items.remove(item);
-        System.out.printf("**%s утратил %s**\n", getName(), item.getTitle());
+        if (flag) {
+            System.out.printf("**%s утратил %s**\n", getName(), item.getTitle());
+        }
+    }
+    @Override
+    public void giveItem(Entity to, Item item) throws NoItems {
+        if (getItem(false).contains(item)) {
+            this.items.remove(item);
+            to.addItem(item, false);
+            System.out.printf("**%s передал %s к %s**\n", getName(), item.getTitle(), to.getName());
+        }
+        else {
+            throw new NoItems("У " + getName() + " отсутствует " + item.getTitle());
+        }
     }
     @Override
     public ArrayList<Item> getItem(boolean flag) {
@@ -104,7 +121,7 @@ public abstract class Entity implements Owner {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Entity entity = (Entity) o;
-        return this.name == entity.name;
+        return Objects.equals(this.name, entity.name);
     }
 
     @Override
