@@ -5,7 +5,7 @@ import enums.*;
 import java.util.ArrayList;
 
 public class Enemies extends People{
-    private final boolean smart = Math.random() * 100 > 95;
+    private final boolean smart = Math.random() * 100 > 55;
     public Enemies(String name, ArrayList<Item> items, Location location, Stat stat, int amount) {
         super(name, items, location, stat, amount);
     }
