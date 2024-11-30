@@ -39,6 +39,9 @@ public class Capitan extends Human {
             System.out.println(e.getMessage());
             speak("Отставить приказ!");
         }
-
+    }
+    @Override
+    public String toString() {
+        return "Капитан " + super.toString();
     }
 }

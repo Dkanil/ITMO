@@ -1,6 +1,7 @@
 package entities.human;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import entities.Entity;
 import enums.*;
@@ -29,5 +30,20 @@ public abstract class Human extends Entity {
     @Override
     public void speak(String str) {
         System.out.printf("%s произнёс: %s\n", getName(), str);
+    }
+    @Override
+    public String toString() {
+        return super.toString() + ", Возраст: " + getAge();
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Human human = (Human) o;
+        return (this.getName() == human.getName()) && (age == human.age);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), age);
     }
 }

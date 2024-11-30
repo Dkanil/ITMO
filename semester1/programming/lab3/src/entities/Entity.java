@@ -93,4 +93,22 @@ public abstract class Entity implements Owner {
         setLocation(location);
         System.out.printf("**%s теперь в %s**\n", getName(), location.getTitle());
     }
+
+    @Override
+    public String toString() {
+        return this.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Entity entity = (Entity) o;
+        return this.name == entity.name;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
 }

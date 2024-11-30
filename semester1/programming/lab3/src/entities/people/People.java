@@ -4,7 +4,6 @@ import entities.Entity;
 import enums.*;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 abstract public class People extends Entity {
     private int amount;
@@ -25,14 +24,16 @@ abstract public class People extends Entity {
     }
 
     public int getAmount() {
-        System.out.println(getName() + " теперь " + amount);
         return amount;
     }
 
     public void setAmount(int amount) {
         this.amount = amount;
     }
-
+    @Override
+    public String toString() {
+        return super.toString() + ", Количество: " + getAmount();
+    }
     @Override
     public void speak(String str) {
         System.out.printf("%s произнесли: %s\n", getName(), str);
