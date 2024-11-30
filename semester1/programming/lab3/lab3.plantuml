@@ -1,0 +1,133 @@
+@startuml
+
+package entities{
+    class Entity {
+      - items: ArrayList<Item>
+      - stat: Stat
+      - name: String
+      - location: Location
+      + takeItem(Item, boolean): void
+      + setStat(Stat): void
+      + getItem(boolean): ArrayList<Item>
+      + toString(): String
+      + hashCode(): int
+      + getName(): String
+      + giveItem(Entity, Item): void
+      + equals(Object): boolean
+      # setLocation(Location): void
+      + speak(String): void
+      + move(Location): void
+      + getLocation(): Location
+      + getStat(): String
+      + setNoItems(): void
+      + addItem(Item, boolean): void
+    }
+    interface Owner << interface >> {
+      + getItem(boolean): ArrayList<Item>
+      + setNoItems(): void
+      + takeItem(Item, boolean): void
+      + giveItem(Entity, Item): void
+      + addItem(Item, boolean): void
+    }
+    class Transport <<record>> {
+      - name: String
+      + name(): String
+      + move(Location, ArrayList<Entity>): void
+    }
+    package human{
+        class Human {
+          - age: int
+          + speak(String): void
+          + equals(Object): boolean
+          + getAge(): int
+          + hashCode(): int
+          + toString(): String
+        }
+        class Capitan {
+          + speak(String): void
+          + toString(): String
+          + MakeCommand(Entity, Item, Entity, Sailors): void
+        }
+        class MainCharacter {
+          + pray(): void
+        }
+        class Governor
+    }
+    package people{
+        class People {
+          - amount: int
+          + setAmount(int): void
+          + toString(): String
+          + getAmount(): int
+          + speak(String): void
+        }
+        class Enemies {
+          - smart: boolean
+          + speak(String): void
+          + isSmart(): boolean
+          + AttackTransport(Transport): boolean
+        }
+        class Sailors {
+          + DoCommand(Entity, Item, Entity): void
+        }
+    }
+}
+package enums{
+    enum Item{
+      + FOOD
+      + TUKES
+      - title: String
+      + values(): Item[]
+      + getTitle(): String
+      + toString(): String
+      + valueOf(String): Item
+    }
+    enum Location {
+      + ISLAND
+      + PORT
+      + DESERT
+      + SEA
+      + COAST
+      - title: String
+      + valueOf(String): Location
+      + toString(): String
+      + values(): Location[]
+      + getTitle(): String
+    }
+    enum Stat {
+      + ANGRY
+      + LONELINESS
+      + STRESSED
+      + HAPPINESS
+      - title: String
+      + values(): Stat[]
+      + valueOf(String): Stat
+      + getTitle(): String
+      + toString(): String
+    }
+}
+package exceptions{
+    exception NoItems {
+      + getMessage(): String
+    }
+    exception InvalidValue {
+      + getMessage(): String
+    }
+}
+
+class Main {
+  + main(String[]): void
+}
+
+Entity          ..   Transport: move()
+Enemies         ..   Transport: AttackTransport()
+Entity         ..|>  Owner
+Human          --|>  Entity
+People         --|>  Entity
+Sailors        --|>  People
+Enemies        --|>  People
+Capitan        --|>  Human
+Governor       --|>  Human
+MainCharacter  --|>  Human
+Capitan <..> Sailors: MakeCommand()\nDoCommand()
+@enduml
