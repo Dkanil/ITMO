@@ -1,6 +1,6 @@
 package exceptions;
 
-public class NoItems extends StringIndexOutOfBoundsException {
+public class NoItems extends ArrayIndexOutOfBoundsException {
     public NoItems(String message) {
         super(message);
     }
