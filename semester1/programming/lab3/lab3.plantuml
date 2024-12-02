@@ -119,8 +119,8 @@ class Main {
   + main(String[]): void
 }
 
-Entity          ..   Transport: move()
-Enemies         ..   Transport: AttackTransport()
+
+
 Entity         ..|>  Owner
 Human          --|>  Entity
 People         --|>  Entity
@@ -129,5 +129,7 @@ Enemies        --|>  People
 Capitan        --|>  Human
 Governor       --|>  Human
 MainCharacter  --|>  Human
-Capitan <..> Sailors: MakeCommand()\nDoCommand()
+Capitan        ..>   Sailors: Отдаёт приказ
+Enemies        ..>   Transport: Атакуют транспорт
+Transport      ..>   Entity: Перевозит
 @enduml
