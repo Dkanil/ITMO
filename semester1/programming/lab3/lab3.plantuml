@@ -1,7 +1,7 @@
 @startuml
 
 package entities{
-    class Entity {
+    abstract class Entity {
       - items: ArrayList<Item>
       - stat: Stat
       - name: String
@@ -15,7 +15,7 @@ package entities{
       + giveItem(Entity, Item): void
       + equals(Object): boolean
       # setLocation(Location): void
-      + speak(String): void
+      + {abstract} speak(String): void
       + move(Location): void
       + getLocation(): Location
       + getStat(): String
@@ -35,7 +35,7 @@ package entities{
       + move(Location, ArrayList<Entity>): void
     }
     package human{
-        class Human {
+        abstract class Human {
           - age: int
           + speak(String): void
           + equals(Object): boolean
@@ -54,7 +54,7 @@ package entities{
         class Governor
     }
     package people{
-        class People {
+        abstract class People {
           - amount: int
           + setAmount(int): void
           + toString(): String
@@ -118,7 +118,6 @@ package exceptions{
 class Main {
   + main(String[]): void
 }
-
 
 
 Entity         ..|>  Owner
