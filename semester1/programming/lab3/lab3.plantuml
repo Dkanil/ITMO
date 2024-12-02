@@ -128,7 +128,7 @@ Enemies        --|>  People
 Capitan        --|>  Human
 Governor       --|>  Human
 MainCharacter  --|>  Human
-Capitan        -->   Sailors: Отдаёт приказ
-Enemies        -->   Transport: Атакуют транспорт
-Transport      -->   Entity: Перевозит
+Capitan        ..>   Sailors: Отдаёт приказ
+Enemies        ..>   Transport: Атакуют транспорт
+Transport      ..>   Entity: Перевозит
 @enduml
