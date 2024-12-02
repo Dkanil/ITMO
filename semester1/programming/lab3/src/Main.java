@@ -32,17 +32,21 @@ public class Main {
         passengers.add(matrosses);
         Transport MainShip = new Transport("Корабль");
         MainShip.move(Location.ISLAND, passengers);
-
-        Enemies aborigens = new Enemies("Аборигены", Location.SEA, Stat.ANGRY, 12);
-        if (aborigens.AttackTransport(MainShip)){
-            Gena.setStat(Stat.ANGRY);
-            cap.setStat(Stat.ANGRY);
-            matrosses.setStat(Stat.ANGRY);
-            Transport TradingShip = new Transport("Торговый корабль");
-            System.out.println("Спустя долгое время героям удалось встретить проходящий мимо " + TradingShip.name());
-            TradingShip.move(Location.PORT, passengers);
+        if (passengers.get(0).getLocation() == Location.ISLAND) {
+            Enemies aborigens = new Enemies("Аборигены", Location.SEA, Stat.ANGRY, 12);
+            if (aborigens.AttackTransport(MainShip)){
+                Gena.setStat(Stat.ANGRY);
+                cap.setStat(Stat.ANGRY);
+                matrosses.setStat(Stat.ANGRY);
+                Transport TradingShip = new Transport("Торговый корабль");
+                System.out.println("Спустя долгое время героям удалось встретить проходящий мимо " + TradingShip.name());
+                TradingShip.move(Location.PORT, passengers);
+            }
+            else{
+                MainShip.move(Location.PORT, passengers);
+            }
         }
-        else{
+        else {
             MainShip.move(Location.PORT, passengers);
         }
 
