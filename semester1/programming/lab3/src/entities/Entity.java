@@ -107,8 +107,10 @@ public abstract class Entity implements Owner {
 
     abstract public void speak(String str);
     public void move(Location location) {
-        setLocation(location);
-        System.out.printf("**%s теперь в %s**\n", getName(), location.getTitle());
+        if (!getLocation().equals(location)) {
+            setLocation(location);
+            System.out.printf("**%s теперь в %s**\n", getName(), location.getTitle());
+        }
     }
 
     @Override

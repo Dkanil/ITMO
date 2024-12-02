@@ -9,6 +9,7 @@ public class Main {
     public static void main(String[] args) {
         MainCharacter Gena = new MainCharacter("Гена", Location.DESERT, Stat.LONELINESS, 23);
         Gena.pray();
+        Location start_location = Gena.getLocation();
         Gena.move(Location.COAST);
 
         ArrayList<Item> CapItems = new ArrayList<>();
@@ -16,8 +17,14 @@ public class Main {
         CapItems.add(Item.FOOD);
         Capitan cap = new Capitan("Джек Воробей", CapItems, Location.COAST, Stat.HAPPINESS, 52);
         Sailors matrosses = new Sailors("Матросы", Location.COAST, Stat.HAPPINESS, 12);
-        Gena.speak(cap.getName() + ", я так голоден и хочу добраться до дома, прошу Вас помочь мне");
-        cap.giveItem(Gena, Item.FOOD);
+        System.out.printf("%s встречает %s вместе с его %s\n", Gena.getName(), cap.getName(), matrosses.getName());
+
+        if (start_location == Location.DESERT) {
+            Gena.speak(cap.getName() + ", я так устал блуждать по пустыне, я так голоден и хочу добраться до дома, прошу Вас помочь мне");
+            cap.giveItem(Gena, Item.FOOD);
+        } else {
+            Gena.speak(cap.getName() + ", я так хочу добраться до дома, прошу Вас помочь мне");
+        }
 
         ArrayList<Entity> passengers = new ArrayList<>();
         passengers.add(cap);
