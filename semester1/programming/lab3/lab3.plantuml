@@ -129,6 +129,7 @@ Capitan        --|>  Human
 Governor       --|>  Human
 MainCharacter  --|>  Human
 Capitan        ..>   Sailors: Отдаёт приказ
+Sailors        ..>   Entity: Выполняют приказ
 Enemies        ..>   Transport: Атакуют транспорт
 Transport      ..>   Entity: Перевозит
 @enduml
