@@ -24,6 +24,6 @@ for date in target_dates:
 plt.figure(figsize=(14, 8))
 plt.boxplot(boxplot_data, tick_labels=labels, patch_artist=True)
 plt.xticks(rotation=45)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.grid(axis='y', linestyle='--', alpha=0.8)
 plt.tight_layout()
 plt.show()
