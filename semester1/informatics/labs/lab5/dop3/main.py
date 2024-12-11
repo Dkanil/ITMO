@@ -19,11 +19,12 @@ for date in target_dates:
     for column in ['Открытие', 'Макс', 'Мин', 'Закрытие']:
         subset = data[data['<DATE>'] == date][column]
         boxplot_data.append(subset)
-        labels.append(f"{column}\n{date.split('-')[2]}/{date.split('-')[1]}/{date.split('-')[0]}")  # Формат меток
-
+        labels.append(f"{column}\n{date.split('-')[2]}/{date.split('-')[1]}/{date.split('-')[0]}")
 plt.figure(figsize=(14, 8))
-plt.boxplot(boxplot_data, tick_labels=labels, patch_artist=True)
+plt.boxplot(boxplot_data,meanprops={ "marker": "X"}, tick_labels=labels, showmeans=True, patch_artist=True)
 plt.xticks(rotation=45)
 plt.grid(axis='y', linestyle='--', alpha=0.8)
+plt.title("Диаграмма размаха для цен акций")
+
 plt.tight_layout()
 plt.show()
