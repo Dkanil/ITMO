@@ -17,7 +17,8 @@ public class Main {
         CapItems.add(Item.FOOD);
         Capitan cap = new Capitan("Джек Воробей", CapItems, Location.COAST, Stat.HAPPINESS, 52);
         Sailors matrosses = new Sailors("Матросы", Location.COAST, Stat.HAPPINESS, 12);
-        System.out.printf("%s встречает %s вместе с его %s\n", Gena.getName(), cap.getName(), matrosses.getName());
+        Gena.meet(cap);
+        Gena.meet(matrosses);
 
         if (start_location == Location.DESERT) {
             Gena.speak(cap.getName() + ", я так устал блуждать по пустыне, я так голоден и хочу добраться до дома, прошу Вас помочь мне");
@@ -39,7 +40,9 @@ public class Main {
                 cap.setStat(Stat.ANGRY);
                 matrosses.setStat(Stat.ANGRY);
                 Transport TradingShip = new Transport("Торговый корабль");
-                System.out.println("Спустя долгое время героям удалось встретить проходящий мимо " + TradingShip.name());
+                cap.meet(TradingShip.name());
+                matrosses.meet(TradingShip.name());
+                Gena.meet(TradingShip.name());
                 TradingShip.move(Location.PORT, passengers);
             }
             else{

@@ -13,6 +13,7 @@ package entities{
       + hashCode(): int
       + getName(): String
       + giveItem(Entity, Item): void
+      + meet(Object): void
       + equals(Object): boolean
       # setLocation(Location): void
       + {abstract} speak(String): void
@@ -60,6 +61,7 @@ package entities{
           + toString(): String
           + getAmount(): int
           + speak(String): void
+          + meet(Object): void
         }
         class Enemies {
           - smart: boolean

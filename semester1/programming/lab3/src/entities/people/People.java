@@ -47,6 +47,11 @@ abstract public class People extends Entity {
         this.amount = amount;
     }
     @Override
+    public void meet(Object object) {
+        System.out.printf("%s встречают %s\n", getName(), object.toString());
+    }
+
+    @Override
     public String toString() {
         return super.toString() + ", Количество: " + getAmount();
     }

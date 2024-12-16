@@ -105,6 +105,9 @@ public abstract class Entity implements Owner {
         return items;
     }
 
+    public void meet(Object object) {
+        System.out.printf("%s встречает %s\n", getName(), object.toString());
+    }
     abstract public void speak(String str);
     public void move(Location location) {
         if (!getLocation().equals(location)) {
