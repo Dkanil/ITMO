@@ -66,6 +66,7 @@ package entities{
         class Enemies {
           - smart: boolean
           + speak(String): void
+          + setSmart(boolean): void
           + isSmart(): boolean
           + AttackTransport(Transport): boolean
         }
@@ -120,7 +121,9 @@ package exceptions{
 class Main {
   + main(String[]): void
 }
-
+class Story {
+  + tellStory(MainCharacter, Capitan, Sailors, Enemies, Governor): void
+}
 
 Entity         ..|>  Owner
 Human          --|>  Entity
@@ -130,6 +133,7 @@ Enemies        --|>  People
 Capitan        --|>  Human
 Governor       --|>  Human
 MainCharacter  --|>  Human
+Story          ..o   Main
 Capitan        ..>   Sailors: Отдаёт приказ
 Sailors        ..>   Entity: Выполняют приказ
 Enemies        ..>   Transport: Атакуют транспорт
