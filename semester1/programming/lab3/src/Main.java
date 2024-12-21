@@ -1,5 +1,4 @@
 import enums.*;
-import entities.*;
 import entities.human.*;
 import entities.people.*;
 
@@ -16,7 +15,6 @@ public class Main {
 
         Sailors matrosses = new Sailors("Матросы", Location.COAST, Stat.HAPPINESS, 12);
         Enemies aborigens = new Enemies("Аборигены", Location.SEA, Stat.ANGRY, 12);
-        aborigens.setSmart(false);
 
         Governor governor = new Governor("Губернатор", Location.ISLAND, Stat.HAPPINESS, 68);
 
