@@ -70,7 +70,7 @@ $\Leftarrow$
 - В каждом из этих путей и циклов рёбра паросочетаний $M$ и $M'$ чередуются. Так как рёбер из $M'$ в $E(H)$ больше, хотя бы одна компонента $P$ графа $H$ — путь нечётной длины, в котором больше рёбер из $M'$. Легко понять, что $P$ — это **$M$-дополняющий** путь. Противоречие.
 >*Объяснение*: $M \Delta M'$ - это симметрическая разность: $M\Delta M'=(M\ \backslash \  M')\cup (M'\ \backslash \  M)$
 
-![photo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa2DjeTA4StFD8x-v-1cJc_yH-LoKQa_-sHA&s)
+![photo](https://github.com/Dkanil/ITMO/blob/main/semester1/DM/Symmetric%20difference.png?raw=true)
 ## Билет 3. Теорема Холла.
 - Пусть $G = (V_1, V_2, E)$ — двудольный граф с долями $V_1$ и $V_2$.
 
