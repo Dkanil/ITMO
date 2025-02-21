@@ -3,6 +3,8 @@ import utility.*;
 
 import java.util.Stack;
 
+// Вариант 4192
+
 public class Main {
     static Stack<MusicBand> Bands = new Stack<MusicBand>();
     public static void main(String[] args) {

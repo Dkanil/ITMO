@@ -4,6 +4,7 @@ import models.MusicBand;
 import utility.Console;
 import com.opencsv.*;
 
+import java.io.FileInputStream;
 import java.util.Stack;
 import java.io.InputStreamReader;
 import java.io.FileWriter;
@@ -33,17 +34,17 @@ public class DumpManager {
 
     public void ReadCollection (Stack<MusicBand> collection) {
         try {
-            CSVReader reader = new CSVReader(new InputStreamReader(System.in)); // TODO проверить правильность чтения из файла, поменять разделитель на ;
-            String[] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
-                MusicBand buf = MusicBand.fromArray(nextLine);
+            CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(fileName))); // TODO проверить правильность чтения из файла, поменять разделитель на ;
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                MusicBand buf = MusicBand.fromArray(line);
                 if (buf.validate())
                 {
                     collection.push(buf);
                 }
                 else
                 {
-                    console.println("Ошибка валидации элемента коллекции!");
+                    console.println("Введены некорректные данные элемента коллекции!");
                 }
             }
         } catch (Exception e) { // TODO добавить обработку ошибок
