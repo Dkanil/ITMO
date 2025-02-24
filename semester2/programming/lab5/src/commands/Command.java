@@ -19,7 +19,7 @@ public abstract class Command {
         return description;
     }
 
-    public abstract ExecutionStatus apply(String[] args);
+    public abstract ExecutionStatus run(String arg);
 
     @Override
     public int hashCode() {

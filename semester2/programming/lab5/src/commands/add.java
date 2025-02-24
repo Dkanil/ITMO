@@ -15,10 +15,10 @@ public class add extends Command {
     }
 
     @Override
-    public ExecutionStatus apply(String[] args) {
+    public ExecutionStatus run(String arg) {
         try {
-            if (args.length != 1) {
-                return new ExecutionStatus(false, "У команды add должен быть только один аргумент!\nПример корректного ввода: " + getName());
+            if (arg.length() != 0) {
+                return new ExecutionStatus(false, "У команды add ввод аргументов построчный!\nПример корректного ввода: " + getName());
             }
             console.println("Добавление элемента в коллекцию...");
             MusicBand band = Asker.askBand(console, collectionManager.getFreeId());
@@ -29,10 +29,14 @@ public class add extends Command {
             else {
                 return new ExecutionStatus(false, "Введены некорректные данные!");
             }
-        } catch (Exception e) {
-            return new ExecutionStatus(false, "Произошла ошибка при добавлении элемента в коллекцию!");
+        } catch (Asker.Breaker e) {
+            return new ExecutionStatus(false, "Ввод был прерван пользователем!");
         }
-
+        try {
+            collectionManager.saveCollection();
+        } catch (Exception e) {
+            return new ExecutionStatus(false, "Произошла ошибка при сохранении коллекции!");
+        }
         return new ExecutionStatus(true, "Элемент успешно добавлен в коллекцию!");
     }
 }

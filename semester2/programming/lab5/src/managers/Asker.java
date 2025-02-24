@@ -1,4 +1,4 @@
-package commands;
+package managers;
 
 import models.Coordinates;
 import models.MusicBand;
@@ -11,6 +11,13 @@ import java.time.LocalDateTime;
 public class Asker {
     public static class Breaker extends Exception { }
 
+    /**
+     * Запрашивает у пользователя данные для создания объекта MusicBand.
+     * @param console Консоль для ввода/вывода.
+     * @param id Идентификатор музыкальной группы.
+     * @return Объект MusicBand с введенными данными.
+     * @throws Breaker Исключение, выбрасываемое при вводе команды "exit".
+     */
     public static MusicBand askBand(Console console, Long id) throws Breaker {
         String name;
         do {
@@ -36,8 +43,10 @@ public class Asker {
                 }
             }
             catch (NumberFormatException e) {
-                console.println("Некорректное значение поля numberOfParticipants!\nЗначение поля должно быть больше 0");
                 numberOfParticipants = -1L;
+            }
+            if (numberOfParticipants <= 0) {
+                console.println("Некорректное значение поля numberOfParticipants!\nЗначение поля должно быть больше 0");
             }
         } while(numberOfParticipants <= 0);
 
@@ -54,8 +63,10 @@ public class Asker {
                 }
             }
             catch (NumberFormatException e) {
-                console.println("Некорректное значение поля albumsCount!\nЗначение поля должно быть больше 0");
                 albumsCount = -1L;
+            }
+            if (albumsCount <= 0) {
+                console.println("Некорректное значение поля albumsCount!\nЗначение поля должно быть больше 0");
             }
         } while(albumsCount <= 0);
 
@@ -70,8 +81,8 @@ public class Asker {
 
         MusicGenre genre = null;
         do {
-            console.println("Список возможных значений: " + MusicGenre.list());
             console.println("Введите значение поля genre:");
+            console.println("Список возможных значений: " + MusicGenre.list());
             String input = console.readln();
             if (input.equals("exit")) {
                 throw new Breaker();
@@ -81,7 +92,7 @@ public class Asker {
                     genre = MusicGenre.valueOf(input);
                 }
                 catch (IllegalArgumentException e) {
-                    console.println("Некорректное значение поля genre!\nСписок возможных значений: " + MusicGenre.list());
+                    console.println("Некорректное значение поля genre!");
                 }
             }
         } while (genre == null);
@@ -91,9 +102,14 @@ public class Asker {
         return new MusicBand(id, name, LocalDateTime.now(), numberOfParticipants, description, coordinates, albumsCount, genre, studio);
     }
 
-    public static Coordinates askCoordinates(Console console) throws Breaker {
-        console.println("Введите координаты:");
-
+    /**
+     * Запрашивает у пользователя данные для создания объекта Coordinates.
+     * @param console Консоль для ввода/вывода.
+     * @return Объект Coordinates с введенными данными.
+     * @throws Breaker Исключение, выбрасываемое при вводе команды "exit".
+     */
+    private static Coordinates askCoordinates(Console console) throws Breaker {
+        console.println("Ввод значений поля Coordinates...");
         double x;
         do {
             console.println("Введите значение поля x:");
@@ -107,8 +123,10 @@ public class Asker {
                 }
             }
             catch (NumberFormatException e) {
-                console.println("Некорректное значение поля x!\nЗначение поля должно быть больше -980");
                 x = -981;
+            }
+            if (x <= -980) {
+                console.printError("Некорректное значение поля x!\nЗначение поля должно быть больше -980");
             }
         } while (x <= -980);
 
@@ -125,15 +143,25 @@ public class Asker {
                 }
             }
             catch (NumberFormatException e) {
-                console.println("Некорректное значение поля y!\nМаксимальное значение поля: 295");
                 y = 296;
+            }
+            if (y > 295) {
+                console.println("Некорректное значение поля y!\nМаксимальное значение поля: 295");
             }
         } while (y > 295);
 
+        console.println("Значения поля Coordinates записаны...");
         return new Coordinates(x, y);
     }
 
-    public static Studio askStudio(Console console) throws Breaker {
+    /**
+     * Запрашивает у пользователя данные для создания объекта Studio.
+     * @param console Консоль для ввода/вывода.
+     * @return Объект Studio с введенными данными.
+     * @throws Breaker Исключение, выбрасываемое при вводе команды "exit".
+     */
+    private static Studio askStudio(Console console) throws Breaker {
+        console.println("Ввод значений поля Studio...");
         String name;
         do {
             console.println("Введите значение поля name:");
@@ -152,6 +180,7 @@ public class Asker {
             }
         } while (address.isEmpty());
 
+        console.println("Значения поля Studio записаны...");
         return new Studio(name, address);
     }
 }

@@ -1,11 +1,5 @@
 package utility;
 
-import java.util.NoSuchElementException;
-import java.lang.IllegalStateException;
-
-import java.io.InputStreamReader;
-import java.io.FileWriter;
-
 public class StandartConsole implements Console {
     public void print(Object obj) {
         System.out.print(obj);
@@ -16,7 +10,7 @@ public class StandartConsole implements Console {
     }
 
     public void printError(Object obj) {
-        System.err.println("Error:" + obj);
+        System.err.println("Error: " + obj);
     }
 
     public void printTable(Object obj1, Object obj2) {
@@ -24,6 +18,6 @@ public class StandartConsole implements Console {
     }
 
     public String readln() {
-        return System.console().readLine();
+        return new java.util.Scanner(System.in).nextLine();
     }
 }
