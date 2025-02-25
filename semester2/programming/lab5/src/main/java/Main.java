@@ -29,15 +29,29 @@ public class Main {
 
         DumpManager dumpManager = new DumpManager(filePath, console);
         CollectionManager collectionManager = new CollectionManager(dumpManager);
+        ExecutionStatus loadStatus = collectionManager.loadCollection();
+        if (!loadStatus.isSuccess()){
+            console.printError(loadStatus.getMessage());
+            System.exit(1);
+        }
 
         CommandManager commandManager = new CommandManager() {{
             register("help", new help(console, this));
-
+            register("info", new info(console, collectionManager));
             register("show", new show(console, collectionManager));
             register("add", new add(console, collectionManager));
-
+            register("update", new update(console, collectionManager));
+            //register("remove_by_id", new removeById(console, collectionManager));
+            //register("clear", new clear(console, collectionManager));
+            //register("save", new save(console, collectionManager));
             register("execute_script", new executeScript(console));
-
+            register("exit", new exit(console));
+            //register("remove_first", new removeFirst(console, collectionManager));
+            //register("add_if_min", new addIfMin(console, collectionManager));
+            //register("sort", new sort(console, collectionManager));
+            //register("remove_all_by_genre", new removeAllByGenre(console, collectionManager));
+            //register("
+            //register("
         }};
         new Executer(console).interactiveMode();
     }

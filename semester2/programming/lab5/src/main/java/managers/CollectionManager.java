@@ -1,15 +1,19 @@
 package managers;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import models.MusicBand;
+import utility.ExecutionStatus;
 
 public class CollectionManager {
     private Long id = 1L;
     private final DumpManager dumpManager;
     private Map<Long, MusicBand> Bands = new HashMap<>();
-    private Stack<MusicBand> collection = new Stack<MusicBand>();
+    private Stack<MusicBand> collection = new Stack<>();
+    private LocalDateTime InitializationDate;
+    private LocalDateTime lastSaveDate;
 
     /**
      * Конструктор класса CollectionManager.
@@ -17,7 +21,6 @@ public class CollectionManager {
      */
     public CollectionManager(DumpManager dumpManager) {
         this.dumpManager = dumpManager;
-        loadCollection();
     }
 
     /**
@@ -37,6 +40,14 @@ public class CollectionManager {
             id++;
         }
         return id;
+    }
+
+    public LocalDateTime getInitializationDate() {
+        return InitializationDate;
+    }
+
+    public LocalDateTime getLastSaveDate() {
+        return lastSaveDate;
     }
 
     /**
@@ -61,18 +72,25 @@ public class CollectionManager {
      */
     public void saveCollection() {
         dumpManager.WriteCollection(collection);
+        lastSaveDate = LocalDateTime.now();
     }
 
     /**
      * Загружает коллекцию музыкальных групп.
      */
-    public void loadCollection() {
+    public ExecutionStatus loadCollection() {
         collection.clear();
         Bands.clear();
         dumpManager.ReadCollection(collection);
+        InitializationDate = LocalDateTime.now();
+        lastSaveDate = LocalDateTime.now();
         for (MusicBand band : collection) {
-            Bands.put(band.getId(), band); // TODO: добавить проверку на уникальность id
+            if (getById(band.getId()) != null) {
+                return new ExecutionStatus(false, "Ошибка загрузки коллекции: обнаружены дубликаты id!");
+            }
+            Bands.put(band.getId(), band);
         }
+        return new ExecutionStatus(true, "Коллекция успешно загружена!");
     }
 
     /**
@@ -88,6 +106,15 @@ public class CollectionManager {
         }
         else {
             return false;
+        }
+    }
+
+    public void removeById(Long elementId) {
+        MusicBand band = Bands.get(elementId);
+        if (band != null) {
+            collection.remove(band);
+            Bands.remove(elementId);
+            id = elementId;
         }
     }
 }

@@ -5,7 +5,6 @@ import utility.Console;
 import com.opencsv.*;
 
 import java.io.*;
-import java.util.Locale;
 import java.util.Stack;
 
 public class DumpManager {
@@ -19,7 +18,7 @@ public class DumpManager {
 
     public void WriteCollection (Stack<MusicBand> collection) {
         try {
-            CSVWriter writer = new CSVWriter(new FileWriter(fileName)); // TODO: костыли с параметрами, по документации не работает
+            CSVWriter writer = new CSVWriter(new FileWriter(fileName));
             for (MusicBand band : collection) {
                 writer.writeNext(MusicBand.toArray(band));
             }
@@ -37,17 +36,16 @@ public class DumpManager {
             throw new RuntimeException(e);
         }
         try (CSVReader reader = new CSVReader(input)) {
-            // TODO проверить правильность чтения из файла, поменять разделитель на ;
             String[] line;
             while ((line = reader.readNext()) != null) {
                 MusicBand buf = MusicBand.fromArray(line);
-                if (buf.validate())
+                if (buf!= null && buf.validate())
                 {
                     collection.push(buf);
                 }
                 else
                 {
-                    console.println("Введены некорректные данные элемента коллекции!");
+                    console.printError("Введены некорректные данные элемента коллекции!");
                 }
             }
         } catch (Exception e) { // TODO добавить обработку ошибок

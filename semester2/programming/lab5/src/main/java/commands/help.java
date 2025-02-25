@@ -23,6 +23,6 @@ public class help extends Command {
         for (var command : commandManager.getCommandsMap().entrySet()) {
             console.println(command.getValue().getName() + " - " + command.getValue().getDescription());
         }
-        return new ExecutionStatus(true, "");
+        return new ExecutionStatus(true, "Справка по командам успешно выведена!");
     }
 }

@@ -132,7 +132,7 @@ public class MusicBand extends Element {
             description = array[7];
             genre = MusicGenre.valueOf(array[8]);
             studio = new Studio(array[9], array[10]);
-        } catch (Exception e) { // TODO добавить обработку ошибок
+        } catch (Exception e) {
             return null;
         }
         return new MusicBand(id, name, creationDate, numberOfParticipants, description, coordinates, albumsCount, genre, studio);
