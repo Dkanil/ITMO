@@ -1,15 +1,15 @@
 package managers;
 
+import com.opencsv.processor.RowProcessor;
+import com.opencsv.validators.LineValidatorAggregator;
+import com.opencsv.validators.RowValidatorAggregator;
 import models.MusicBand;
 import utility.Console;
 import com.opencsv.*;
 
+import java.io.*;
+import java.util.Locale;
 import java.util.Stack;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.FileWriter;
-
-import java.io.IOException;
 
 public class DumpManager {
     private final String fileName;
@@ -22,7 +22,7 @@ public class DumpManager {
 
     public void WriteCollection (Stack<MusicBand> collection) {
         try {
-            CSVWriter writer = new CSVWriter(new FileWriter(fileName), ';', '"', '"', "\n"); // TODO: костыли с параметрами, по документации не работает
+            CSVWriter writer = new CSVWriter(new FileWriter(fileName)); // TODO: костыли с параметрами, по документации не работает
             for (MusicBand band : collection) {
                 writer.writeNext(MusicBand.toArray(band));
             }
@@ -33,8 +33,14 @@ public class DumpManager {
     }
 
     public void ReadCollection (Stack<MusicBand> collection) {
+        InputStreamReader input = null;
         try {
-            CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(fileName))); // TODO проверить правильность чтения из файла, поменять разделитель на ;
+            input = new InputStreamReader(new FileInputStream(fileName));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try (CSVReader reader = new CSVReader(input)) {
+            // TODO проверить правильность чтения из файла, поменять разделитель на ;
             String[] line;
             while ((line = reader.readNext()) != null) {
                 MusicBand buf = MusicBand.fromArray(line);
@@ -48,7 +54,7 @@ public class DumpManager {
                 }
             }
         } catch (Exception e) { // TODO добавить обработку ошибок
-            console.println("Произошла ошибка при чтении коллекции из файла!");
+            console.printError("Произошла ошибка при чтении коллекции из файла!");
         }
     }
 }

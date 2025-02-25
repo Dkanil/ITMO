@@ -11,7 +11,7 @@ public class CommandManager {
     public static void register(String commandName, Command command) {
         commands.put(commandName, command);
     }
-    public static Map<String, Command> getCommandsMap() {
+    public Map<String, Command> getCommandsMap() {
         return commands;
     }
 

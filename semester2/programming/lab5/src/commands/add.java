@@ -17,7 +17,7 @@ public class add extends Command {
     @Override
     public ExecutionStatus run(String arg) {
         try {
-            if (arg.length() != 0) {
+            if (!arg.isEmpty()) {
                 return new ExecutionStatus(false, "У команды add ввод аргументов построчный!\nПример корректного ввода: " + getName());
             }
             console.println("Добавление элемента в коллекцию...");

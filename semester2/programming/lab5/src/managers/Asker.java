@@ -46,7 +46,7 @@ public class Asker {
                 numberOfParticipants = -1L;
             }
             if (numberOfParticipants <= 0) {
-                console.println("Некорректное значение поля numberOfParticipants!\nЗначение поля должно быть больше 0");
+                console.printError("Некорректное значение поля numberOfParticipants!\nЗначение поля должно быть больше 0");
             }
         } while(numberOfParticipants <= 0);
 
@@ -66,7 +66,7 @@ public class Asker {
                 albumsCount = -1L;
             }
             if (albumsCount <= 0) {
-                console.println("Некорректное значение поля albumsCount!\nЗначение поля должно быть больше 0");
+                console.printError("Некорректное значение поля albumsCount!\nЗначение поля должно быть больше 0");
             }
         } while(albumsCount <= 0);
 
@@ -92,7 +92,7 @@ public class Asker {
                     genre = MusicGenre.valueOf(input);
                 }
                 catch (IllegalArgumentException e) {
-                    console.println("Некорректное значение поля genre!");
+                    console.printError("Некорректное значение поля genre!");
                 }
             }
         } while (genre == null);
@@ -146,7 +146,7 @@ public class Asker {
                 y = 296;
             }
             if (y > 295) {
-                console.println("Некорректное значение поля y!\nМаксимальное значение поля: 295");
+                console.printError("Некорректное значение поля y!\nМаксимальное значение поля: 295");
             }
         } while (y > 295);
 

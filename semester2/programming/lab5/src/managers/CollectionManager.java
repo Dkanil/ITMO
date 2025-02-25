@@ -17,6 +17,7 @@ public class CollectionManager {
      */
     public CollectionManager(DumpManager dumpManager) {
         this.dumpManager = dumpManager;
+        loadCollection();
     }
 
     /**

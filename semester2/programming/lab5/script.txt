@@ -1,0 +1,7 @@
+execute_script script.txt
+add
+hello
+exit
+exit
+help
+add
