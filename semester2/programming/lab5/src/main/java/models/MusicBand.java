@@ -78,7 +78,7 @@ public class MusicBand extends Element {
 
     @Override
     public String toString() {
-        return "models.MusicBand{" +
+        return  '{' +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", coordinates=" + coordinates +

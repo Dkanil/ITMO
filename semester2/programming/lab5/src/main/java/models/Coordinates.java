@@ -36,7 +36,10 @@ public class Coordinates implements Validatable {
 
     @Override
     public String toString() {
-        return "models.Coordinates = { " + x + " ; " + y + " }";
+        return '{' +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
     public boolean validate() {
         return x > -980 && y != null && y <= 295;

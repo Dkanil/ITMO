@@ -36,7 +36,7 @@ public class Studio implements Validatable {
 
     @Override
     public String toString() {
-        return "models.Studio{" +
+        return '{' +
                 "name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 '}';

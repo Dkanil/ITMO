@@ -21,6 +21,9 @@ public class show extends Command {
             }
             console.println("Вывод всех элементов коллекции:");
             collectionManager.getCollection().forEach(band -> console.println(band.toString()));
+            if (collectionManager.getCollection().isEmpty()) {
+                console.println("Коллекция пуста.");
+            }
         } catch (Exception e) {
             return new ExecutionStatus(false, "Произошла ошибка при выводе элементов коллекции!");
         }
