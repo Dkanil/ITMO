@@ -3,16 +3,29 @@ package commands;
 import utility.*;
 import managers.*;
 
+/**
+ * Класс команды для вывода всех элементов коллекции в строковом представлении.
+ */
 public class show extends Command {
     private final Console console;
     private final CollectionManager collectionManager;
 
+    /**
+     * Конструктор команды show.
+     * @param console Консоль для ввода/вывода.
+     * @param collectionManager Менеджер коллекции.
+     */
     public show(Console console, CollectionManager collectionManager) {
         super("show", "вывести в стандартный поток вывода все элементы коллекции в строковом представлении");
         this.console = console;
         this.collectionManager = collectionManager;
     }
 
+    /**
+     * Выполняет команду вывода всех элементов коллекции.
+     * @param arg Аргумент команды (не используется).
+     * @return Статус выполнения команды.
+     */
     @Override
     public ExecutionStatus run(String arg) {
         try {

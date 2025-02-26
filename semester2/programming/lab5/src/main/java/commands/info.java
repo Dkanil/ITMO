@@ -3,15 +3,29 @@ package commands;
 import managers.*;
 import utility.*;
 
-public class info extends Command{
+/**
+ * Класс команды для вывода информации о коллекции.
+ */
+public class info extends Command {
     Console console;
     CollectionManager collectionManager;
 
-    public info(Console console, CollectionManager collectionManager){
+    /**
+     * Конструктор команды info.
+     * @param console Консоль для ввода/вывода.
+     * @param collectionManager Менеджер коллекции.
+     */
+    public info(Console console, CollectionManager collectionManager) {
         super("info", "вывести в стандартный поток вывода информацию о коллекции");
         this.console = console;
         this.collectionManager = collectionManager;
     }
+
+    /**
+     * Выполняет команду вывода информации о коллекции.
+     * @param arg Аргумент команды (не используется).
+     * @return Статус выполнения команды.
+     */
     @Override
     public ExecutionStatus run(String arg) {
         if (!arg.isEmpty()) {

@@ -1,12 +1,14 @@
 package managers;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-import models.MusicBand;
-import utility.ExecutionStatus;
+import java.util.*;
 
+import models.*;
+import utility.*;
+
+/**
+ * Класс, управляющий коллекцией музыкальных групп.
+ */
 public class CollectionManager {
     private Long id = 1L;
     private final DumpManager dumpManager;
@@ -32,6 +34,28 @@ public class CollectionManager {
     }
 
     /**
+     * Сортирует коллекцию музыкальных групп.
+     */
+    public void sort() {
+        Stack<MusicBand> sortedBands = new Stack<>();
+        Map<Long, MusicBand> SortedBandsMap = new TreeMap<>(Bands);
+        for (var band : SortedBandsMap.entrySet()) {
+            sortedBands.push(band.getValue());
+        }
+        collection = sortedBands;
+    }
+
+    /**
+     * Удаляет первую музыкальную группу из коллекции.
+     */
+    public void removeFirst() {
+        if (!collection.isEmpty()) {
+            Bands.remove(collection.firstElement().getId());
+            collection.remove(0);
+        }
+    }
+
+    /**
      * Возвращает свободный идентификатор.
      * @return Свободный идентификатор.
      */
@@ -42,10 +66,18 @@ public class CollectionManager {
         return id;
     }
 
+    /**
+     * Возвращает дату инициализации коллекции.
+     * @return Дата инициализации коллекции.
+     */
     public LocalDateTime getInitializationDate() {
         return InitializationDate;
     }
 
+    /**
+     * Возвращает дату последнего сохранения коллекции.
+     * @return Дата последнего сохранения коллекции.
+     */
     public LocalDateTime getLastSaveDate() {
         return lastSaveDate;
     }
@@ -68,6 +100,23 @@ public class CollectionManager {
     }
 
     /**
+     * Удаляет все музыкальные группы с указанным жанром.
+     * @param genre Жанр музыкальных групп для удаления.
+     * @return Количество удалённых групп.
+     */
+    public int removeAllByGenre(MusicGenre genre) {
+        int count = 0;
+        for (MusicBand band : collection) {
+            if (band.getGenre().equals(genre)) {
+                Bands.remove(band.getId());
+                count++;
+            }
+        }
+        collection.removeIf(band -> band.getGenre().equals(genre));
+        return count;
+    }
+
+    /**
      * Сохраняет коллекцию музыкальных групп.
      */
     public void saveCollection() {
@@ -77,6 +126,7 @@ public class CollectionManager {
 
     /**
      * Загружает коллекцию музыкальных групп.
+     * @return Статус выполнения загрузки коллекции.
      */
     public ExecutionStatus loadCollection() {
         collection.clear();
@@ -94,6 +144,14 @@ public class CollectionManager {
     }
 
     /**
+     * Очищает коллекцию музыкальных групп.
+     */
+    public void clear() {
+        collection.clear();
+        Bands.clear();
+    }
+
+    /**
      * Добавляет музыкальную группу в коллекцию.
      * @param band Музыкальная группа для добавления.
      * @return true, если группа успешно добавлена, иначе false.
@@ -103,12 +161,15 @@ public class CollectionManager {
             collection.push(band);
             Bands.put(band.getId(), band);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
+    /**
+     * Удаляет музыкальную группу по идентификатору.
+     * @param elementId Идентификатор музыкальной группы для удаления.
+     */
     public void removeById(Long elementId) {
         MusicBand band = Bands.get(elementId);
         if (band != null) {

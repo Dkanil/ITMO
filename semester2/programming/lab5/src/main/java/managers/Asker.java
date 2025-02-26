@@ -1,13 +1,13 @@
 package managers;
 
-import models.Coordinates;
-import models.MusicBand;
-import models.MusicGenre;
-import models.Studio;
+import models.*;
 import utility.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Класс, запрашивающий у пользователя данные для создания объектов.
+ */
 public class Asker {
     public static class Breaker extends Exception { }
 
@@ -37,18 +37,16 @@ public class Asker {
                 String input = console.readln();
                 if (input.equals("exit")) {
                     throw new Breaker();
-                }
-                else {
+                } else {
                     numberOfParticipants = Long.valueOf(input);
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 numberOfParticipants = -1L;
             }
             if (numberOfParticipants <= 0) {
                 console.printError("Некорректное значение поля numberOfParticipants!\nЗначение поля должно быть больше 0");
             }
-        } while(numberOfParticipants <= 0);
+        } while (numberOfParticipants <= 0);
 
         Long albumsCount = -1L;
         do {
@@ -57,18 +55,16 @@ public class Asker {
                 String input = console.readln();
                 if (input.equals("exit")) {
                     throw new Breaker();
-                }
-                else {
+                } else {
                     albumsCount = Long.valueOf(input);
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 albumsCount = -1L;
             }
             if (albumsCount <= 0) {
                 console.printError("Некорректное значение поля albumsCount!\nЗначение поля должно быть больше 0");
             }
-        } while(albumsCount <= 0);
+        } while (albumsCount <= 0);
 
         String description;
         do {
@@ -86,12 +82,10 @@ public class Asker {
             String input = console.readln();
             if (input.equals("exit")) {
                 throw new Breaker();
-            }
-            else {
+            } else {
                 try {
                     genre = MusicGenre.valueOf(input);
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     console.printError("Некорректное значение поля genre!");
                 }
             }
@@ -117,12 +111,10 @@ public class Asker {
                 String input = console.readln();
                 if (input.equals("exit")) {
                     throw new Breaker();
-                }
-                else {
+                } else {
                     x = Double.parseDouble(input);
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 x = -981;
             }
             if (x <= -980) {
@@ -137,12 +129,10 @@ public class Asker {
                 String input = console.readln();
                 if (input.equals("exit")) {
                     throw new Breaker();
-                }
-                else {
+                } else {
                     y = Integer.valueOf(input);
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 y = 296;
             }
             if (y > 295) {
