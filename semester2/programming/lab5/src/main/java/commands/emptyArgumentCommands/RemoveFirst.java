@@ -1,13 +1,13 @@
-package commands;
+package commands.emptyArgumentCommands;
 
+import commands.CommandNames;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для удаления первого элемента из коллекции.
  */
-public class removeFirst extends Command {
-    Console console;
+public class RemoveFirst extends NoArgumentCommand {
     CollectionManager collectionManager;
 
     /**
@@ -15,9 +15,8 @@ public class removeFirst extends Command {
      * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public removeFirst(utility.Console console, managers.CollectionManager collectionManager) {
-        super("remove_first", "удалить первый элемент из коллекции");
-        this.console = console;
+    public RemoveFirst(utility.Console console, managers.CollectionManager collectionManager) {
+        super(CommandNames.REMOVE_FIRST.getName(), CommandNames.REMOVE_FIRST.getDescription(), console);
         this.collectionManager = collectionManager;
     }
 
@@ -28,17 +27,15 @@ public class removeFirst extends Command {
      */
     @Override
     public ExecutionStatus run(String argument) {
-        try {
-            if (!argument.isEmpty()) {
-                return new ExecutionStatus(false, "У команды remove_first не должно быть аргументов!\nПример корректного ввода: " + getName());
-            }
+        ExecutionStatus ArgumentStatus = validate(argument, getName());
+        if (ArgumentStatus.isSuccess()) {
             if (collectionManager.getCollection().isEmpty()) {
                 return new ExecutionStatus(false, "Коллекция пуста!");
             }
             collectionManager.removeFirst();
             return new ExecutionStatus(true, "Первый элемент успешно удален!");
-        } catch (Exception e) {
-            return new ExecutionStatus(false, "Произошла ошибка при удалении первого элемента коллекции!");
+        } else {
+            return ArgumentStatus;
         }
     }
 }

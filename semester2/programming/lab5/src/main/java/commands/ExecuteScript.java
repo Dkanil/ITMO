@@ -5,16 +5,27 @@ import utility.*;
 /**
  * Класс команды для выполнения скрипта из указанного файла.
  */
-public class executeScript extends Command {
+public class ExecuteScript extends Command {
     public final Console console;
 
     /**
      * Конструктор команды executeScript.
      * @param console Консоль для ввода/вывода.
      */
-    public executeScript(Console console) {
-        super("execute_script file_name", "считать и исполнить скрипт из указанного файла.");
+    public ExecuteScript(Console console) {
+        super(CommandNames.EXECUTE_SCRIPT.getName() + " file_name", CommandNames.EXECUTE_SCRIPT.getDescription());
         this.console = console;
+    }
+
+    /**
+     * Проверяет корректность аргументов команды.
+     * @param arg Аргумент команды.
+     * @param name Имя команды.
+     * @return Статус выполнения проверки.
+     */
+    @Override
+    public ExecutionStatus validate(String arg, String name) {
+        return null;
     }
 
     /**

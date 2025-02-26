@@ -1,3 +1,5 @@
+import commands.emptyArgumentCommands.*;
+import commands.idArgumentCommands.*;
 import utility.*;
 import managers.*;
 import commands.*;
@@ -38,22 +40,22 @@ public class Main {
 
         // Регистрация команд
         CommandManager commandManager = new CommandManager() {{
-            register("help", new help(console, this));
-            register("info", new info(console, collectionManager));
-            register("show", new show(console, collectionManager));
-            register("add", new add(console, collectionManager));
-            register("update", new update(console, collectionManager));
-            register("remove_by_id", new removeById(console, collectionManager));
-            register("clear", new clear(console, collectionManager));
-            register("save", new save(console, collectionManager));
-            register("execute_script", new executeScript(console));
-            register("exit", new exit(console));
-            register("remove_first", new removeFirst(console, collectionManager));
-            register("add_if_min", new addIfMin(console, collectionManager));
-            register("sort", new sort(console, collectionManager));
-            register("remove_all_by_genre", new removeAllByGenre(console, collectionManager));
-            register("print_field_ascending_description", new printFieldAscendingDescription(console, collectionManager));
-            register("print_field_descending_description", new printFieldDescendingDescription(console, collectionManager));
+            register(CommandNames.HELP.getName(), new Help(console, this));
+            register(CommandNames.INFO.getName(), new Info(console, collectionManager));
+            register(CommandNames.SHOW.getName(), new Show(console, collectionManager));
+            register(CommandNames.ADD.getName(), new Add(console, collectionManager));
+            register(CommandNames.UPDATE.getName(), new Update(console, collectionManager));
+            register(CommandNames.REMOVE_BY_ID.getName(), new RemoveById(console, collectionManager));
+            register(CommandNames.CLEAR.getName(), new Clear(console, collectionManager));
+            register(CommandNames.SAVE.getName(), new Save(console, collectionManager));
+            register(CommandNames.EXECUTE_SCRIPT.getName(), new ExecuteScript(console));
+            register(CommandNames.EXIT.getName(), new Exit(console));
+            register(CommandNames.REMOVE_FIRST.getName(), new RemoveFirst(console, collectionManager));
+            register(CommandNames.ADD_IF_MIN.getName(), new AddIfMin(console, collectionManager));
+            register(CommandNames.SORT.getName(), new Sort(console, collectionManager));
+            register(CommandNames.REMOVE_ALL_BY_GENRE.getName(), new RemoveAllByGenre(console, collectionManager));
+            register(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), new PrintFieldAscendingDescription(console, collectionManager));
+            register(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), new PrintFieldDescendingDescription(console, collectionManager));
         }};
 
         // Запуск интерактивного режима

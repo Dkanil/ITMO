@@ -35,6 +35,8 @@ public abstract class Command {
         return description;
     }
 
+    public abstract ExecutionStatus validate(String arg, String name);
+
     /**
      * Абстрактный метод для выполнения команды.
      * @param arg Аргумент команды.

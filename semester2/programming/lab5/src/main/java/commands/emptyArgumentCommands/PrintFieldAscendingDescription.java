@@ -1,13 +1,13 @@
-package commands;
+package commands.emptyArgumentCommands;
 
+import commands.CommandNames;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для вывода значений поля description всех элементов в порядке возрастания.
  */
-public class printFieldAscendingDescription extends Command {
-    Console console;
+public class PrintFieldAscendingDescription extends NoArgumentCommand {
     CollectionManager collectionManager;
 
     /**
@@ -15,9 +15,8 @@ public class printFieldAscendingDescription extends Command {
      * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public printFieldAscendingDescription(Console console, CollectionManager collectionManager) {
-        super("print_field_ascending_description", "вывести значения поля description всех элементов в порядке возрастания");
-        this.console = console;
+    public PrintFieldAscendingDescription(Console console, CollectionManager collectionManager) {
+        super(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getDescription(), console);
         this.collectionManager = collectionManager;
     }
 
@@ -28,10 +27,8 @@ public class printFieldAscendingDescription extends Command {
      */
     @Override
     public ExecutionStatus run(String argument) {
-        try {
-            if (!argument.isEmpty()) {
-                return new ExecutionStatus(false, "У команды print_field_ascending_description не должно быть аргументов!\nПример корректного ввода: " + getName());
-            }
+        ExecutionStatus ArgumentStatus = validate(argument, getName());
+        if (ArgumentStatus.isSuccess()) {
             if (collectionManager.getBands().isEmpty()) {
                 return new ExecutionStatus(false, "Коллекция пуста!");
             }
@@ -40,8 +37,8 @@ public class printFieldAscendingDescription extends Command {
                 console.println(band.getDescription());
             }
             return new ExecutionStatus(true, "Операция выполнена!");
-        } catch (Exception e) {
-            return new ExecutionStatus(false, "Произошла ошибка при выводе описаний!");
+        } else {
+            return ArgumentStatus;
         }
     }
 }

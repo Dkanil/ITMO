@@ -1,5 +1,6 @@
-package commands;
+package commands.emptyArgumentCommands;
 
+import commands.*;
 import models.MusicBand;
 import utility.*;
 import managers.*;
@@ -10,8 +11,7 @@ import java.util.Stack;
 /**
  * Класс команды для добавления нового элемента в коллекцию, если его значение меньше, чем у наименьшего элемента этой коллекции.
  */
-public class addIfMin extends Command {
-    Console console;
+public class AddIfMin extends NoArgumentCommand implements Asking {
     CollectionManager collectionManager;
 
     /**
@@ -19,9 +19,8 @@ public class addIfMin extends Command {
      * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public addIfMin(Console console, CollectionManager collectionManager) {
-        super("add_if_min {element}", "добавить новый элемент в коллекцию, если его значение меньше, чем у наименьшего элемента этой коллекции");
-        this.console = console;
+    public AddIfMin(Console console, CollectionManager collectionManager) {
+        super(CommandNames.ADD_IF_MIN.getName() + " {element}", CommandNames.ADD_IF_MIN.getDescription(), console);
         this.collectionManager = collectionManager;
     }
 
@@ -32,14 +31,13 @@ public class addIfMin extends Command {
      */
     @Override
     public ExecutionStatus run(String argument) {
-        try {
-            if (!argument.isEmpty()) {
-                return new ExecutionStatus(false, "У команды add_if_min ввод аргументов построчный!\nПример корректного ввода: " + getName());
-            }
-
+        ExecutionStatus ArgumentStatus = validate(argument, getName());
+        if (ArgumentStatus.isSuccess()) {
             console.println("Добавление элемента в коллекцию...");
-            MusicBand band = Asker.askBand(console, collectionManager.getFreeId());
-            if (band != null && band.validate()) {
+            Asking.Pair validationStatusPair = validate(console, collectionManager.getFreeId());
+            ExecutionStatus executionStatus = validationStatusPair.getExecutionStatus();
+            MusicBand band = validationStatusPair.getBand();
+            if (executionStatus.isSuccess()) {
                 if (collectionManager.getCollection().isEmpty()) {
                     collectionManager.add(band);
                     return new ExecutionStatus(true, "Коллекция пуста! Элемент добавлен как наименьший.");
@@ -48,15 +46,15 @@ public class addIfMin extends Command {
                 bufCollection.sort(Comparator.naturalOrder());
                 if (band.compareTo(bufCollection.firstElement()) < 0) {
                     collectionManager.add(band);
-                    return new ExecutionStatus(true, "Элемент успешно добавлен в коллекцию!");
+                    return executionStatus;
                 } else {
                     return new ExecutionStatus(true, "Элемент не является наименьшим в коллекции!");
                 }
             } else {
-                return new ExecutionStatus(false, "Введены некорректные данные!");
+                return executionStatus;
             }
-        } catch (Asker.Breaker e) {
-            return new ExecutionStatus(false, "Ввод был прерван пользователем!");
+        } else {
+            return ArgumentStatus;
         }
     }
 }

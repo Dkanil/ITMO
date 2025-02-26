@@ -1,13 +1,13 @@
-package commands;
+package commands.emptyArgumentCommands;
 
+import commands.CommandNames;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для сортировки коллекции в естественном порядке.
  */
-public class sort extends Command {
-    private final Console console;
+public class Sort extends NoArgumentCommand {
     private final CollectionManager collectionManager;
 
     /**
@@ -15,9 +15,8 @@ public class sort extends Command {
      * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public sort(Console console, CollectionManager collectionManager) {
-        super("sort", "отсортировать коллекцию в естественном порядке");
-        this.console = console;
+    public Sort(Console console, CollectionManager collectionManager) {
+        super(CommandNames.SORT.getName(), CommandNames.SORT.getDescription(), console);
         this.collectionManager = collectionManager;
     }
 
@@ -28,14 +27,12 @@ public class sort extends Command {
      */
     @Override
     public ExecutionStatus run(String argument) {
-        try {
-            if (!argument.isEmpty()) {
-                return new ExecutionStatus(false, "У команды sort не должно быть аргументов!\nПример корректного ввода: " + getName());
-            }
+        ExecutionStatus ArgumentStatus = validate(argument, getName());
+        if (ArgumentStatus.isSuccess()) {
             collectionManager.sort();
             return new ExecutionStatus(true, "Коллекция успешно отсортирована!");
-        } catch (Exception e) {
-            return new ExecutionStatus(false, "Произошла ошибка при сортировке коллекции!");
+        } else {
+            return ArgumentStatus;
         }
     }
 }

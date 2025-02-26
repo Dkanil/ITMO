@@ -1,13 +1,13 @@
-package commands;
+package commands.emptyArgumentCommands;
 
+import commands.CommandNames;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для очистки коллекции.
  */
-public class clear extends Command {
-    Console console;
+public class Clear extends NoArgumentCommand {
     CollectionManager collectionManager;
 
     /**
@@ -15,9 +15,8 @@ public class clear extends Command {
      * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public clear(Console console, CollectionManager collectionManager) {
-        super("clear", "очистить коллекцию");
-        this.console = console;
+    public Clear(Console console, CollectionManager collectionManager) {
+        super(CommandNames.CLEAR.getName(), CommandNames.CLEAR.getDescription(), console);
         this.collectionManager = collectionManager;
     }
 
@@ -28,14 +27,12 @@ public class clear extends Command {
      */
     @Override
     public ExecutionStatus run(String argument) {
-        try {
-            if (!argument.isEmpty()) {
-                return new ExecutionStatus(false, "У команды clear не должно быть аргументов!\nПример корректного ввода: " + getName());
-            }
+        ExecutionStatus ArgumentStatus = validate(argument, getName());
+        if (ArgumentStatus.isSuccess()) {
             collectionManager.clear();
             return new ExecutionStatus(true, "Коллекция успешно очищена!");
-        } catch (Exception e) {
-            return new ExecutionStatus(false, "Произошла ошибка при очистке коллекции!");
+        } else {
+            return ArgumentStatus;
         }
     }
 }

@@ -56,7 +56,7 @@ public class Executer {
                 scriptStackCounter--;
                 return new ExecutionStatus(false, "Превышена максимальная глубина рекурсии!");
             }
-            if (fileName.length() == 0) {
+            if (fileName.isEmpty()) {
                 scriptStackCounter--;
                 return new ExecutionStatus(false, "У команды execute_script должен быть только один аргумент!\nПример корректного ввода: execute_script file_name");
             }
@@ -71,7 +71,9 @@ public class Executer {
                         if (commandStatus.isSuccess()) {
                             console.println(commandStatus.getMessage());
                         } else {
-                            console.printError(commandStatus.getMessage());
+                            if (!commandStatus.getMessage().equals("Выполнение скрипта приостановлено.")) {
+                                console.printError(commandStatus.getMessage());
+                            }
                             return new ExecutionStatus(false, "Выполнение скрипта приостановлено.");
                         }
                     } else {
