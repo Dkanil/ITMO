@@ -1,0 +1,244 @@
+@startuml
+
+class Asker {
+  + askBand(Console, Long): MusicBand
+  - askCoordinates(Console): Coordinates
+  - askStudio(Console): Studio
+}
+class CollectionManager {
+  - collection: Stack<MusicBand>
+  - InitializationDate: LocalDateTime
+  - Bands: Map<Long, MusicBand>
+  - id: Long
+  - dumpManager: DumpManager
+  - lastSaveDate: LocalDateTime
+  + saveCollection(): void
+  + getBands(): Stack<MusicBand>
+  + getFreeId(): Long
+  + removeAllByGenre(MusicGenre): int
+  + getById(Long): MusicBand
+  + sort(): void
+  + removeById(Long): void
+  + getInitializationDate(): LocalDateTime
+  + clear(): void
+  + loadCollection(): ExecutionStatus
+  + getLastSaveDate(): LocalDateTime
+  + add(MusicBand): boolean
+  + removeFirst(): void
+  + getCollection(): Stack<MusicBand>
+}
+class Command {
+  - name: String
+  - description: String
+  + getDescription(): String
+  + equals(Object): boolean
+  + toString(): String
+  + hashCode(): int
+  + run(String): ExecutionStatus
+  + getName(): String
+}
+class CommandManager {
+  - commands: Map<String, Command>
+  + register(String, Command): void
+  + getCommandsMap(): Map<String, Command>
+  + getCommand(String): Command
+}
+interface Console << interface >> {
+  + println(Object): void
+  + print(Object): void
+  + printError(Object): void
+  + readln(): String
+  + printTable(Object, Object): void
+}
+class Coordinates {
+  - x: double
+  - y: Integer
+  + equals(Object): boolean
+  + validate(): boolean
+  + getX(): double
+  + getY(): Integer
+  + hashCode(): int
+  + toString(): String
+}
+class DumpManager {
+  - fileName: String
+  - console: Console
+  + WriteCollection(Stack<MusicBand>): void
+  + ReadCollection(Stack<MusicBand>): void
+}
+class Element {
+  + getID(): Long
+}
+class Executer {
+  - console: Console
+  - scriptStackCounter: int
+  + runScript(String): ExecutionStatus
+  - runCommand(String[]): ExecutionStatus
+  + interactiveMode(): void
+}
+class ExecutionStatus {
+  - success: boolean
+  - message: String
+  + isSuccess(): boolean
+  + getMessage(): String
+}
+class Main {
+  + main(String[]): void
+}
+class MusicBand {
+  - numberOfParticipants: Long
+  - coordinates: Coordinates
+  - creationDate: LocalDateTime
+  - description: String
+  - albumsCount: Long
+  - id: Long
+  - genre: MusicGenre
+  - studio: Studio
+  - name: String
+  + toString(): String
+  + getID(): Long
+  + compareTo(Element): int
+  + getAlbumsCount(): Long
+  + getDescription(): String
+  + toArray(MusicBand): String[]
+  + getStudio(): Studio
+  + fromArray(String[]): MusicBand
+  + getCreationDate(): LocalDateTime
+  + hashCode(): int
+  + getId(): Long
+  + getCoordinates(): Coordinates
+  + getGenre(): MusicGenre
+  + getName(): String
+  + equals(Object): boolean
+  + getNumberOfParticipants(): Long
+  + validate(): boolean
+}
+enum MusicGenre << enumeration >> {
+  + BRIT_POP: 
+  + JAZZ: 
+  + MATH_ROCK: 
+  + values(): MusicGenre[]
+  + list(): String
+  + valueOf(String): MusicGenre
+}
+class StandartConsole {
+  + print(Object): void
+  + readln(): String
+  + println(Object): void
+  + printError(Object): void
+  + printTable(Object, Object): void
+}
+class Studio {
+  - name: String
+  - address: String
+  + toString(): String
+  + equals(Object): boolean
+  + getAddress(): String
+  + hashCode(): int
+  + getName(): String
+  + validate(): boolean
+}
+interface Validatable << interface >> {
+  + validate(): boolean
+}
+class add {
+  - console: Console
+  - collectionManager: CollectionManager
+  + run(String): ExecutionStatus
+}
+class addIfMin {
+  ~ collectionManager: CollectionManager
+  ~ console: Console
+  + run(String): ExecutionStatus
+}
+class clear {
+  ~ collectionManager: CollectionManager
+  ~ console: Console
+  + run(String): ExecutionStatus
+}
+class executeScript {
+  + console: Console
+  + run(String): ExecutionStatus
+}
+class exit {
+  ~ console: Console
+  + run(String): ExecutionStatus
+}
+class help {
+  - console: Console
+  - commandManager: CommandManager
+  + run(String): ExecutionStatus
+}
+class info {
+  ~ collectionManager: CollectionManager
+  ~ console: Console
+  + run(String): ExecutionStatus
+}
+class printFieldAscendingDescription {
+  ~ collectionManager: CollectionManager
+  ~ console: Console
+  + run(String): ExecutionStatus
+}
+class printFieldDescendingDescription {
+  ~ collectionManager: CollectionManager
+  ~ console: Console
+  + run(String): ExecutionStatus
+}
+class removeAllByGenre {
+  ~ console: Console
+  ~ collectionManager: CollectionManager
+  + run(String): ExecutionStatus
+}
+class removeById {
+  ~ console: Console
+  ~ collectionManager: CollectionManager
+  + run(String): ExecutionStatus
+}
+class removeFirst {
+  ~ console: Console
+  ~ collectionManager: CollectionManager
+  + run(String): ExecutionStatus
+}
+class save {
+  ~ console: Console
+  ~ collectionManager: CollectionManager
+  + run(String): ExecutionStatus
+}
+class show {
+  - console: Console
+  - collectionManager: CollectionManager
+  + run(String): ExecutionStatus
+}
+class sort {
+  - collectionManager: CollectionManager
+  - console: Console
+  + run(String): ExecutionStatus
+}
+class update {
+  - console: Console
+  - collectionManager: CollectionManager
+  + run(String): ExecutionStatus
+}
+
+Coordinates                      -[#008200,dashed]-^  Validatable                     
+Element                          -[#008200,dashed]-^  Validatable                     
+MusicBand                        -[#000082,plain]-^  Element                         
+StandartConsole                  -[#008200,dashed]-^  Console                         
+Studio                           -[#008200,dashed]-^  Validatable                     
+add                              -[#000082,plain]-^  Command                         
+addIfMin                         -[#000082,plain]-^  Command                         
+clear                            -[#000082,plain]-^  Command                         
+executeScript                    -[#000082,plain]-^  Command                         
+exit                             -[#000082,plain]-^  Command                         
+help                             -[#000082,plain]-^  Command                         
+info                             -[#000082,plain]-^  Command                         
+printFieldAscendingDescription   -[#000082,plain]-^  Command                         
+printFieldDescendingDescription  -[#000082,plain]-^  Command                         
+removeAllByGenre                 -[#000082,plain]-^  Command                         
+removeById                       -[#000082,plain]-^  Command                         
+removeFirst                      -[#000082,plain]-^  Command                         
+save                             -[#000082,plain]-^  Command                         
+show                             -[#000082,plain]-^  Command                         
+sort                             -[#000082,plain]-^  Command                         
+update                           -[#000082,plain]-^  Command                         
+@enduml
