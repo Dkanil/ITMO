@@ -6,15 +6,13 @@ import utility.*;
  * Класс команды для выполнения скрипта из указанного файла.
  */
 public class ExecuteScript extends Command {
-    public final Console console;
 
     /**
      * Конструктор команды executeScript.
      * @param console Консоль для ввода/вывода.
      */
     public ExecuteScript(Console console) {
-        super(CommandNames.EXECUTE_SCRIPT.getName() + " file_name", CommandNames.EXECUTE_SCRIPT.getDescription());
-        this.console = console;
+        super(CommandNames.EXECUTE_SCRIPT.getName() + " file_name", CommandNames.EXECUTE_SCRIPT.getDescription(), console);
     }
 
     /**

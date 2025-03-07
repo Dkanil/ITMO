@@ -7,7 +7,6 @@ import utility.*;
  * Абстрактный класс для команд, не принимающих аргументы.
  */
 public abstract class NoArgumentCommand extends Command {
-    Console console;
 
     /**
      * Конструктор команды без аргументов.
@@ -16,8 +15,7 @@ public abstract class NoArgumentCommand extends Command {
      * @param console Консоль для ввода/вывода.
      */
     public NoArgumentCommand(String name, String description, Console console) {
-        super(name, description);
-        this.console = console;
+        super(name, description, console);
     }
 
     /**

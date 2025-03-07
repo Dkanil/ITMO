@@ -5,7 +5,6 @@ import managers.CollectionManager;
 import utility.*;
 
 public abstract class IdArgumentCommand extends Command {
-    Console console;
     CollectionManager collectionManager;
 
     /**
@@ -13,10 +12,10 @@ public abstract class IdArgumentCommand extends Command {
      * @param name Имя команды.
      * @param description Описание команды.
      * @param console Консоль для ввода/вывода.
+     * @param collectionManager Менеджер коллекции.
      */
     public IdArgumentCommand(String name, String description, Console console, CollectionManager collectionManager) {
-        super(name, description);
-        this.console = console;
+        super(name, description, console);
         this.collectionManager = collectionManager;
     }
 

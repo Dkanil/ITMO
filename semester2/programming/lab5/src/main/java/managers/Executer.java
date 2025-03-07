@@ -1,5 +1,6 @@
 package managers;
 
+import commands.CommandNames;
 import utility.*;
 
 import java.io.BufferedReader;
@@ -39,7 +40,10 @@ public class Executer {
                 console.println("Выполнение команды '" + userCommand[0] + "'");
                 return command.run(userCommand[1]);
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
+            return new ExecutionStatus(false, "Введено недостаточно аргументов для выполнения последней команды!");
+        }
+        catch (Exception e) {
             return new ExecutionStatus(false, "Произошла ошибка при выполнении команды!");
         }
     }
@@ -62,6 +66,11 @@ public class Executer {
             }
             console.println("Запуск скрипта '" + fileName + "'");
             try (BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
+                Console FileConsole = new FileConsole(input);
+                // Костыльно подменяем консоль для команд, которые требуют построчного ввода пользователя
+                CommandManager.getCommand(CommandNames.ADD.getName()).updateConsole(FileConsole);
+                CommandManager.getCommand(CommandNames.ADD_IF_MIN.getName()).updateConsole(FileConsole);
+                CommandManager.getCommand(CommandNames.UPDATE.getName()).updateConsole(FileConsole);
                 while (scriptStackCounter > 0) {
                     String line = input.readLine();
                     if (!line.equals("exit")) {
@@ -83,12 +92,20 @@ public class Executer {
                 }
             } catch (FileNotFoundException e) {
                 return new ExecutionStatus(false, "Не удаётся найти файл скрипта!");
+            } catch (IllegalArgumentException e) {
+                return new ExecutionStatus(false, "Произошла ошибка при чтении данных из файла скрипта!");
             } catch (Exception e) {
                 return new ExecutionStatus(false, "Произошла ошибка при выполнении команды скрипта!");
             }
             return new ExecutionStatus(true, "");
         } catch (Exception e) {
             return new ExecutionStatus(false, "Произошла ошибка при запуске скрипта!");
+        }
+        finally {
+            // Возвращаем консоль для команд в исходное состояние
+            CommandManager.getCommand(CommandNames.ADD.getName()).updateConsole(console);
+            CommandManager.getCommand(CommandNames.ADD_IF_MIN.getName()).updateConsole(console);
+            CommandManager.getCommand(CommandNames.UPDATE.getName()).updateConsole(console);
         }
     }
 

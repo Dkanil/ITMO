@@ -1,2 +1,13 @@
 help
-execute_script script2.txt
+add
+sfgsfg
+20
+20
+5
+38
+krytie
+JAZZ
+sTUDIO HOME
+Kronva
+aboba
+exit

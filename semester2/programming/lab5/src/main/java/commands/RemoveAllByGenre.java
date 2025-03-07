@@ -8,7 +8,6 @@ import managers.*;
  * Класс команды для удаления всех элементов из коллекции по заданному жанру.
  */
 public class RemoveAllByGenre extends Command {
-    Console console;
     CollectionManager collectionManager;
 
     /**
@@ -16,9 +15,8 @@ public class RemoveAllByGenre extends Command {
      * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public RemoveAllByGenre(utility.Console console, managers.CollectionManager collectionManager) {
-        super(CommandNames.REMOVE_ALL_BY_GENRE.getName() + " genre", CommandNames.REMOVE_ALL_BY_GENRE.getDescription());
-        this.console = console;
+    public RemoveAllByGenre(Console console, managers.CollectionManager collectionManager) {
+        super(CommandNames.REMOVE_ALL_BY_GENRE.getName() + " genre", CommandNames.REMOVE_ALL_BY_GENRE.getDescription(), console);
         this.collectionManager = collectionManager;
     }
 

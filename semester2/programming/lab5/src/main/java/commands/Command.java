@@ -1,5 +1,6 @@
 package commands;
 
+import utility.Console;
 import utility.ExecutionStatus;
 
 /**
@@ -8,15 +9,18 @@ import utility.ExecutionStatus;
 public abstract class Command {
     private final String name;
     private final String description;
+    protected Console console;
 
     /**
      * Конструктор команды.
      * @param name Имя команды.
      * @param description Описание команды.
+     * @param console Консоль ввода-вывода.
      */
-    public Command(String name, String description) {
+    public Command(String name, String description, Console console) {
         this.name = name;
         this.description = description;
+        this.console = console;
     }
 
     /**
@@ -33,6 +37,14 @@ public abstract class Command {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Обновляет консоль ввода-вывода.
+     * @param console Консоль ввода-вывода.
+     */
+    public void updateConsole(Console console) {
+        this.console = console;
     }
 
     public abstract ExecutionStatus validate(String arg, String name);
