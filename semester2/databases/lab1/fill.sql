@@ -8,14 +8,14 @@ VALUES ('Mars', 4),
        ('Earth', 1),
        ('Neptune', 2),
        ('Sun', 3);
-INSERT INTO engine (power, working)
-VALUES (5000, true),
-       (3000, false),
-       (4500, true);
 INSERT INTO spaceship (name, location_id)
 VALUES ('Big Destroyer', 4),
        ('Mars Explorer', 1),
        ('Union', 2);
+INSERT INTO engine (power, working, spaceship_id)
+VALUES (5000, true, 2),
+       (3000, false, 2),
+       (4500, true, 1);
 INSERT INTO role (name)
 VALUES ('Captain'),
        ('Engineer'),
@@ -28,10 +28,10 @@ INSERT INTO battery (charge)
 VALUES (100.0),
        (0),
        (45.0);
-INSERT INTO antenna (battery_id, direction_id)
-VALUES (2, 2),
-       (3, 2),
-       (1, 3);
+INSERT INTO antenna (battery_id, direction_id, spaceship_id)
+VALUES (2, 2, 1),
+       (3, 2, 1),
+       (1, 3, 2);
 INSERT INTO human_antenna (human_id, antenna_id)
 VALUES (1, 2),
        (2, 2),
