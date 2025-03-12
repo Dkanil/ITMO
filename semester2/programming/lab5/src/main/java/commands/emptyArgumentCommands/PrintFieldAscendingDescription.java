@@ -26,19 +26,14 @@ public class PrintFieldAscendingDescription extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            if (collectionManager.getBands().isEmpty()) {
-                return new ExecutionStatus(false, "Коллекция пуста!");
-            }
-            collectionManager.sort();
-            for (var band : collectionManager.getBands()) {
-                console.println(band.getDescription());
-            }
-            return new ExecutionStatus(true, "Операция выполнена!");
-        } else {
-            return ArgumentStatus;
+    public ExecutionStatus runInternal(String argument) {
+        if (collectionManager.getBands().isEmpty()) {
+            return new ExecutionStatus(false, "Коллекция пуста!");
         }
+        collectionManager.sort();
+        for (var band : collectionManager.getBands()) {
+            console.println(band.getDescription());
+        }
+        return new ExecutionStatus(true, "Операция выполнена!");
     }
 }

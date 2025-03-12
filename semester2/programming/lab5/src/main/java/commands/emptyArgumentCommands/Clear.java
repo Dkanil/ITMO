@@ -26,13 +26,8 @@ public class Clear extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            collectionManager.clear();
-            return new ExecutionStatus(true, "Коллекция успешно очищена!");
-        } else {
-            return ArgumentStatus;
-        }
+    public ExecutionStatus runInternal(String argument) {
+        collectionManager.clear();
+        return new ExecutionStatus(true, "Коллекция успешно очищена!");
     }
 }

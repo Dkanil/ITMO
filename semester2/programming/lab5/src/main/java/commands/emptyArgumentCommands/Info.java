@@ -26,16 +26,11 @@ public class Info extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            console.println("Тип коллекции: " + collectionManager.getBands().getClass().getName());
-            console.println("Дата инициализации: " + collectionManager.getInitializationDate());
-            console.println("Дата последнего сохранения: " + collectionManager.getLastSaveDate());
-            console.println("Количество элементов: " + collectionManager.getBands().size());
-            return new ExecutionStatus(true, "Информация о коллекции успешно выведена!");
-        } else {
-            return ArgumentStatus;
-        }
+    public ExecutionStatus runInternal(String argument) {
+        console.println("Тип коллекции: " + collectionManager.getBands().getClass().getName());
+        console.println("Дата инициализации: " + collectionManager.getInitializationDate());
+        console.println("Дата последнего сохранения: " + collectionManager.getLastSaveDate());
+        console.println("Количество элементов: " + collectionManager.getBands().size());
+        return new ExecutionStatus(true, "Информация о коллекции успешно выведена!");
     }
 }

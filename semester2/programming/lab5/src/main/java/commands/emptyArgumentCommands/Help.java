@@ -26,16 +26,11 @@ public class Help extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            console.println("Список доступных команд:");
-            for (var command : commandManager.getCommandsMap().entrySet()) {
-                console.println(command.getValue().getName() + " - " + command.getValue().getDescription());
-            }
-            return new ExecutionStatus(true, "Справка по командам успешно выведена!");
-        } else {
-            return ArgumentStatus;
+    public ExecutionStatus runInternal(String argument) {
+        console.println("Список доступных команд:");
+        for (var command : commandManager.getCommandsMap().entrySet()) {
+            console.println(command.getValue().getName() + " - " + command.getValue().getDescription());
         }
+        return new ExecutionStatus(true, "Справка по командам успешно выведена!");
     }
 }

@@ -26,13 +26,8 @@ public class Save extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            collectionManager.saveCollection();
-            return new ExecutionStatus(true, "Коллекция успешно сохранена!");
-        } else {
-            return ArgumentStatus;
-        }
+    public ExecutionStatus runInternal(String argument) {
+        collectionManager.saveCollection();
+        return new ExecutionStatus(true, "Коллекция успешно сохранена!");
     }
 }

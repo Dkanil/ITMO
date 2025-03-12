@@ -32,7 +32,7 @@ public class ExecuteScript extends Command {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String arg) {
+    public ExecutionStatus runInternal(String arg) {
         return null;
     }
 }

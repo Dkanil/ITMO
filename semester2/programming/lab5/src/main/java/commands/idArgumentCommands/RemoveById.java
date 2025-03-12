@@ -24,14 +24,9 @@ public class RemoveById extends IdArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            Long id = Long.parseLong(argument);
-            collectionManager.removeById(id);
-            return new ExecutionStatus(true, "Элемент успешно удален!");
-        } else {
-            return ArgumentStatus;
-        }
+    public ExecutionStatus runInternal(String argument) {
+        Long id = Long.parseLong(argument);
+        collectionManager.removeById(id);
+        return new ExecutionStatus(true, "Элемент успешно удален!");
     }
 }

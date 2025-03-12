@@ -26,13 +26,8 @@ public class Sort extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            collectionManager.sort();
-            return new ExecutionStatus(true, "Коллекция успешно отсортирована!");
-        } else {
-            return ArgumentStatus;
-        }
+    public ExecutionStatus runInternal(String argument) {
+        collectionManager.sort();
+        return new ExecutionStatus(true, "Коллекция успешно отсортирована!");
     }
 }

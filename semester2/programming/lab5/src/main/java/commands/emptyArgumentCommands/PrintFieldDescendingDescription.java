@@ -26,19 +26,14 @@ public class PrintFieldDescendingDescription extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            if (collectionManager.getBands().isEmpty()) {
-                return new ExecutionStatus(false, "Коллекция пуста!");
-            }
-            collectionManager.sort();
-            for (int i = collectionManager.getBands().size() - 1; i >= 0; i--) {
-                console.println(collectionManager.getBands().get(i).getDescription());
-            }
-            return new ExecutionStatus(true, "Операция выполнена!");
-        } else {
-            return ArgumentStatus;
+    public ExecutionStatus runInternal(String argument) {
+        if (collectionManager.getBands().isEmpty()) {
+            return new ExecutionStatus(false, "Коллекция пуста!");
         }
+        collectionManager.sort();
+        for (int i = collectionManager.getBands().size() - 1; i >= 0; i--) {
+            console.println(collectionManager.getBands().get(i).getDescription());
+        }
+        return new ExecutionStatus(true, "Операция выполнена!");
     }
 }

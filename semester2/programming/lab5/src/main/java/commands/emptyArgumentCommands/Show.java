@@ -26,17 +26,12 @@ public class Show extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            console.println("Вывод всех элементов коллекции:");
-            if (collectionManager.getCollection().isEmpty()) {
-                console.println("Коллекция пуста.");
-            }
-            collectionManager.getCollection().forEach(band -> console.println(band.toString()));
-            return new ExecutionStatus(true, "Вывод всех элементов коллекции успешно завершен!");
-        } else {
-            return ArgumentStatus;
+    public ExecutionStatus runInternal(String argument) {
+        console.println("Вывод всех элементов коллекции:");
+        if (collectionManager.getCollection().isEmpty()) {
+            console.println("Коллекция пуста.");
         }
+        collectionManager.getCollection().forEach(band -> console.println(band.toString()));
+        return new ExecutionStatus(true, "Вывод всех элементов коллекции успешно завершен!");
     }
 }

@@ -45,14 +45,9 @@ public class RemoveAllByGenre extends Command {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus argumentStatus = validate(argument, getName());
-        if (argumentStatus.isSuccess()) {
-            MusicGenre genre = MusicGenre.valueOf(argument);
-            int count = collectionManager.removeAllByGenre(genre);
-            return new ExecutionStatus(true, "Удалено " + count + " элементов!");
-        } else {
-            return argumentStatus;
-        }
+    public ExecutionStatus runInternal(String argument) {
+        MusicGenre genre = MusicGenre.valueOf(argument);
+        int count = collectionManager.removeAllByGenre(genre);
+        return new ExecutionStatus(true, "Удалено " + count + " элементов!");
     }
 }

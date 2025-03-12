@@ -50,11 +50,25 @@ public abstract class Command {
     public abstract ExecutionStatus validate(String arg, String name);
 
     /**
-     * Абстрактный метод для выполнения команды.
+     * Приватный метод для выполнения команды с проверкой. В случае успешной проверки вызывает метод runInternal.
      * @param arg Аргумент команды.
      * @return Статус выполнения команды.
      */
-    public abstract ExecutionStatus run(String arg);
+    public ExecutionStatus run(String arg){
+        ExecutionStatus ArgumentStatus = validate(arg, getName());
+        if (ArgumentStatus.isSuccess()) {
+            return runInternal(arg);
+        } else {
+            return ArgumentStatus;
+        }
+    }
+
+    /**
+     * Абстрактный метод для выполнения внутренней части команды.
+     * @param arg Аргумент команды.
+     * @return Статус выполнения команды.
+     */
+    public abstract ExecutionStatus runInternal(String arg);
 
     /**
      * Возвращает хэш-код команды.

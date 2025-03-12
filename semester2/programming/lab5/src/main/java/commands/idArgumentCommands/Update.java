@@ -7,7 +7,7 @@ import utility.*;
 /**
  * Класс команды для обновления значения элемента коллекции по его id.
  */
-public class Update extends IdArgumentCommand implements Asking {
+public class Update extends IdArgumentAskingCommand {
 
     /**
      * Конструктор команды update.
@@ -24,20 +24,9 @@ public class Update extends IdArgumentCommand implements Asking {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            Long id = Long.parseLong(argument);
-            console.println("Обновление элемента коллекции...");
-
-            Pair validationStatusPair = validate(console, id);
-            if (validationStatusPair.getExecutionStatus().isSuccess()) {
-                collectionManager.removeById(id);
-                collectionManager.add(validationStatusPair.getBand());
-            }
-            return validationStatusPair.getExecutionStatus();
-        } else {
-            return ArgumentStatus;
-        }
+    public ExecutionStatus runInternal(Pair validationStatusPair) {
+        collectionManager.removeById(validationStatusPair.getBand().getId());
+        collectionManager.add(validationStatusPair.getBand());
+        return new ExecutionStatus(true, "Элемент успешно обновлён!");
     }
 }

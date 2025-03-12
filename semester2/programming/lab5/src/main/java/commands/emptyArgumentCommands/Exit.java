@@ -22,13 +22,8 @@ public class Exit extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus run(String argument) {
-        ExecutionStatus ArgumentStatus = validate(argument, getName());
-        if (ArgumentStatus.isSuccess()) {
-            System.exit(0);
-            return new ExecutionStatus(true, "Программа завершена!");
-        } else {
-            return ArgumentStatus;
-        }
+    public ExecutionStatus runInternal(String argument) {
+        System.exit(0);
+        return new ExecutionStatus(true, "Программа завершена!");
     }
 }
