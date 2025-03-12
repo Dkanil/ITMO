@@ -1,37 +1,27 @@
 package utility;
 
-import models.MusicBand;
+public class Pair<A, B> {
+    private A a;
+    private B b;
 
-/**
- * Класс для представления пары значений ExecutionStatus и MusicBand.
- */
-public class Pair {
-    private ExecutionStatus executionStatus;
-    private MusicBand band;
-
-    /**
-     * Конструктор для создания пары значений.
-     * @param executionStatus Статус выполнения команды.
-     * @param band Музыкальная группа.
-     */
-    public Pair(ExecutionStatus executionStatus, MusicBand band) {
-        this.executionStatus = executionStatus;
-        this.band = band;
+    public Pair(A a, B b) {
+        this.a = a;
+        this.b = b;
     }
 
-    /**
-     * Возвращает статус выполнения команды.
-     * @return Статус выполнения команды.
-     */
-    public ExecutionStatus getExecutionStatus() {
-        return executionStatus;
+    public A getFirst() {
+        return a;
     }
 
-    /**
-     * Возвращает музыкальную группу.
-     * @return Музыкальная группа.
-     */
-    public MusicBand getBand() {
-        return band;
+    public B getSecond() {
+        return b;
+    }
+
+    public void setFirst(A a) {
+        this.a = a;
+    }
+
+    public void setSecond(B b) {
+        this.b = b;
     }
 }

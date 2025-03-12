@@ -1,7 +1,8 @@
 help
+show
 add
 sfgsfg
-20
+20sfdgsf
 20
 5
 38
@@ -9,5 +10,5 @@ krytie
 JAZZ
 sTUDIO HOME
 Kronva
-aboba
+show
 exit

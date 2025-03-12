@@ -1,14 +1,12 @@
 package commands;
 
-import utility.Console;
-import utility.ExecutionStatus;
+import utility.*;
 
 /**
  * Абстрактный класс для всех команд.
  */
 public abstract class Command {
-    private final String name;
-    private final String description;
+    private final Pair<String, String> nameAndDescription;
     protected Console console;
 
     /**
@@ -18,8 +16,7 @@ public abstract class Command {
      * @param console Консоль ввода-вывода.
      */
     public Command(String name, String description, Console console) {
-        this.name = name;
-        this.description = description;
+        this.nameAndDescription = new Pair<String, String>(name, description);
         this.console = console;
     }
 
@@ -28,7 +25,7 @@ public abstract class Command {
      * @return Имя команды.
      */
     public String getName() {
-        return name;
+        return nameAndDescription.getFirst();
     }
 
     /**
@@ -36,7 +33,7 @@ public abstract class Command {
      * @return Описание команды.
      */
     public String getDescription() {
-        return description;
+        return nameAndDescription.getSecond();
     }
 
     /**
@@ -68,7 +65,7 @@ public abstract class Command {
      * @param arg Аргумент команды.
      * @return Статус выполнения команды.
      */
-    public abstract ExecutionStatus runInternal(String arg);
+    protected abstract ExecutionStatus runInternal(String arg);
 
     /**
      * Возвращает хэш-код команды.
@@ -76,7 +73,7 @@ public abstract class Command {
      */
     @Override
     public int hashCode() {
-        return name.hashCode() + description.hashCode();
+        return nameAndDescription.getFirst().hashCode() + nameAndDescription.getSecond().hashCode();
     }
 
     /**
@@ -89,7 +86,7 @@ public abstract class Command {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Command command = (Command) object;
-        return name.equals(command.name) && description.equals(command.description);
+        return nameAndDescription.getFirst().equals(command.nameAndDescription.getFirst()) && nameAndDescription.getSecond().equals(command.nameAndDescription.getSecond());
     }
 
     /**
@@ -99,8 +96,8 @@ public abstract class Command {
     @Override
     public String toString() {
         return "Command{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
+                "name='" + nameAndDescription.getFirst() + '\'' +
+                ", description='" + nameAndDescription.getSecond() + '\'' +
                 '}';
     }
 }

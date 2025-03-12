@@ -4,8 +4,7 @@ package utility;
      * Класс, представляющий статус выполнения операции.
      */
     public class ExecutionStatus {
-        private boolean success;
-        private String message;
+        private Pair<Boolean, String> status;
 
         /**
          * Конструктор для создания объекта ExecutionStatus.
@@ -13,8 +12,7 @@ package utility;
          * @param message сообщение о результате выполнения операции
          */
         public ExecutionStatus(boolean success, String message) {
-            this.success = success;
-            this.message = message;
+            this.status = new Pair<Boolean, String>(success, message);
         }
 
         /**
@@ -22,7 +20,7 @@ package utility;
          * @return true, если операция была успешной, иначе false
          */
         public boolean isSuccess() {
-            return success;
+            return status.getFirst();
         }
 
         /**
@@ -30,6 +28,6 @@ package utility;
          * @return сообщение о результате выполнения операции
          */
         public String getMessage() {
-            return message;
+            return status.getSecond();
         }
     }

@@ -18,14 +18,10 @@ public class Add extends NoArgumentAskingCommand {
         super(CommandNames.ADD.getName() + " {element}", CommandNames.ADD.getDescription(), console, collectionManager);
     }
 
-    /**
-     * Выполняет команду добавления нового элемента в коллекцию.
-     * @param argument Аргумент команды (не используется).
-     * @return Статус выполнения команды.
-     */
+
     @Override
-    public ExecutionStatus runInternal(Pair validationStatusPair) {
-        collectionManager.add(validationStatusPair.getBand());
-        return validationStatusPair.getExecutionStatus();
+    public ExecutionStatus runInternal(Pair<ExecutionStatus, MusicBand> validationStatusPair) {
+        collectionManager.add(validationStatusPair.getSecond());
+        return validationStatusPair.getFirst();
     }
 }

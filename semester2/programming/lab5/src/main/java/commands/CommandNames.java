@@ -1,7 +1,9 @@
 package commands;
 
+import utility.Pair;
+
 /**
- * Перечисление, представляющее имена команд.
+ * Перечисление, представляющее имена команд и их описания.
  */
 public enum CommandNames {
     HELP("help", "вывести справку по доступным командам"),
@@ -21,28 +23,18 @@ public enum CommandNames {
     PRINT_FIELD_ASCENDING_DESCRIPTION("print_field_ascending_description", "вывести значения поля description всех элементов в порядке возрастания"),
     PRINT_FIELD_DESCENDING_DESCRIPTION("print_field_descending_description", "вывести значения поля description всех элементов в порядке убывания");
 
-    private final String command;
-    private final String description;
+    private final Pair<String, String> commandDescription;
 
-    /**
-     * Конструктор перечисления CommandNames.
-     * @param command имя команды
-     */
     CommandNames(String command, String description) {
-        this.command = command;
-        this.description = description;
+        this.commandDescription = new Pair<String, String>(command, description);
     }
 
-    /**
-     * Возвращает имя команды.
-     * @return имя команды
-     */
     public String getName() {
-        return command;
+        return commandDescription.getFirst();
     }
 
     public String getDescription() {
-        return description;
+        return commandDescription.getSecond();
     }
 
 }

@@ -21,14 +21,9 @@ public class AddIfMin extends NoArgumentAskingCommand{
         super(CommandNames.ADD_IF_MIN.getName() + " {element}", CommandNames.ADD_IF_MIN.getDescription(), console, collectionManager);
     }
 
-    /**
-     * Выполняет команду добавления нового элемента в коллекцию, если его значение меньше, чем у наименьшего элемента этой коллекции.
-     * @param argument Аргумент команды (не используется).
-     * @return Статус выполнения команды.
-     */
     @Override
-    public ExecutionStatus runInternal(Pair validationStatusPair) {
-        MusicBand band = validationStatusPair.getBand();
+    public ExecutionStatus runInternal(Pair<ExecutionStatus, MusicBand> validationStatusPair) {
+        MusicBand band = validationStatusPair.getSecond();
         if (collectionManager.getCollection().isEmpty()) {
             collectionManager.add(band);
             return new ExecutionStatus(true, "Коллекция пуста! Элемент добавлен как наименьший.");
@@ -37,7 +32,7 @@ public class AddIfMin extends NoArgumentAskingCommand{
         bufCollection.sort(Comparator.naturalOrder());
         if (band.compareTo(bufCollection.firstElement()) < 0) {
             collectionManager.add(band);
-            return validationStatusPair.getExecutionStatus();
+            return validationStatusPair.getFirst();
         } else {
             return new ExecutionStatus(true, "Элемент не является наименьшим в коллекции!");
         }

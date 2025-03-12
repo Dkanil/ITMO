@@ -2,6 +2,7 @@ package commands.idArgumentCommands;
 
 import commands.*;
 import managers.*;
+import models.MusicBand;
 import utility.*;
 
 /**
@@ -18,15 +19,10 @@ public class Update extends IdArgumentAskingCommand {
         super(CommandNames.UPDATE.getName() + " id {element}", CommandNames.UPDATE.getDescription(), console, collectionManager);
     }
 
-    /**
-     * Выполняет команду обновления элемента коллекции.
-     * @param argument Аргумент команды, содержащий id элемента.
-     * @return Статус выполнения команды.
-     */
     @Override
-    public ExecutionStatus runInternal(Pair validationStatusPair) {
-        collectionManager.removeById(validationStatusPair.getBand().getId());
-        collectionManager.add(validationStatusPair.getBand());
+    public ExecutionStatus runInternal(Pair<ExecutionStatus, MusicBand> validationStatusPair) {
+        collectionManager.removeById(validationStatusPair.getSecond().getId());
+        collectionManager.add(validationStatusPair.getSecond());
         return new ExecutionStatus(true, "Элемент успешно обновлён!");
     }
 }

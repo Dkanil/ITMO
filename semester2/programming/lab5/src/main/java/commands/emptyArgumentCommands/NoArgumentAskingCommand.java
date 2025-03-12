@@ -17,11 +17,11 @@ public abstract class NoArgumentAskingCommand extends NoArgumentCommand {
         ExecutionStatus ArgumentStatus = validate(arg, getName());
         if (ArgumentStatus.isSuccess()) {
             console.println("Добавление элемента в коллекцию...");
-            Pair validationStatusPair = validAsking(console, collectionManager.getFreeId());
-            if (validationStatusPair.getExecutionStatus().isSuccess()) {
+            Pair<ExecutionStatus, MusicBand> validationStatusPair = validAsking(console, collectionManager.getFreeId());
+            if (validationStatusPair.getFirst().isSuccess()) {
                 return runInternal(validationStatusPair);
             }
-            return validationStatusPair.getExecutionStatus();
+            return validationStatusPair.getFirst();
         } else {
             return ArgumentStatus;
         }
@@ -31,17 +31,19 @@ public abstract class NoArgumentAskingCommand extends NoArgumentCommand {
     public ExecutionStatus runInternal(String arg) {
         return null;
     }
-    public abstract ExecutionStatus runInternal(Pair validationStatusPair);
+    public abstract ExecutionStatus runInternal(Pair<ExecutionStatus, MusicBand> validationStatusPair);
 
-    public Pair validAsking(Console console, Long id) {
+    public Pair<ExecutionStatus, MusicBand> validAsking(Console console, Long id) {
         try {
             MusicBand band = Asker.askBand(console, id);
             if (band != null && band.validate()) {
-                return new Pair(new ExecutionStatus(true, "Элемент успешно добавлен в коллекцию!"), band);
+                return new Pair<ExecutionStatus, MusicBand>(new ExecutionStatus(true, "Элемент успешно добавлен в коллекцию!"), band);
             }
-            return new Pair(new ExecutionStatus(false, "Введены некорректные данные!"), null);
+            return new Pair<ExecutionStatus, MusicBand>(new ExecutionStatus(false, "Введены некорректные данные!"), null);
         } catch (Asker.Breaker e) {
-            return new Pair(new ExecutionStatus(false, "Ввод был прерван пользователем!"), null);
+            return new Pair<ExecutionStatus, MusicBand>(new ExecutionStatus(false, "Ввод был прерван пользователем!"), null);
+        } catch (Asker.IllegalInputException e) {
+            return new Pair<ExecutionStatus, MusicBand>(new ExecutionStatus(false, e.getMessage()), null);
         }
     }
 }

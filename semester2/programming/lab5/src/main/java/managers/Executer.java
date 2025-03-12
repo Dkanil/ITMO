@@ -77,6 +77,7 @@ public class Executer {
                         String[] inputCommand = (line.trim() + " ").split(" ", 2);
                         inputCommand[1] = inputCommand[1].trim();
                         ExecutionStatus commandStatus = runCommand(inputCommand);
+
                         if (commandStatus.isSuccess()) {
                             console.println(commandStatus.getMessage());
                         } else {

@@ -11,6 +11,12 @@ import java.time.LocalDateTime;
 public class Asker {
     public static class Breaker extends Exception { }
 
+    public static class IllegalInputException extends IllegalArgumentException {
+        public IllegalInputException(String message) {
+            super(message);
+        }
+    }
+
     /**
      * Запрашивает у пользователя данные для создания объекта MusicBand.
      * @param console Консоль для ввода/вывода.
@@ -18,7 +24,7 @@ public class Asker {
      * @return Объект MusicBand с введенными данными.
      * @throws Breaker Исключение, выбрасываемое при вводе команды "exit".
      */
-    public static MusicBand askBand(Console console, Long id) throws Breaker {
+    public static MusicBand askBand(Console console, Long id) throws Breaker, IllegalInputException {
         String name;
         do {
             console.println("Введите значение поля name:");
@@ -44,6 +50,9 @@ public class Asker {
                 numberOfParticipants = -1L;
             }
             if (numberOfParticipants <= 0) {
+                if (console instanceof FileConsole){
+                    throw new IllegalInputException("Некорректное значение поля numberOfParticipants!\nЗначение поля должно быть больше 0");
+                }
                 console.printError("Некорректное значение поля numberOfParticipants!\nЗначение поля должно быть больше 0");
             }
         } while (numberOfParticipants <= 0);
@@ -62,6 +71,9 @@ public class Asker {
                 albumsCount = -1L;
             }
             if (albumsCount <= 0) {
+                if (console instanceof FileConsole){
+                    throw new IllegalInputException("Некорректное значение поля albumsCount!\nЗначение поля должно быть больше 0");
+                }
                 console.printError("Некорректное значение поля albumsCount!\nЗначение поля должно быть больше 0");
             }
         } while (albumsCount <= 0);
@@ -86,6 +98,9 @@ public class Asker {
                 try {
                     genre = MusicGenre.valueOf(input);
                 } catch (IllegalArgumentException e) {
+                    if (console instanceof FileConsole){
+                        throw new IllegalArgumentException("Некорректное значение поля genre!");
+                    }
                     console.printError("Некорректное значение поля genre!");
                 }
             }
@@ -118,6 +133,9 @@ public class Asker {
                 x = -981;
             }
             if (x <= -980) {
+                if (console instanceof FileConsole){
+                    throw new IllegalInputException("Некорректное значение поля x!\nЗначение поля должно быть больше -980");
+                }
                 console.printError("Некорректное значение поля x!\nЗначение поля должно быть больше -980");
             }
         } while (x <= -980);
@@ -136,6 +154,9 @@ public class Asker {
                 y = 296;
             }
             if (y > 295) {
+                if (console instanceof FileConsole){
+                    throw new IllegalInputException("Некорректное значение поля y!\nМаксимальное значение поля: 295");
+                }
                 console.printError("Некорректное значение поля y!\nМаксимальное значение поля: 295");
             }
         } while (y > 295);
