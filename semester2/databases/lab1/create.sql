@@ -6,12 +6,12 @@ CREATE TABLE weather (
 CREATE TABLE location (
     id         SERIAL PRIMARY KEY,
     name       VARCHAR(50) NOT NULL,
-    id_weather INTEGER REFERENCES weather ON DELETE CASCADE
+    id_weather INTEGER NOT NULL REFERENCES weather ON DELETE CASCADE
 );
 CREATE TABLE spaceship (
     id          SERIAL PRIMARY KEY,
     name        VARCHAR(50) NOT NULL,
-    location_id INTEGER REFERENCES location ON DELETE CASCADE
+    location_id INTEGER NOT NULL REFERENCES location ON DELETE CASCADE
 );
 CREATE TABLE engine (
     id      SERIAL PRIMARY KEY,
@@ -36,12 +36,12 @@ CREATE TABLE battery (
 );
 CREATE TABLE antenna (
     id           SERIAL PRIMARY KEY,
-    battery_id   INTEGER REFERENCES battery ON DELETE CASCADE,
+    battery_id   INTEGER NOT NULL REFERENCES battery ON DELETE CASCADE,
     direction_id INTEGER REFERENCES location ON DELETE CASCADE,
-    spaceship_id INTEGER REFERENCES spaceship ON DELETE CASCADE
+    spaceship_id INTEGER NOT NULL REFERENCES spaceship ON DELETE CASCADE
 );
 CREATE TABLE human_antenna (
     id         SERIAL PRIMARY KEY,
-    human_id   INTEGER REFERENCES human ON DELETE CASCADE,
-    antenna_id INTEGER REFERENCES antenna ON DELETE CASCADE
+    human_id   INTEGER NOT NULL REFERENCES human ON DELETE CASCADE,
+    antenna_id INTEGER NOT NULL REFERENCES antenna ON DELETE CASCADE
 );
