@@ -6,18 +6,21 @@ CREATE TABLE weather (
 CREATE TABLE location (
     id         SERIAL PRIMARY KEY,
     name       VARCHAR(50) NOT NULL,
-    id_weather INTEGER NOT NULL REFERENCES weather ON DELETE CASCADE
+    id_weather INTEGER NOT NULL,
+    FOREIGN KEY (id_weather) REFERENCES weather ON DELETE CASCADE
 );
 CREATE TABLE spaceship (
     id          SERIAL PRIMARY KEY,
     name        VARCHAR(50) NOT NULL,
-    location_id INTEGER NOT NULL REFERENCES location ON DELETE CASCADE
+    location_id INTEGER NOT NULL,
+    FOREIGN KEY (location_id) REFERENCES location ON DELETE CASCADE
 );
 CREATE TABLE engine (
     id      SERIAL PRIMARY KEY,
     power   INTEGER NOT NULL CHECK ( power > 0 ),
     working BOOLEAN NOT NULL,
-    spaceship_id INTEGER REFERENCES spaceship ON DELETE CASCADE
+    spaceship_id INTEGER,
+    FOREIGN KEY (spaceship_id) REFERENCES spaceship ON DELETE CASCADE
 );
 CREATE TABLE role (
     id   SERIAL PRIMARY KEY,
@@ -27,8 +30,10 @@ CREATE TABLE human (
     id           SERIAL PRIMARY KEY,
     name         VARCHAR(50) NOT NULL,
     birth_date   DATE        NOT NULL CHECK ( birth_date < CURRENT_DATE ),
-    role_id      INTEGER REFERENCES role ON DELETE CASCADE,
-    spaceship_id INTEGER REFERENCES spaceship ON DELETE CASCADE
+    role_id      INTEGER,
+    spaceship_id INTEGER,
+    FOREIGN KEY (role_id) REFERENCES role ON DELETE CASCADE,
+    FOREIGN KEY (spaceship_id) REFERENCES spaceship ON DELETE CASCADE
 );
 CREATE TABLE battery (
     id     SERIAL PRIMARY KEY,
@@ -36,12 +41,17 @@ CREATE TABLE battery (
 );
 CREATE TABLE antenna (
     id           SERIAL PRIMARY KEY,
-    battery_id   INTEGER NOT NULL REFERENCES battery ON DELETE CASCADE,
-    direction_id INTEGER REFERENCES location ON DELETE CASCADE,
-    spaceship_id INTEGER NOT NULL REFERENCES spaceship ON DELETE CASCADE
+    battery_id   INTEGER NOT NULL,
+    direction_id INTEGER,
+    spaceship_id INTEGER NOT NULL,
+    FOREIGN KEY (battery_id) REFERENCES battery ON DELETE CASCADE,
+    FOREIGN KEY (direction_id) REFERENCES location ON DELETE CASCADE,
+    FOREIGN KEY (spaceship_id) REFERENCES spaceship ON DELETE CASCADE
 );
 CREATE TABLE human_antenna (
     id         SERIAL PRIMARY KEY,
-    human_id   INTEGER NOT NULL REFERENCES human ON DELETE CASCADE,
-    antenna_id INTEGER NOT NULL REFERENCES antenna ON DELETE CASCADE
+    human_id   INTEGER NOT NULL,
+    antenna_id INTEGER NOT NULL,
+    FOREIGN KEY (human_id) REFERENCES human ON DELETE CASCADE,
+    FOREIGN KEY (antenna_id) REFERENCES antenna ON DELETE CASCADE
 );
