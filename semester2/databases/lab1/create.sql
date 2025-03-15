@@ -6,21 +6,21 @@ CREATE TABLE weather (
 CREATE TABLE location (
     id         SERIAL PRIMARY KEY,
     name       VARCHAR(50) NOT NULL,
-    id_weather INTEGER NOT NULL,
+    id_weather INTEGER NOT NULL UNIQUE,
     FOREIGN KEY (id_weather) REFERENCES weather ON DELETE CASCADE
 );
 CREATE TABLE spaceship (
     id          SERIAL PRIMARY KEY,
     name        VARCHAR(50) NOT NULL,
     location_id INTEGER NOT NULL,
-    FOREIGN KEY (location_id) REFERENCES location ON DELETE CASCADE
+    FOREIGN KEY (location_id) REFERENCES location
 );
 CREATE TABLE engine (
     id      SERIAL PRIMARY KEY,
     power   INTEGER NOT NULL CHECK ( power > 0 ),
     working BOOLEAN NOT NULL,
     spaceship_id INTEGER,
-    FOREIGN KEY (spaceship_id) REFERENCES spaceship ON DELETE CASCADE
+    FOREIGN KEY (spaceship_id) REFERENCES spaceship
 );
 CREATE TABLE role (
     id   SERIAL PRIMARY KEY,
@@ -32,8 +32,8 @@ CREATE TABLE human (
     birth_date   DATE        NOT NULL CHECK ( birth_date < CURRENT_DATE ),
     role_id      INTEGER,
     spaceship_id INTEGER,
-    FOREIGN KEY (role_id) REFERENCES role ON DELETE CASCADE,
-    FOREIGN KEY (spaceship_id) REFERENCES spaceship ON DELETE CASCADE
+    FOREIGN KEY (role_id) REFERENCES role,
+    FOREIGN KEY (spaceship_id) REFERENCES spaceship
 );
 CREATE TABLE battery (
     id     SERIAL PRIMARY KEY,
