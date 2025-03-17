@@ -1,34 +1,34 @@
-package commands.idArgumentCommands;
+package commands.validators;
 
-import commands.*;
 import managers.CollectionManager;
-import utility.*;
+import utility.ExecutionStatus;
 
-public abstract class IdArgumentCommand extends Command {
-    CollectionManager collectionManager;
+/**
+ * Валидатор для проверки корректности идентификатора элемента коллекции.
+ */
+public class IdValidator extends ArgumentValidator {
+    private final CollectionManager collectionManager;
 
     /**
-     * Конструктор команды с аргументом id.
-     * @param name Имя команды.
-     * @param description Описание команды.
-     * @param console Консоль для ввода/вывода.
+     * Конструктор валидатора IdValidator.
+     *
      * @param collectionManager Менеджер коллекции.
      */
-    public IdArgumentCommand(String name, String description, Console console, CollectionManager collectionManager) {
-        super(name, description, console);
+    public IdValidator(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
      * Проверяет корректность аргумента команды.
+     *
      * @param arg Аргумент команды.
      * @param name Имя команды.
-     * @return Статус выполнения команды.
+     * @return Статус выполнения проверки.
      */
     @Override
     public ExecutionStatus validate(String arg, String name) {
         if (arg.isEmpty()) {
-            return new ExecutionStatus(false, "У команды должен быть аргумент (id элемента коллекции)!\nПример корректного ввода: " + getName());
+            return new ExecutionStatus(false, "У команды должен быть аргумент (id элемента коллекции)!\nПример корректного ввода: " + name);
         }
         try {
             Long id = Long.parseLong(arg);

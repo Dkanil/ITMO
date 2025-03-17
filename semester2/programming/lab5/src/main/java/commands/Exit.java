@@ -1,19 +1,19 @@
-package commands.emptyArgumentCommands;
+package commands;
 
-import commands.CommandNames;
+import commands.validators.EmptyValidator;
 import utility.*;
 
 /**
  * Класс команды для завершения программы (без сохранения в файл).
  */
-public class Exit extends NoArgumentCommand {
+public class Exit extends Command<EmptyValidator> {
 
     /**
      * Конструктор команды exit.
      * @param console Консоль для ввода/вывода.
      */
     public Exit(Console console) {
-        super(CommandNames.EXIT.getName(), CommandNames.EXIT.getDescription(), console);
+        super(CommandNames.EXIT.getName(), CommandNames.EXIT.getDescription(), console, new EmptyValidator());
     }
 
     /**
@@ -22,7 +22,7 @@ public class Exit extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus runInternal(String argument) {
+    protected ExecutionStatus runInternal(String argument) {
         System.exit(0);
         return new ExecutionStatus(true, "Программа завершена!");
     }

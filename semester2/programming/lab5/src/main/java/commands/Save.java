@@ -1,13 +1,13 @@
-package commands.emptyArgumentCommands;
+package commands;
 
-import commands.CommandNames;
+import commands.validators.EmptyValidator;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для сохранения коллекции в файл.
  */
-public class Save extends NoArgumentCommand {
+public class Save extends Command<EmptyValidator> {
     CollectionManager collectionManager;
 
     /**
@@ -16,7 +16,7 @@ public class Save extends NoArgumentCommand {
      * @param collectionManager Менеджер коллекции.
      */
     public Save(utility.Console console, managers.CollectionManager collectionManager) {
-        super(CommandNames.SAVE.getName(), CommandNames.SAVE.getDescription(), console);
+        super(CommandNames.SAVE.getName(), CommandNames.SAVE.getDescription(), console, new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 
@@ -26,7 +26,7 @@ public class Save extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus runInternal(String argument) {
+    protected ExecutionStatus runInternal(String argument) {
         collectionManager.saveCollection();
         return new ExecutionStatus(true, "Коллекция успешно сохранена!");
     }

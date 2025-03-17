@@ -1,13 +1,13 @@
-package commands.emptyArgumentCommands;
+package commands;
 
-import commands.CommandNames;
+import commands.validators.EmptyValidator;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для сортировки коллекции в естественном порядке.
  */
-public class Sort extends NoArgumentCommand {
+public class Sort extends Command<EmptyValidator> {
     private final CollectionManager collectionManager;
 
     /**
@@ -16,7 +16,7 @@ public class Sort extends NoArgumentCommand {
      * @param collectionManager Менеджер коллекции.
      */
     public Sort(Console console, CollectionManager collectionManager) {
-        super(CommandNames.SORT.getName(), CommandNames.SORT.getDescription(), console);
+        super(CommandNames.SORT.getName(), CommandNames.SORT.getDescription(), console, new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 
@@ -26,7 +26,7 @@ public class Sort extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus runInternal(String argument) {
+    protected ExecutionStatus runInternal(String argument) {
         collectionManager.sort();
         return new ExecutionStatus(true, "Коллекция успешно отсортирована!");
     }

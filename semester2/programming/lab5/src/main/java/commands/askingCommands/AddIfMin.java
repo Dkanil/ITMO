@@ -1,9 +1,10 @@
-package commands.emptyArgumentCommands;
+package commands.askingCommands;
 
 import commands.*;
+import commands.validators.EmptyValidator;
 import models.MusicBand;
 import utility.*;
-import managers.*;
+import managers.CollectionManager;
 
 import java.util.Comparator;
 import java.util.Stack;
@@ -11,19 +12,25 @@ import java.util.Stack;
 /**
  * Класс команды для добавления нового элемента в коллекцию, если его значение меньше, чем у наименьшего элемента этой коллекции.
  */
-public class AddIfMin extends NoArgumentAskingCommand{
+public class AddIfMin extends AskingCommand<EmptyValidator> {
     /**
      * Конструктор команды addIfMin.
+     *
      * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
     public AddIfMin(Console console, CollectionManager collectionManager) {
-        super(CommandNames.ADD_IF_MIN.getName() + " {element}", CommandNames.ADD_IF_MIN.getDescription(), console, collectionManager);
+        super(CommandNames.ADD_IF_MIN.getName() + " {element}", CommandNames.ADD_IF_MIN.getDescription(), console, new EmptyValidator(), collectionManager);
     }
 
+    /**
+     * Выполняет команду добавления нового элемента в коллекцию, если его значение меньше, чем у наименьшего элемента этой коллекции.
+     *
+     * @param band Элемент коллекции.
+     * @return Статус выполнения команды.
+     */
     @Override
-    public ExecutionStatus runInternal(Pair<ExecutionStatus, MusicBand> validationStatusPair) {
-        MusicBand band = validationStatusPair.getSecond();
+    protected ExecutionStatus runInternal(MusicBand band) {
         if (collectionManager.getCollection().isEmpty()) {
             collectionManager.add(band);
             return new ExecutionStatus(true, "Коллекция пуста! Элемент добавлен как наименьший.");
@@ -32,7 +39,7 @@ public class AddIfMin extends NoArgumentAskingCommand{
         bufCollection.sort(Comparator.naturalOrder());
         if (band.compareTo(bufCollection.firstElement()) < 0) {
             collectionManager.add(band);
-            return validationStatusPair.getFirst();
+            return new ExecutionStatus(true, "Элемент успешно добавлен в коллекцию!");
         } else {
             return new ExecutionStatus(true, "Элемент не является наименьшим в коллекции!");
         }

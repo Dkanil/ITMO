@@ -1,13 +1,13 @@
-package commands.emptyArgumentCommands;
+package commands;
 
-import commands.CommandNames;
+import commands.validators.EmptyValidator;
 import managers.*;
 import utility.*;
 
 /**
  * Класс команды для вывода информации о коллекции.
  */
-public class Info extends NoArgumentCommand {
+public class Info extends Command<EmptyValidator> {
     CollectionManager collectionManager;
 
     /**
@@ -16,7 +16,7 @@ public class Info extends NoArgumentCommand {
      * @param collectionManager Менеджер коллекции.
      */
     public Info(Console console, CollectionManager collectionManager) {
-        super(CommandNames.INFO.getName(), CommandNames.INFO.getDescription(), console);
+        super(CommandNames.INFO.getName(), CommandNames.INFO.getDescription(), console, new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 
@@ -26,7 +26,7 @@ public class Info extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus runInternal(String argument) {
+    protected ExecutionStatus runInternal(String argument) {
         console.println("Тип коллекции: " + collectionManager.getBands().getClass().getName());
         console.println("Дата инициализации: " + collectionManager.getInitializationDate());
         console.println("Дата последнего сохранения: " + collectionManager.getLastSaveDate());

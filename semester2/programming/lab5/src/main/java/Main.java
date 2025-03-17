@@ -1,5 +1,4 @@
-import commands.emptyArgumentCommands.*;
-import commands.idArgumentCommands.*;
+import commands.askingCommands.*;
 import utility.*;
 import managers.*;
 import commands.*;

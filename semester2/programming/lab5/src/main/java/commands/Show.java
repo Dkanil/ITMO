@@ -1,13 +1,13 @@
-package commands.emptyArgumentCommands;
+package commands;
 
-import commands.CommandNames;
+import commands.validators.EmptyValidator;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для вывода всех элементов коллекции в строковом представлении.
  */
-public class Show extends NoArgumentCommand {
+public class Show extends Command<EmptyValidator> {
     private final CollectionManager collectionManager;
 
     /**
@@ -16,7 +16,7 @@ public class Show extends NoArgumentCommand {
      * @param collectionManager Менеджер коллекции.
      */
     public Show(Console console, CollectionManager collectionManager) {
-        super(CommandNames.SHOW.getName(), CommandNames.SHOW.getDescription(), console);
+        super(CommandNames.SHOW.getName(), CommandNames.SHOW.getDescription(), console, new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 
@@ -26,7 +26,7 @@ public class Show extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus runInternal(String argument) {
+    protected ExecutionStatus runInternal(String argument) {
         console.println("Вывод всех элементов коллекции:");
         if (collectionManager.getCollection().isEmpty()) {
             console.println("Коллекция пуста.");

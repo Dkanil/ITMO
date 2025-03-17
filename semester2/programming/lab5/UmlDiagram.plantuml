@@ -4,106 +4,109 @@ top to bottom direction
 skinparam linetype ortho
 
 class Add {
-  - collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(MusicBand): ExecutionStatus
 }
 class AddIfMin {
-  ~ collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(MusicBand): ExecutionStatus
+}
+class ArgumentValidator {
+  + validate(String, String): ExecutionStatus
 }
 class Asker {
   + askBand(Console, Long): MusicBand
   - askStudio(Console): Studio
   - askCoordinates(Console): Coordinates
 }
-interface Asking << interface >> {
-  + validate(Console, Long): Pair
+class AskingCommand<T> {
+  # collectionManager: CollectionManager
+  # runInternal(MusicBand): ExecutionStatus
+  # runInternal(String): ExecutionStatus
+  + run(String): ExecutionStatus
 }
 class Clear {
   ~ collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class CollectionManager {
-  - dumpManager: DumpManager
   - Bands: Map<Long, MusicBand>
+  - dumpManager: DumpManager
   - InitializationDate: LocalDateTime
-  - collection: Stack<MusicBand>
-  - id: Long
   - lastSaveDate: LocalDateTime
-  + getCollection(): Stack<MusicBand>
+  - id: Long
+  - collection: Stack<MusicBand>
   + saveCollection(): void
-  + clear(): void
-  + sort(): void
-  + loadCollection(): ExecutionStatus
-  + getById(Long): MusicBand
-  + removeAllByGenre(MusicGenre): int
-  + add(MusicBand): boolean
-  + removeById(Long): void
-  + getBands(): Stack<MusicBand>
-  + getFreeId(): Long
   + getInitializationDate(): LocalDateTime
-  + removeFirst(): void
+  + clear(): void
+  + add(MusicBand): boolean
+  + getBands(): Stack<MusicBand>
+  + removeById(Long): void
+  + sort(): void
+  + removeAllByGenre(MusicGenre): int
+  + getFreeId(): Long
+  + getById(Long): MusicBand
+  + getCollection(): Stack<MusicBand>
+  + loadCollection(): ExecutionStatus
   + getLastSaveDate(): LocalDateTime
+  + removeFirst(): void
 }
-class Command {
-  - name: String
+class Command<T> {
+  - nameAndDescription: Pair<String, String>
   # console: Console
-  - description: String
-  + getName(): String
-  + hashCode(): int
-  + equals(Object): boolean
+  # argumentValidator: T
   + getDescription(): String
-  + updateConsole(Console): void
-  + toString(): String
+  + getName(): String
   + run(String): ExecutionStatus
-  + validate(String, String): ExecutionStatus
+  + hashCode(): int
+  + updateConsole(Console): void
+  # runInternal(String): ExecutionStatus
+  + toString(): String
+  + equals(Object): boolean
 }
 class CommandManager {
   - commands: Map<String, Command>
+  + getCommandsMap(): Map<String, Command>
   + getCommand(String): Command
   + register(String, Command): void
-  + getCommandsMap(): Map<String, Command>
 }
 enum CommandNames << enumeration >> {
-  + PRINT_FIELD_DESCENDING_DESCRIPTION: 
-  - description: String
-  + SAVE: 
-  + HELP: 
-  + SORT: 
-  + ADD_IF_MIN: 
-  + REMOVE_BY_ID: 
-  + REMOVE_ALL_BY_GENRE: 
-  - command: String
-  + CLEAR: 
-  + ADD: 
-  + EXIT: 
-  + UPDATE: 
-  + REMOVE_FIRST: 
-  + SHOW: 
   + INFO: 
   + EXECUTE_SCRIPT: 
+  - commandDescription: Pair<String, String>
+  + HELP: 
+  + REMOVE_FIRST: 
   + PRINT_FIELD_ASCENDING_DESCRIPTION: 
-  + values(): CommandNames[]
-  + getDescription(): String
+  + SAVE: 
+  + ADD_IF_MIN: 
+  + PRINT_FIELD_DESCENDING_DESCRIPTION: 
+  + REMOVE_ALL_BY_GENRE: 
+  + REMOVE_BY_ID: 
+  + SORT: 
+  + UPDATE: 
+  + CLEAR: 
+  + ADD: 
+  + SHOW: 
+  + EXIT: 
   + getName(): String
   + valueOf(String): CommandNames
+  + getDescription(): String
+  + values(): CommandNames[]
 }
 interface Console << interface >> {
-  + print(Object): void
-  + printTable(Object, Object): void
-  + readln(): String
   + println(Object): void
+  + print(Object): void
   + printError(Object): void
+  + readln(): String
+  + printTable(Object, Object): void
 }
 class Coordinates {
-  - y: Integer
   - x: double
-  + getX(): double
+  - y: Integer
   + toString(): String
-  + equals(Object): boolean
   + getY(): Integer
-  + validate(): boolean
+  + equals(Object): boolean
   + hashCode(): int
+  + getX(): double
+  + validate(): boolean
 }
 class DumpManager {
   - fileName: String
@@ -114,169 +117,182 @@ class DumpManager {
 class Element {
   + getID(): Long
 }
-class ExecuteScript {
-  + run(String): ExecutionStatus
+class ElementValidator {
+  + validateAsking(Console, Long): Pair<ExecutionStatus, MusicBand>
+}
+class EmptyValidator {
   + validate(String, String): ExecutionStatus
 }
+class ExecuteScript {
+  + runInternal(String): ExecutionStatus
+}
 class Executer {
-  - console: Console
   - scriptStackCounter: int
-  + runScript(String): ExecutionStatus
-  - runCommand(String[]): ExecutionStatus
+  - console: Console
   + interactiveMode(): void
+  - runCommand(String[]): ExecutionStatus
+  + runScript(String): ExecutionStatus
 }
 class ExecutionStatus {
-  - success: boolean
-  - message: String
-  + isSuccess(): boolean
+  - status: Pair<Boolean, String>
   + getMessage(): String
+  + isSuccess(): boolean
 }
 class Exit {
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class FileConsole {
   - input: BufferedReader
   + printError(Object): void
-  + readln(): String
+  + printTable(Object, Object): void
   + print(Object): void
   + println(Object): void
-  + printTable(Object, Object): void
+  + readln(): String
+}
+class GenreValidator {
+  + validate(String, String): ExecutionStatus
 }
 class Help {
   - commandManager: CommandManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
-class IdArgumentCommand {
-  ~ collectionManager: CollectionManager
+class IdValidator {
+  - collectionManager: CollectionManager
   + validate(String, String): ExecutionStatus
 }
 class Info {
   ~ collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class Main {
   + main(String[]): void
 }
 class MusicBand {
+  - description: String
+  - studio: Studio
+  - id: Long
+  - creationDate: LocalDateTime
   - albumsCount: Long
   - name: String
-  - studio: Studio
   - genre: MusicGenre
   - numberOfParticipants: Long
-  - creationDate: LocalDateTime
-  - description: String
-  - id: Long
   - coordinates: Coordinates
-  + getGenre(): MusicGenre
-  + getAlbumsCount(): Long
-  + getDescription(): String
+  + toString(): String
+  + toArray(MusicBand): String[]
   + getNumberOfParticipants(): Long
+  + getCoordinates(): Coordinates
   + hashCode(): int
   + validate(): boolean
   + getId(): Long
   + getID(): Long
   + getCreationDate(): LocalDateTime
-  + getCoordinates(): Coordinates
-  + toArray(MusicBand): String[]
-  + toString(): String
-  + compareTo(Element): int
-  + fromArray(String[]): MusicBand
-  + getName(): String
-  + getStudio(): Studio
+  + getGenre(): MusicGenre
+  + getAlbumsCount(): Long
   + equals(Object): boolean
+  + fromArray(String[]): MusicBand?
+  + getDescription(): String
+  + getStudio(): Studio
+  + compareTo(Element): int
+  + getName(): String
 }
 enum MusicGenre << enumeration >> {
+  + BRIT_POP: 
   + JAZZ: 
   + MATH_ROCK: 
-  + BRIT_POP: 
-  + list(): String
   + valueOf(String): MusicGenre
+  + list(): String
   + values(): MusicGenre[]
 }
-class NoArgumentCommand {
-  + validate(String, String): ExecutionStatus
+class Pair<A, B> {
+  - a: A
+  - b: B
+  + setFirst(A): void
+  + getFirst(): A
+  + setSecond(B): void
+  + getSecond(): B
 }
 class PrintFieldAscendingDescription {
   ~ collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class PrintFieldDescendingDescription {
   ~ collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class RemoveAllByGenre {
   ~ collectionManager: CollectionManager
-  + validate(String, String): ExecutionStatus
-  + run(String): ExecutionStatus
+  + runInternal(String): ExecutionStatus
 }
 class RemoveById {
-  + run(String): ExecutionStatus
+  - collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
 }
 class RemoveFirst {
   ~ collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class Save {
   ~ collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class Show {
   - collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class Sort {
   - collectionManager: CollectionManager
-  + run(String): ExecutionStatus
+  # runInternal(String): ExecutionStatus
 }
 class StandartConsole {
-  + readln(): String
-  + println(Object): void
   + printTable(Object, Object): void
+  + println(Object): void
   + print(Object): void
   + printError(Object): void
+  + readln(): String
 }
 class Studio {
   - name: String
   - address: String
+  + equals(Object): boolean
   + toString(): String
   + getAddress(): String
-  + equals(Object): boolean
+  + getName(): String
   + hashCode(): int
   + validate(): boolean
-  + getName(): String
 }
 class Update {
-  + run(String): ExecutionStatus
+  # runInternal(MusicBand): ExecutionStatus
 }
 interface Validatable << interface >> {
   + validate(): boolean
 }
 
-Add                              -[#008200,dashed]-^  Asking                          
-Add                              -[#000082,plain]-^  NoArgumentCommand               
-AddIfMin                         -[#008200,dashed]-^  Asking                          
-AddIfMin                         -[#000082,plain]-^  NoArgumentCommand               
-Clear                            -[#000082,plain]-^  NoArgumentCommand               
+Add                              -[#000082,plain]-^  AskingCommand                   
+AddIfMin                         -[#000082,plain]-^  AskingCommand                   
+AskingCommand                    -[#595959,dashed]->  ArgumentValidator               
+AskingCommand                    -[#000082,plain]-^  Command                         
+Clear                            -[#000082,plain]-^  Command                         
+Command                          -[#595959,dashed]->  ArgumentValidator               
 Coordinates                      -[#008200,dashed]-^  Validatable                     
 Element                          -[#008200,dashed]-^  Validatable                     
+EmptyValidator                   -[#000082,plain]-^  ArgumentValidator               
 ExecuteScript                    -[#000082,plain]-^  Command                         
-Exit                             -[#000082,plain]-^  NoArgumentCommand               
+Exit                             -[#000082,plain]-^  Command                         
 FileConsole                      -[#008200,dashed]-^  Console                         
-Help                             -[#000082,plain]-^  NoArgumentCommand               
-IdArgumentCommand                -[#000082,plain]-^  Command                         
-Info                             -[#000082,plain]-^  NoArgumentCommand               
+GenreValidator                   -[#000082,plain]-^  ArgumentValidator               
+Help                             -[#000082,plain]-^  Command                         
+IdValidator                      -[#000082,plain]-^  ArgumentValidator               
+Info                             -[#000082,plain]-^  Command                         
 MusicBand                        -[#000082,plain]-^  Element                         
-NoArgumentCommand                -[#000082,plain]-^  Command                         
-PrintFieldAscendingDescription   -[#000082,plain]-^  NoArgumentCommand               
-PrintFieldDescendingDescription  -[#000082,plain]-^  NoArgumentCommand               
+PrintFieldAscendingDescription   -[#000082,plain]-^  Command                         
+PrintFieldDescendingDescription  -[#000082,plain]-^  Command                         
 RemoveAllByGenre                 -[#000082,plain]-^  Command                         
-RemoveById                       -[#000082,plain]-^  IdArgumentCommand               
-RemoveFirst                      -[#000082,plain]-^  NoArgumentCommand               
-Save                             -[#000082,plain]-^  NoArgumentCommand               
-Show                             -[#000082,plain]-^  NoArgumentCommand               
-Sort                             -[#000082,plain]-^  NoArgumentCommand               
+RemoveById                       -[#000082,plain]-^  Command                         
+RemoveFirst                      -[#000082,plain]-^  Command                         
+Save                             -[#000082,plain]-^  Command                         
+Show                             -[#000082,plain]-^  Command                         
+Sort                             -[#000082,plain]-^  Command                         
 StandartConsole                  -[#008200,dashed]-^  Console                         
 Studio                           -[#008200,dashed]-^  Validatable                     
-Update                           -[#008200,dashed]-^  Asking                          
-Update                           -[#000082,plain]-^  IdArgumentCommand               
+Update                           -[#000082,plain]-^  AskingCommand                   
 @enduml

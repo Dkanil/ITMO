@@ -1,13 +1,13 @@
-package commands.emptyArgumentCommands;
+package commands;
 
-import commands.CommandNames;
+import commands.validators.EmptyValidator;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для вывода значений поля description всех элементов в порядке убывания.
  */
-public class PrintFieldDescendingDescription extends NoArgumentCommand {
+public class PrintFieldDescendingDescription extends Command<EmptyValidator> {
     CollectionManager collectionManager;
 
     /**
@@ -16,7 +16,7 @@ public class PrintFieldDescendingDescription extends NoArgumentCommand {
      * @param collectionManager Менеджер коллекции.
      */
     public PrintFieldDescendingDescription(Console console, CollectionManager collectionManager) {
-        super(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getDescription(), console);
+        super(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getDescription(), console, new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 
@@ -26,7 +26,7 @@ public class PrintFieldDescendingDescription extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus runInternal(String argument) {
+    protected ExecutionStatus runInternal(String argument) {
         if (collectionManager.getBands().isEmpty()) {
             return new ExecutionStatus(false, "Коллекция пуста!");
         }

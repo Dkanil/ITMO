@@ -1,5 +1,6 @@
 package commands;
 
+import commands.validators.GenreValidator;
 import models.MusicGenre;
 import utility.*;
 import managers.*;
@@ -7,7 +8,7 @@ import managers.*;
 /**
  * Класс команды для удаления всех элементов из коллекции по заданному жанру.
  */
-public class RemoveAllByGenre extends Command {
+public class RemoveAllByGenre extends Command<GenreValidator> {
     CollectionManager collectionManager;
 
     /**
@@ -16,27 +17,8 @@ public class RemoveAllByGenre extends Command {
      * @param collectionManager Менеджер коллекции.
      */
     public RemoveAllByGenre(Console console, managers.CollectionManager collectionManager) {
-        super(CommandNames.REMOVE_ALL_BY_GENRE.getName() + " genre", CommandNames.REMOVE_ALL_BY_GENRE.getDescription(), console);
+        super(CommandNames.REMOVE_ALL_BY_GENRE.getName() + " genre", CommandNames.REMOVE_ALL_BY_GENRE.getDescription(), console, new GenreValidator());
         this.collectionManager = collectionManager;
-    }
-
-    /**
-     * Проверяет корректность аргументов команды.
-     * @param arg Аргумент команды.
-     * @param name Имя команды.
-     * @return Статус выполнения проверки.
-     */
-    @Override
-    public ExecutionStatus validate(String arg, String name) {
-        if (arg.isEmpty()) {
-            return new ExecutionStatus(false, "У команды должен быть аргумент (genre)!\nПример корректного ввода: " + getName());
-        }
-        try {
-            MusicGenre genre = MusicGenre.valueOf(arg);
-            return new ExecutionStatus(true, "Аргумент команды введен корректно.");
-        } catch (IllegalArgumentException e) {
-            return new ExecutionStatus(false, "Некорректное значение поля genre!\nСписок возможных значений: " + MusicGenre.list());
-        }
     }
 
     /**

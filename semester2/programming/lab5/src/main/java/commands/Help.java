@@ -1,13 +1,13 @@
-package commands.emptyArgumentCommands;
+package commands;
 
-import commands.CommandNames;
+import commands.validators.EmptyValidator;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для вывода справки по доступным командам.
  */
-public class Help extends NoArgumentCommand {
+public class Help extends Command<EmptyValidator> {
     private final CommandManager commandManager;
 
     /**
@@ -16,7 +16,7 @@ public class Help extends NoArgumentCommand {
      * @param commandManager Менеджер команд.
      */
     public Help(Console console, CommandManager commandManager) {
-        super(CommandNames.HELP.getName(), CommandNames.HELP.getDescription(), console);
+        super(CommandNames.HELP.getName(), CommandNames.HELP.getDescription(), console, new EmptyValidator());
         this.commandManager = commandManager;
     }
 
@@ -26,7 +26,7 @@ public class Help extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus runInternal(String argument) {
+    protected ExecutionStatus runInternal(String argument) {
         console.println("Список доступных команд:");
         for (var command : commandManager.getCommandsMap().entrySet()) {
             console.println(command.getValue().getName() + " - " + command.getValue().getDescription());

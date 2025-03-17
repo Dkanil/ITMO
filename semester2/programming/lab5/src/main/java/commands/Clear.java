@@ -1,13 +1,13 @@
-package commands.emptyArgumentCommands;
+package commands;
 
-import commands.CommandNames;
+import commands.validators.EmptyValidator;
 import utility.*;
 import managers.*;
 
 /**
  * Класс команды для очистки коллекции.
  */
-public class Clear extends NoArgumentCommand {
+public class Clear extends Command<EmptyValidator> {
     CollectionManager collectionManager;
 
     /**
@@ -16,7 +16,7 @@ public class Clear extends NoArgumentCommand {
      * @param collectionManager Менеджер коллекции.
      */
     public Clear(Console console, CollectionManager collectionManager) {
-        super(CommandNames.CLEAR.getName(), CommandNames.CLEAR.getDescription(), console);
+        super(CommandNames.CLEAR.getName(), CommandNames.CLEAR.getDescription(), console, new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 
@@ -26,7 +26,7 @@ public class Clear extends NoArgumentCommand {
      * @return Статус выполнения команды.
      */
     @Override
-    public ExecutionStatus runInternal(String argument) {
+    protected ExecutionStatus runInternal(String argument) {
         collectionManager.clear();
         return new ExecutionStatus(true, "Коллекция успешно очищена!");
     }

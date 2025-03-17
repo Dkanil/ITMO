@@ -9,9 +9,19 @@ import java.time.LocalDateTime;
  * Класс, запрашивающий у пользователя данные для создания объектов.
  */
 public class Asker {
+    /**
+     * Исключение, выбрасываемое для прерывания ввода.
+     */
     public static class Breaker extends Exception { }
 
+    /**
+     * Исключение, выбрасываемое при некорректном вводе.
+     */
     public static class IllegalInputException extends IllegalArgumentException {
+        /**
+         * Конструктор исключения с сообщением.
+         * @param message Сообщение об ошибке.
+         */
         public IllegalInputException(String message) {
             super(message);
         }
@@ -23,6 +33,7 @@ public class Asker {
      * @param id Идентификатор музыкальной группы.
      * @return Объект MusicBand с введенными данными.
      * @throws Breaker Исключение, выбрасываемое при вводе команды "exit".
+     * @throws IllegalInputException Исключение, выбрасываемое при некорректном вводе.
      */
     public static MusicBand askBand(Console console, Long id) throws Breaker, IllegalInputException {
         String name;
@@ -116,8 +127,9 @@ public class Asker {
      * @param console Консоль для ввода/вывода.
      * @return Объект Coordinates с введенными данными.
      * @throws Breaker Исключение, выбрасываемое при вводе команды "exit".
+     * @throws IllegalInputException Исключение, выбрасываемое при некорректном вводе.
      */
-    private static Coordinates askCoordinates(Console console) throws Breaker {
+    private static Coordinates askCoordinates(Console console) throws Breaker, IllegalInputException {
         console.println("Ввод значений поля Coordinates...");
         double x;
         do {

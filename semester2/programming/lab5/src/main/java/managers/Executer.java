@@ -67,7 +67,7 @@ public class Executer {
             console.println("Запуск скрипта '" + fileName + "'");
             try (BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
                 Console FileConsole = new FileConsole(input);
-                // Костыльно подменяем консоль для команд, которые требуют построчного ввода пользователя
+                // Подменяем консоль для команд, которые требуют построчного ввода пользователя
                 CommandManager.getCommand(CommandNames.ADD.getName()).updateConsole(FileConsole);
                 CommandManager.getCommand(CommandNames.ADD_IF_MIN.getName()).updateConsole(FileConsole);
                 CommandManager.getCommand(CommandNames.UPDATE.getName()).updateConsole(FileConsole);
