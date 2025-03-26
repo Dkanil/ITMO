@@ -26,7 +26,7 @@ public enum CommandNames {
     private final Pair<String, String> commandDescription;
 
     CommandNames(String command, String description) {
-        this.commandDescription = new Pair<String, String>(command, description);
+        this.commandDescription = new Pair<>(command, description);
     }
 
     public String getName() {

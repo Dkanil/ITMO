@@ -19,13 +19,13 @@ public class ElementValidator {
         try {
             MusicBand band = Asker.askBand(console, id);
             if (band != null && band.validate()) {
-                return new Pair<ExecutionStatus, MusicBand>(new ExecutionStatus(true, "Элемент введён корректно!"), band);
+                return new Pair<>(new ExecutionStatus(true, "Элемент введён корректно!"), band);
             }
-            return new Pair<ExecutionStatus, MusicBand>(new ExecutionStatus(false, "Введены некорректные данные!"), null);
+            return new Pair<>(new ExecutionStatus(false, "Введены некорректные данные!"), null);
         } catch (Asker.Breaker e) {
-            return new Pair<ExecutionStatus, MusicBand>(new ExecutionStatus(false, "Ввод был прерван пользователем!"), null);
+            return new Pair<>(new ExecutionStatus(false, "Ввод был прерван пользователем!"), null);
         } catch (Asker.IllegalInputException e) {
-            return new Pair<ExecutionStatus, MusicBand>(new ExecutionStatus(false, e.getMessage()), null);
+            return new Pair<>(new ExecutionStatus(false, e.getMessage()), null);
         }
     }
 }
