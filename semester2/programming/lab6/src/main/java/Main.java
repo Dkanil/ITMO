@@ -5,7 +5,7 @@ import commands.*;
 
 /**
  * Главный класс программы.
- * Вариант 4192
+ * Вариант 88347
  */
 public class Main {
     public static void main(String[] args) {
