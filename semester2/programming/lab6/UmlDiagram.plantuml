@@ -1,0 +1,298 @@
+@startuml
+
+top to bottom direction
+skinparam linetype ortho
+
+class Add {
+  # runInternal(MusicBand): ExecutionStatus
+}
+class AddIfMin {
+  # runInternal(MusicBand): ExecutionStatus
+}
+class ArgumentValidator {
+  + validate(String, String): ExecutionStatus
+}
+class Asker {
+  + askBand(Console, Long): MusicBand
+  - askStudio(Console): Studio
+  - askCoordinates(Console): Coordinates
+}
+class AskingCommand<T> {
+  # collectionManager: CollectionManager
+  # runInternal(MusicBand): ExecutionStatus
+  # runInternal(String): ExecutionStatus
+  + run(String): ExecutionStatus
+}
+class Clear {
+  ~ collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class CollectionManager {
+  - Bands: Map<Long, MusicBand>
+  - dumpManager: DumpManager
+  - InitializationDate: LocalDateTime
+  - lastSaveDate: LocalDateTime
+  - id: Long
+  - collection: Stack<MusicBand>
+  + saveCollection(): void
+  + getInitializationDate(): LocalDateTime
+  + clear(): void
+  + add(MusicBand): boolean
+  + getBands(): Stack<MusicBand>
+  + removeById(Long): void
+  + sort(): void
+  + removeAllByGenre(MusicGenre): int
+  + getFreeId(): Long
+  + getById(Long): MusicBand
+  + getCollection(): Stack<MusicBand>
+  + loadCollection(): ExecutionStatus
+  + getLastSaveDate(): LocalDateTime
+  + removeFirst(): void
+}
+class Command<T> {
+  - nameAndDescription: Pair<String, String>
+  # console: Console
+  # argumentValidator: T
+  + getDescription(): String
+  + getName(): String
+  + run(String): ExecutionStatus
+  + hashCode(): int
+  + updateConsole(Console): void
+  # runInternal(String): ExecutionStatus
+  + toString(): String
+  + equals(Object): boolean
+}
+class CommandManager {
+  - commands: Map<String, Command>
+  + getCommandsMap(): Map<String, Command>
+  + getCommand(String): Command
+  + register(String, Command): void
+}
+enum CommandNames << enumeration >> {
+  + INFO: 
+  + EXECUTE_SCRIPT: 
+  - commandDescription: Pair<String, String>
+  + HELP: 
+  + REMOVE_FIRST: 
+  + PRINT_FIELD_ASCENDING_DESCRIPTION: 
+  + SAVE: 
+  + ADD_IF_MIN: 
+  + PRINT_FIELD_DESCENDING_DESCRIPTION: 
+  + REMOVE_ALL_BY_GENRE: 
+  + REMOVE_BY_ID: 
+  + SORT: 
+  + UPDATE: 
+  + CLEAR: 
+  + ADD: 
+  + SHOW: 
+  + EXIT: 
+  + getName(): String
+  + valueOf(String): CommandNames
+  + getDescription(): String
+  + values(): CommandNames[]
+}
+interface Console << interface >> {
+  + println(Object): void
+  + print(Object): void
+  + printError(Object): void
+  + readln(): String
+  + printTable(Object, Object): void
+}
+class Coordinates {
+  - x: double
+  - y: Integer
+  + toString(): String
+  + getY(): Integer
+  + equals(Object): boolean
+  + hashCode(): int
+  + getX(): double
+  + validate(): boolean
+}
+class DumpManager {
+  - fileName: String
+  - console: Console
+  + WriteCollection(Stack<MusicBand>): void
+  + ReadCollection(Stack<MusicBand>): void
+}
+class Element {
+  + getID(): Long
+}
+class ElementValidator {
+  + validateAsking(Console, Long): Pair<ExecutionStatus, MusicBand>
+}
+class EmptyValidator {
+  + validate(String, String): ExecutionStatus
+}
+class ExecuteScript {
+  + runInternal(String): ExecutionStatus
+}
+class Executer {
+  - scriptStackCounter: int
+  - console: Console
+  + interactiveMode(): void
+  - runCommand(String[]): ExecutionStatus
+  + runScript(String): ExecutionStatus
+}
+class ExecutionStatus {
+  - status: Pair<Boolean, String>
+  + getMessage(): String
+  + isSuccess(): boolean
+}
+class Exit {
+  # runInternal(String): ExecutionStatus
+}
+class FileConsole {
+  - input: BufferedReader
+  + printError(Object): void
+  + printTable(Object, Object): void
+  + print(Object): void
+  + println(Object): void
+  + readln(): String
+}
+class GenreValidator {
+  + validate(String, String): ExecutionStatus
+}
+class Help {
+  - commandManager: CommandManager
+  # runInternal(String): ExecutionStatus
+}
+class IdValidator {
+  - collectionManager: CollectionManager
+  + validate(String, String): ExecutionStatus
+}
+class Info {
+  ~ collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class Main {
+  + main(String[]): void
+}
+class MusicBand {
+  - description: String
+  - studio: Studio
+  - id: Long
+  - creationDate: LocalDateTime
+  - albumsCount: Long
+  - name: String
+  - genre: MusicGenre
+  - numberOfParticipants: Long
+  - coordinates: Coordinates
+  + toString(): String
+  + toArray(MusicBand): String[]
+  + getNumberOfParticipants(): Long
+  + getCoordinates(): Coordinates
+  + hashCode(): int
+  + validate(): boolean
+  + getId(): Long
+  + getID(): Long
+  + getCreationDate(): LocalDateTime
+  + getGenre(): MusicGenre
+  + getAlbumsCount(): Long
+  + equals(Object): boolean
+  + fromArray(String[]): MusicBand?
+  + getDescription(): String
+  + getStudio(): Studio
+  + compareTo(Element): int
+  + getName(): String
+}
+enum MusicGenre << enumeration >> {
+  + BRIT_POP: 
+  + JAZZ: 
+  + MATH_ROCK: 
+  + valueOf(String): MusicGenre
+  + list(): String
+  + values(): MusicGenre[]
+}
+class Pair<A, B> {
+  - a: A
+  - b: B
+  + setFirst(A): void
+  + getFirst(): A
+  + setSecond(B): void
+  + getSecond(): B
+}
+class PrintFieldAscendingDescription {
+  ~ collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class PrintFieldDescendingDescription {
+  ~ collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class RemoveAllByGenre {
+  ~ collectionManager: CollectionManager
+  + runInternal(String): ExecutionStatus
+}
+class RemoveById {
+  - collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class RemoveFirst {
+  ~ collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class Save {
+  ~ collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class Show {
+  - collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class Sort {
+  - collectionManager: CollectionManager
+  # runInternal(String): ExecutionStatus
+}
+class StandartConsole {
+  + printTable(Object, Object): void
+  + println(Object): void
+  + print(Object): void
+  + printError(Object): void
+  + readln(): String
+}
+class Studio {
+  - name: String
+  - address: String
+  + equals(Object): boolean
+  + toString(): String
+  + getAddress(): String
+  + getName(): String
+  + hashCode(): int
+  + validate(): boolean
+}
+class Update {
+  # runInternal(MusicBand): ExecutionStatus
+}
+interface Validatable << interface >> {
+  + validate(): boolean
+}
+
+Add                              -[#000082,plain]-^  AskingCommand                   
+AddIfMin                         -[#000082,plain]-^  AskingCommand                   
+AskingCommand                    -[#595959,dashed]->  ArgumentValidator               
+AskingCommand                    -[#000082,plain]-^  Command                         
+Clear                            -[#000082,plain]-^  Command                         
+Command                          -[#595959,dashed]->  ArgumentValidator               
+Coordinates                      -[#008200,dashed]-^  Validatable                     
+Element                          -[#008200,dashed]-^  Validatable                     
+EmptyValidator                   -[#000082,plain]-^  ArgumentValidator               
+ExecuteScript                    -[#000082,plain]-^  Command                         
+Exit                             -[#000082,plain]-^  Command                         
+FileConsole                      -[#008200,dashed]-^  Console                         
+GenreValidator                   -[#000082,plain]-^  ArgumentValidator               
+Help                             -[#000082,plain]-^  Command                         
+IdValidator                      -[#000082,plain]-^  ArgumentValidator               
+Info                             -[#000082,plain]-^  Command                         
+MusicBand                        -[#000082,plain]-^  Element                         
+PrintFieldAscendingDescription   -[#000082,plain]-^  Command                         
+PrintFieldDescendingDescription  -[#000082,plain]-^  Command                         
+RemoveAllByGenre                 -[#000082,plain]-^  Command                         
+RemoveById                       -[#000082,plain]-^  Command                         
+RemoveFirst                      -[#000082,plain]-^  Command                         
+Save                             -[#000082,plain]-^  Command                         
+Show                             -[#000082,plain]-^  Command                         
+Sort                             -[#000082,plain]-^  Command                         
+StandartConsole                  -[#008200,dashed]-^  Console                         
+Studio                           -[#008200,dashed]-^  Validatable                     
+Update                           -[#000082,plain]-^  AskingCommand                   
+@enduml

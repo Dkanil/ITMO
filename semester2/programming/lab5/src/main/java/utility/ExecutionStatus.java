@@ -12,7 +12,7 @@ package utility;
          * @param message сообщение о результате выполнения операции
          */
         public ExecutionStatus(boolean success, String message) {
-            this.status = new Pair<Boolean, String>(success, message);
+            this.status = new Pair<>(success, message);
         }
 
         /**
