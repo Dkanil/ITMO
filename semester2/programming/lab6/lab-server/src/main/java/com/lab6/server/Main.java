@@ -18,22 +18,20 @@ import com.lab6.server.commands.RemoveAllByGenre;
 import com.lab6.server.commands.PrintFieldAscendingDescription;
 import com.lab6.server.commands.PrintFieldDescendingDescription;
 
-import com.lab6.server.managers.*;
-
+import com.lab6.server.managers.CollectionManager;
+import com.lab6.server.managers.CommandManager;
+import com.lab6.server.managers.DumpManager;
+import com.lab6.server.managers.Executer;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.common.utility.Request;
 import com.lab6.common.utility.StandartConsole;
-import com.lab6.common.utility.Console;
 
-import java.io.File;
-import java.io.IOException;
-
-//Вариант 88347
-public final class Server {
-    private static final int PORT = 12345;
-
+/**
+ * Главный класс программы.
+ * Вариант 88347
+ */
+public class Main {
     public static void main(String[] args) {
-        Console console = new StandartConsole();
+        var console = new StandartConsole();
         String filePath = System.getenv("LAB5_FILE_PATH");
 
         // Проверка наличия и корректности переменной окружения LAB5_FILE_PATH
@@ -46,7 +44,7 @@ public final class Server {
         } else if (!filePath.endsWith(".csv")) {
             console.printError("Файл должен быть формата .csv!");
             System.exit(1);
-        } else if (!new File(filePath).exists()) {
+        } else if (!new java.io.File(filePath).exists()) {
             console.printError("Файл по указанному пути не найден!");
             System.exit(1);
         }
@@ -54,7 +52,6 @@ public final class Server {
         DumpManager dumpManager = new DumpManager(filePath, console);
         CollectionManager collectionManager = new CollectionManager(dumpManager);
         ExecutionStatus loadStatus = collectionManager.loadCollection();
-        NetworkManager networkManager = new NetworkManager(PORT);
 
         // Проверка успешности загрузки коллекции
         if (!loadStatus.isSuccess()){
@@ -81,53 +78,8 @@ public final class Server {
             register(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), new PrintFieldAscendingDescription(console, collectionManager));
             register(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), new PrintFieldDescendingDescription(console, collectionManager));
         }};
-        Executer executer = new Executer(console);
 
-        run(console, commandManager, networkManager, executer);
-    }
-
-    public static void run(Console console, CommandManager commandManager, NetworkManager networkManager, Executer executer) {
-        try {
-            networkManager.start();
-            while (true) {
-                try {
-                    networkManager.makeConnection();
-                }
-                catch (IOException e) {
-                    console.printError("Ошибка при установке соединения с клиентом: " + e.getMessage());
-                }
-
-                try {
-                    Request clientRequest = networkManager.receive();
-                    console.println("Получен запрос: " + clientRequest);
-                    Request serverRequest = new Request("ХУЙХУЙХУЙ ВСЕМ ПОХУЙ НА ТВОЮ КОМАНДУ", null);
-                    try {
-                        String[] inputCommand = clientRequest.getCommand();
-                        inputCommand[1] = inputCommand[1].trim();
-                        ExecutionStatus commandStatus = executer.runCommand(inputCommand);
-                        if (commandStatus.isSuccess()) {
-                            serverRequest.setCommand(commandStatus.getMessage());
-                        } else {
-                            serverRequest.setCommand(commandStatus.getMessage());
-                        }
-                    } catch (Exception e) {
-                        serverRequest.setCommand("Произошла ошибка при выполнении команды!");
-                    }
-                    networkManager.send(serverRequest);
-                    console.println("Клиент успешно послан нахуй.");
-
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        } catch (IOException e) {
-            console.printError("Ошибка при запуске сервера: " + e.getMessage());
-        }
-    }
-
-    private static Request handleRequest(Request request, CommandManager commandManager) {
-        // Логика обработки запроса
-        // Здесь можно использовать commandManager для выполнения команд
-        return new Request("Ответ на " + request.getCommandString(), null);
+        // Запуск интерактивного режима
+        new Executer(console).interactiveMode();
     }
 }
