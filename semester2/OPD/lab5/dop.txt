@@ -1,0 +1,43 @@
+ORG  0x101  ;  Начало программы
+RES_ADDRESS:   WORD   0x5CF  ;  Адрес введённой строки
+RES_ADDRESS2:   WORD   0x5CF  ;  Адрес введённой строки
+EOF: WORD 0x00  ;  Стоп-символ
+TEMP: WORD 0x00
+START:   CLA
+
+FIRST: 
+	IN 5  ;  Проверка регистра состояния ВУ-2
+	AND  #0x40
+	BEQ  FIRST  ;  "Спин-луп"
+	IN 4  ;  Чтение с ВУ-2
+	SWAB
+	ST   (RES_ADDRESS)
+	CMP EOF  ; Проверка на стоп-символ
+	BEQ OUTPUT
+SECOND: 
+	IN 5  ;  Проверка регистра состояния ВУ-2
+	AND  #0x40
+	BEQ  SECOND  ;  "Спин-луп"
+	IN 4  ;  Чтение с ВУ-2  
+	CMP EOF  ; Проверка на стоп-символ
+	BEQ OUTPUT
+	ADD (RES_ADDRESS)
+	ST (RES_ADDRESS)+
+	JUMP FIRST
+OUTPUT:   
+	LD (RES_ADDRESS2)+
+	ST TEMP
+	SWAB
+	AND  #0xFF
+	CMP EOF  ; Проверка на стоп-символ
+	BEQ STOP
+	OUT 0xC
+	LD TEMP
+	AND  #0xFF
+	CMP EOF  ; Проверка на стоп-символ
+	BEQ STOP
+	OUT 0xC
+	JUMP OUTPUT
+STOP:
+	HLT
+	
