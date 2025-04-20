@@ -1,6 +1,4 @@
-package com.lab6.server.commands;
-
-import com.lab6.common.utility.Pair;
+package com.lab6.common.utility;
 
 /**
  * Перечисление, представляющее имена команд и их описания.

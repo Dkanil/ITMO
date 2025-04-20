@@ -1,9 +1,11 @@
 package com.lab6.common.utility;
 
+import java.io.Serializable;
+
 /**
  * Класс, представляющий стандартную консоль для ввода и вывода данных.
  */
-public class StandartConsole implements Console {
+public class StandartConsole implements Console, Serializable { //todo: убрать Serializable
 
     /**
      * Выводит объект в стандартный поток вывода.
@@ -27,15 +29,6 @@ public class StandartConsole implements Console {
      */
     public void printError(Object obj) {
         System.err.println("Error: " + obj);
-    }
-
-    /**
-     * Выводит два объекта в виде таблицы.
-     * @param obj1 первый объект
-     * @param obj2 второй объект
-     */
-    public void printTable(Object obj1, Object obj2) {
-        System.out.printf("%-20s: %s\n", obj1, obj2);
     }
 
     /**

@@ -2,12 +2,17 @@ package com.lab6.common.models;
 
 import com.lab6.common.utility.Validatable;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Класс, представляющий студию.
  */
-public class Studio implements Validatable {
+public class Studio implements Validatable, Serializable {
+    @Serial
+    private static final long serialVersionUID = 13L;
+
     private String name; // Поле не может быть null
     private String address; // Поле может быть null
 

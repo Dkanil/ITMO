@@ -1,7 +1,8 @@
 package com.lab6.server.commands.askingCommands;
 
-import com.lab6.server.commands.CommandNames;
-import com.lab6.server.commands.validators.IdValidator;
+import com.lab6.common.utility.AskingCommand;
+import com.lab6.common.utility.CommandNames;
+import com.lab6.common.validators.IdValidator;
 import com.lab6.server.managers.CollectionManager;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.utility.Console;
@@ -18,7 +19,7 @@ public class Update extends AskingCommand<IdValidator> {
      * @param collectionManager Менеджер коллекции.
      */
     public Update(Console console, CollectionManager collectionManager) {
-        super(CommandNames.UPDATE.getName() + " id {element}", CommandNames.UPDATE.getDescription(), console, new IdValidator(collectionManager), collectionManager);
+        super(CommandNames.UPDATE.getName() + " id {element}", CommandNames.UPDATE.getDescription(), console, new IdValidator(), collectionManager);
     }
 
     /**

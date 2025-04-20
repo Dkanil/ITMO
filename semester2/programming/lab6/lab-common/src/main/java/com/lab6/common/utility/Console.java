@@ -23,13 +23,6 @@ public interface Console {
     void printError(Object obj);
 
     /**
-     * Выводит два объекта в виде таблицы.
-     * @param obj1 первый объект
-     * @param obj2 второй объект
-     */
-    void printTable(Object obj1, Object obj2);
-
-    /**
      * Считывает строку из стандартного потока ввода.
      * @return считанная строка
      */

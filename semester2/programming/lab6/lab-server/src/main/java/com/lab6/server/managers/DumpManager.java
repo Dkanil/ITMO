@@ -5,18 +5,16 @@ import com.lab6.common.utility.Console;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
+import java.io.*;
 import java.util.Stack;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 
 /**
  * Класс, управляющий сохранением и загрузкой коллекции музыкальных групп.
  */
-public class DumpManager {
+public class DumpManager implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L; //TODO разобраться нахуя это?
     private final String fileName;
     private final Console console;
 
@@ -45,7 +43,6 @@ public class DumpManager {
             console.println("Произошла ошибка при записи коллекции в файл!");
         }
     }
-
     /**
      * Загружает коллекцию музыкальных групп из файла.
      * @param collection коллекция музыкальных групп

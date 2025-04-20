@@ -1,31 +1,31 @@
-package com.lab6.server.commands;
+package com.lab6.common.utility;
 
-import com.lab6.server.commands.validators.ArgumentValidator;
-import com.lab6.common.utility.Console;
-import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.common.utility.Pair;
+import com.lab6.common.validators.ArgumentValidator;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Абстрактный класс для всех команд.
  *
  * @param <T> Тип валидатора аргументов, который должен расширять {@link ArgumentValidator}.
  */
-public abstract class Command<T extends ArgumentValidator> {
+public abstract class Command<T extends ArgumentValidator> implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 2L;
+
     private final Pair<String, String> nameAndDescription;
-    protected Console console;
-    protected final T argumentValidator;
+    public final T argumentValidator;
 
     /**
      * Конструктор команды.
      *
      * @param name Имя команды.
-     * @param description Описание команды.
-     * @param console Консоль ввода-вывода.
+     * @param description Описание команды..
      * @param argumentValidator Валидатор аргументов.
      */
-    public Command(String name, String description, Console console, T argumentValidator) {
+    public Command(String name, String description, T argumentValidator) {
         this.nameAndDescription = new Pair<>(name, description);
-        this.console = console;
         this.argumentValidator = argumentValidator;
     }
 
@@ -48,12 +48,12 @@ public abstract class Command<T extends ArgumentValidator> {
     }
 
     /**
-     * Обновляет консоль ввода-вывода.
+     * Возвращает валидатор аргументов команды.
      *
-     * @param console Консоль ввода-вывода.
+     * @return Валидатор аргументов.
      */
-    public void updateConsole(Console console) {
-        this.console = console;
+    public T getArgumentValidator() {
+        return argumentValidator;
     }
 
     /**

@@ -1,22 +1,18 @@
-package com.lab6.server.commands.askingCommands;
+package com.lab6.common.utility;
 
-import com.lab6.server.commands.Command;
-import com.lab6.server.commands.validators.ArgumentValidator;
-import com.lab6.server.commands.validators.ElementValidator;
-import com.lab6.server.commands.validators.IdValidator;
-import com.lab6.server.managers.CollectionManager;
+import com.lab6.common.validators.ArgumentValidator;
+import com.lab6.common.validators.ElementValidator;
+import com.lab6.common.validators.IdValidator;
+import com.lab6.common.managers.ICollectionManager;
 import com.lab6.common.models.MusicBand;
-import com.lab6.common.utility.Console;
-import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.common.utility.Pair;
 
 /**
  * Абстрактный класс для команд, требующих ввода данных.
- *
  * @param <T> Тип валидатора аргументов.
  */
 public abstract class AskingCommand<T extends ArgumentValidator> extends Command<T> {
-    protected final CollectionManager collectionManager;
+    protected final ICollectionManager collectionManager;
+    private Console console;
 
     /**
      * Конструктор команды AskingCommand.
@@ -27,8 +23,9 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
      * @param argumentValidator Валидатор аргументов команды.
      * @param collectionManager Менеджер коллекции.
      */
-    public AskingCommand(String name, String description, Console console, T argumentValidator, CollectionManager collectionManager) {
-        super(name, description, console, argumentValidator);
+    public AskingCommand(String name, String description, Console console, T argumentValidator, ICollectionManager collectionManager) {
+        super(name, description, argumentValidator);
+        this.console = console;
         this.collectionManager = collectionManager;
     }
 
@@ -41,6 +38,15 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
     @Override
     protected ExecutionStatus runInternal(String arg) {
         return null;
+    }
+
+    /**
+     * Обновляет консоль ввода-вывода.
+     *
+     * @param console Консоль ввода-вывода.
+     */
+    public void updateConsole(Console console) {
+        this.console = console;
     }
 
     /**
@@ -57,6 +63,24 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
      * @param arg Аргумент команды.
      * @return Статус выполнения команды.
      */
+    public ExecutionStatus run(String arg, MusicBand band) {
+        ExecutionStatus argumentStatus = argumentValidator.validate(arg, getName());
+        if (argumentStatus.isSuccess()) {
+            Long id;
+            if (argumentValidator instanceof IdValidator) {
+                id = Long.parseLong(arg);
+                if (collectionManager.getById(id) == null) {
+                    return new ExecutionStatus(false, "Элемент с указанным id не найден!");
+                }
+            } else {
+                id = collectionManager.getFreeId();
+            }
+            return runInternal(band);
+        } else {
+            return argumentStatus;
+        }
+    }
+
     @Override
     public ExecutionStatus run(String arg) {
         ExecutionStatus argumentStatus = argumentValidator.validate(arg, getName());

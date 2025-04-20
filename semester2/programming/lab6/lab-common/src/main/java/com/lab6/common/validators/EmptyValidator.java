@@ -1,11 +1,16 @@
-package com.lab6.server.commands.validators;
+package com.lab6.common.validators;
 
 import com.lab6.common.utility.ExecutionStatus;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Валидатор для проверки отсутствия аргументов у команды.
  */
-public class EmptyValidator extends ArgumentValidator {
+public class EmptyValidator extends ArgumentValidator implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 5L;
     /**
      * Проверяет корректность аргумента команды.
      *

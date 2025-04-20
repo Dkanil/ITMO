@@ -1,7 +1,8 @@
 package com.lab6.server.commands.askingCommands;
 
-import com.lab6.server.commands.CommandNames;
-import com.lab6.server.commands.validators.EmptyValidator;
+import com.lab6.common.utility.AskingCommand;
+import com.lab6.common.utility.CommandNames;
+import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.utility.Console;

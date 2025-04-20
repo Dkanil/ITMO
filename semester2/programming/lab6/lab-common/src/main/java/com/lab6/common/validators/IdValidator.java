@@ -1,23 +1,16 @@
-package com.lab6.server.commands.validators;
+package com.lab6.common.validators;
 
-import com.lab6.server.managers.CollectionManager;
 import com.lab6.common.utility.ExecutionStatus;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Валидатор для проверки корректности идентификатора элемента коллекции.
  */
-public class IdValidator extends ArgumentValidator {
-    private final CollectionManager collectionManager;
-
-    /**
-     * Конструктор валидатора IdValidator.
-     *
-     * @param collectionManager Менеджер коллекции.
-     */
-    public IdValidator(CollectionManager collectionManager) {
-        this.collectionManager = collectionManager;
-    }
-
+public class IdValidator extends ArgumentValidator implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 7L;
     /**
      * Проверяет корректность аргумента команды.
      *
@@ -32,9 +25,6 @@ public class IdValidator extends ArgumentValidator {
         }
         try {
             Long id = Long.parseLong(arg);
-            if (collectionManager.getById(id) == null) {
-                return new ExecutionStatus(false, "Элемент с указанным id не найден!");
-            }
         } catch (NumberFormatException e) {
             return new ExecutionStatus(false, "Формат аргумента неверен! Он должен быть целым числом.");
         }

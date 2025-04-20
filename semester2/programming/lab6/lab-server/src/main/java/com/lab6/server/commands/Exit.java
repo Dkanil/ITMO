@@ -1,7 +1,8 @@
 package com.lab6.server.commands;
 
-import com.lab6.server.commands.validators.EmptyValidator;
-import com.lab6.common.utility.Console;
+import com.lab6.common.utility.Command;
+import com.lab6.common.utility.CommandNames;
+import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.utility.ExecutionStatus;
 
 /**
@@ -11,10 +12,9 @@ public class Exit extends Command<EmptyValidator> {
 
     /**
      * Конструктор команды exit.
-     * @param console Консоль для ввода/вывода.
      */
-    public Exit(Console console) {
-        super(CommandNames.EXIT.getName(), CommandNames.EXIT.getDescription(), console, new EmptyValidator());
+    public Exit() {
+        super(CommandNames.EXIT.getName(), CommandNames.EXIT.getDescription(), new EmptyValidator());
     }
 
     /**

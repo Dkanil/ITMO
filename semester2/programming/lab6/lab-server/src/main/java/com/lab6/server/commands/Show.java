@@ -1,7 +1,8 @@
 package com.lab6.server.commands;
 
-import com.lab6.server.commands.validators.EmptyValidator;
-import com.lab6.common.utility.Console;
+import com.lab6.common.utility.Command;
+import com.lab6.common.utility.CommandNames;
+import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.server.managers.CollectionManager;
 
@@ -13,11 +14,10 @@ public class Show extends Command<EmptyValidator> {
 
     /**
      * Конструктор команды show.
-     * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public Show(Console console, CollectionManager collectionManager) {
-        super(CommandNames.SHOW.getName(), CommandNames.SHOW.getDescription(), console, new EmptyValidator());
+    public Show(CollectionManager collectionManager) {
+        super(CommandNames.SHOW.getName(), CommandNames.SHOW.getDescription(), new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 

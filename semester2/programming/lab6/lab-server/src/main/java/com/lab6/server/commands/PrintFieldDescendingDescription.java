@@ -1,7 +1,8 @@
 package com.lab6.server.commands;
 
-import com.lab6.server.commands.validators.EmptyValidator;
-import com.lab6.common.utility.Console;
+import com.lab6.common.utility.Command;
+import com.lab6.common.utility.CommandNames;
+import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.server.managers.CollectionManager;
 
@@ -13,11 +14,10 @@ public class PrintFieldDescendingDescription extends Command<EmptyValidator> {
 
     /**
      * Конструктор команды printFieldDescendingDescription.
-     * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public PrintFieldDescendingDescription(Console console, CollectionManager collectionManager) {
-        super(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getDescription(), console, new EmptyValidator());
+    public PrintFieldDescendingDescription(CollectionManager collectionManager) {
+        super(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getDescription(), new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 

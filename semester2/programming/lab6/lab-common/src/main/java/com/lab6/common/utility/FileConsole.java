@@ -43,15 +43,6 @@ public class FileConsole implements Console {
     }
 
     /**
-     * Заглушает поток вывода таблицы с двумя объектами.
-     * @param obj1 Первый объект.
-     * @param obj2 Второй объект.
-     */
-    @Override
-    public void printTable(Object obj1, Object obj2) {
-    }
-
-    /**
      * Считывает строку из файла.
      * @return Считанная строка.
      * @throws IllegalArgumentException Если произошла ошибка ввода-вывода.

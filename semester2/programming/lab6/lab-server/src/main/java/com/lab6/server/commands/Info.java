@@ -1,8 +1,9 @@
 package com.lab6.server.commands;
 
-import com.lab6.server.commands.validators.EmptyValidator;
+import com.lab6.common.utility.Command;
+import com.lab6.common.utility.CommandNames;
+import com.lab6.common.validators.EmptyValidator;
 import com.lab6.server.managers.CollectionManager;
-import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 
 /**
@@ -13,11 +14,10 @@ public class Info extends Command<EmptyValidator> {
 
     /**
      * Конструктор команды info.
-     * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public Info(Console console, CollectionManager collectionManager) {
-        super(CommandNames.INFO.getName(), CommandNames.INFO.getDescription(), console, new EmptyValidator());
+    public Info(CollectionManager collectionManager) {
+        super(CommandNames.INFO.getName(), CommandNames.INFO.getDescription(), new EmptyValidator());
         this.collectionManager = collectionManager;
     }
 

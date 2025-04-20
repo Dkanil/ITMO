@@ -1,9 +1,12 @@
 package com.lab6.server.commands;
 
-import com.lab6.server.commands.validators.EmptyValidator;
-import com.lab6.common.utility.Console;
+import com.lab6.common.managers.CommandManager;
+import com.lab6.common.utility.Command;
+import com.lab6.common.utility.CommandNames;
+import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.server.managers.CommandManager;
+
+import java.util.Map;
 
 /**
  * Класс команды для вывода справки по доступным командам.
@@ -16,8 +19,8 @@ public class Help extends Command<EmptyValidator> {
      * @param console Консоль для ввода/вывода.
      * @param commandManager Менеджер команд.
      */
-    public Help(Console console, CommandManager commandManager) {
-        super(CommandNames.HELP.getName(), CommandNames.HELP.getDescription(), console, new EmptyValidator());
+    public Help(CommandManager commandManager) {
+        super(CommandNames.HELP.getName(), CommandNames.HELP.getDescription(), new EmptyValidator());
         this.commandManager = commandManager;
     }
 

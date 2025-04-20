@@ -2,12 +2,16 @@ package com.lab6.common.models;
 
 import com.lab6.common.utility.Validatable;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Класс, представляющий координаты.
  */
-public class Coordinates implements Validatable {
+public class Coordinates implements Validatable, Serializable {
+    @Serial
+    private static final long serialVersionUID = 11L;
     private double x; // Значение поля должно быть больше -980
     private Integer y; // Максимальное значение поля: 295, Поле не может быть null
 
