@@ -1,9 +1,14 @@
 package com.lab6.common.utility;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Класс, представляющий статус выполнения операции.
  */
-public class ExecutionStatus {
+public class ExecutionStatus implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 13L;
     private Pair<Boolean, String> status;
 
     /**

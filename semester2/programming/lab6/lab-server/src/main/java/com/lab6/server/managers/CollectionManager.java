@@ -1,10 +1,12 @@
 package com.lab6.server.managers;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.TreeMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.models.MusicGenre;
@@ -41,12 +43,9 @@ public class CollectionManager {
      * Сортирует коллекцию музыкальных групп.
      */
     public void sort() {
-        Stack<MusicBand> sortedBands = new Stack<>();
-        Map<Long, MusicBand> SortedBandsMap = new TreeMap<>(Bands);
-        for (var band : SortedBandsMap.entrySet()) {
-            sortedBands.push(band.getValue());
-        }
-        collection = sortedBands;
+        collection = collection.stream()
+                .sorted(Comparator.comparing(MusicBand::getId))
+                .collect(Collectors.toCollection(Stack::new));
     }
 
     /**
@@ -109,15 +108,14 @@ public class CollectionManager {
      * @return Количество удалённых групп.
      */
     public int removeAllByGenre(MusicGenre genre) {
-        int count = 0;
-        for (MusicBand band : collection) {
-            if (band.getGenre().equals(genre)) {
-                Bands.remove(band.getId());
-                count++;
-            }
-        }
-        collection.removeIf(band -> band.getGenre().equals(genre));
-        return count;
+        List<MusicBand> toRemove = collection.stream()
+                .filter(band -> band.getGenre().equals(genre))
+                .collect(Collectors.toList());
+        toRemove.forEach(band -> Bands.remove(band.getId()));
+        collection = collection.stream()
+                .filter(band -> !band.getGenre().equals(genre))
+                .collect(Collectors.toCollection(Stack::new));
+        return toRemove.size();
     }
 
     /**
@@ -138,12 +136,14 @@ public class CollectionManager {
         dumpManager.ReadCollection(collection);
         InitializationDate = LocalDateTime.now();
         lastSaveDate = LocalDateTime.now();
-        for (MusicBand band : collection) {
-            if (getById(band.getId()) != null) {
-                return new ExecutionStatus(false, "Ошибка загрузки коллекции: обнаружены дубликаты id!");
-            }
-            Bands.put(band.getId(), band);
+
+        boolean hasDuplicates = collection.stream()
+                .anyMatch(band -> Bands.putIfAbsent(band.getId(), band) != null);
+
+        if (hasDuplicates) {
+            return new ExecutionStatus(false, "Ошибка загрузки коллекции: обнаружены дубликаты id!");
         }
+
         return new ExecutionStatus(true, "Коллекция успешно загружена!");
     }
 
@@ -175,11 +175,9 @@ public class CollectionManager {
      * @param elementId Идентификатор музыкальной группы для удаления.
      */
     public void removeById(Long elementId) {
-        MusicBand band = Bands.get(elementId);
-        if (band != null) {
-            collection.remove(band);
-            Bands.remove(elementId);
-            id = elementId;
-        }
+        collection = collection.stream()
+                .filter(band -> !band.getId().equals(elementId))
+                .collect(Collectors.toCollection(Stack::new));
+        Bands.remove(elementId);
     }
 }

@@ -39,6 +39,7 @@ public final class Server {
     private static final int PORT = 12345;
     private static final String SERVER_HOST = "localhost";
     private static CommandManager commandManager;
+    private static Save saveCommand;
     private static ServerNetworkManager networkManager;
     private static Selector selector;
     private static Request request;
@@ -94,6 +95,8 @@ public final class Server {
             register(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), new PrintFieldDescendingDescription(collectionManager));
         }};
 
+        saveCommand = new Save(collectionManager);
+
         Executer executer = new Executer(console, commandManager);
 
         run(console, executer);
@@ -138,18 +141,18 @@ public final class Server {
                                     request = networkManager.receive(clientChannel, key);
                                 } catch (ServerNetworkManager.NullRequestException | SocketException | NullPointerException e) {
                                     console.printError("Ошибка при получении запроса от клиента: " + e.getMessage());
+                                    console.println(saveCommand.run("").getMessage());
                                     key.cancel();
                                     continue;//todo проверить обработку ошибок
                                 }
                                 console.println("Получен запрос от клиента: " + request);
                                 ExecutionStatus executionStatus = executer.runCommand(request.getCommand(), request.getBand());
-                                response = new Response(executionStatus.getMessage());
+                                response = new Response(executionStatus);
                                 if (!executionStatus.isSuccess()) {
                                     console.printError(executionStatus.getMessage());
                                 } else {
                                     console.println("Команда выполнена успешно");
                                 }
-
                                 clientChannel.register(selector, SelectionKey.OP_WRITE);
 
                             } else if (key.isWritable()) {
@@ -162,16 +165,14 @@ public final class Server {
                                     clientChannel.register(selector, SelectionKey.OP_READ);
                                 } catch (IOException e) {
                                     console.printError("Ошибка при отправке ответа клиенту: " + e.getMessage());
-                                    key.cancel();
-                                } catch (NullPointerException e) {
-                                    console.printError("Клиент отключился от сервера: " + e.getMessage());
+                                    console.println(saveCommand.run("").getMessage());
                                     key.cancel();
                                 }
                             }
                         }
                     } catch (SocketException | CancelledKeyException e) {
                         console.printError("Клиент " + key.channel().toString() + " отключился");//todo try-with-resources
-                        executer.runCommand(new String[]{"save"}, null);
+                        console.println(saveCommand.run("").getMessage());
                         key.cancel();
                     } finally {
                         keys.remove();

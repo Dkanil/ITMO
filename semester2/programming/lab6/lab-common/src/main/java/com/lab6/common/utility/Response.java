@@ -10,18 +10,18 @@ public class Response implements Serializable {
     @Serial
     private static final long serialVersionUID = 10L;
     private Map<String, Pair<ArgumentValidator, Boolean>> commandsData; // Второе значение - true, если команда требует ввода элемента коллекции
-    private String message;
+    private ExecutionStatus executionStatus;
 
     public Response(Map<String, Pair<ArgumentValidator, Boolean>> commandsData) {
         this.commandsData = commandsData;
     }
 
-    public Response(String answer) {
-        this.message = answer;
+    public Response(ExecutionStatus executionStatus) {
+        this.executionStatus = executionStatus;
     }
 
-    public String getMessage() {
-        return message;
+    public ExecutionStatus getExecutionStatus() {
+        return executionStatus;
     }
 
     public Map<String, Pair<ArgumentValidator, Boolean>> getCommandsMap() {
@@ -32,7 +32,7 @@ public class Response implements Serializable {
     public String toString() {
         return "Response{" +
                 "commandsData=" + commandsData +
-                ", message='" + message + '\'' +
+                ", executionStatus='" + executionStatus + '\'' +
                 '}';
     }
 }
