@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public class GenreValidator extends ArgumentValidator implements Serializable {
     @Serial
-    private static final long serialVersionUID = 6L;
+    private static final long serialVersionUID = 1L;
     /**
      * Проверяет корректность аргумента команды.
      *

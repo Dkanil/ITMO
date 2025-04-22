@@ -1,18 +1,13 @@
 package com.lab6.common.models;
 
-import java.io.Serial;
-import java.io.Serializable;
-
 /**
  * Перечисление, представляющее музыкальные жанры.
  */
-public enum MusicGenre implements Serializable {
+public enum MusicGenre {
     JAZZ,
     MATH_ROCK,
     BRIT_POP;
 
-    @Serial
-    private static final long serialVersionUID = 12L;
     /**
      * Возвращает строку, содержащую все музыкальные жанры, разделенные запятыми.
      * @return строка с перечислением всех музыкальных жанров

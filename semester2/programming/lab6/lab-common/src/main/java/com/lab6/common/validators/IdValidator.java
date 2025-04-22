@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class IdValidator extends ArgumentValidator implements Serializable {
     @Serial
-    private static final long serialVersionUID = 7L;
+    private static final long serialVersionUID = 2L;
     /**
      * Проверяет корректность аргумента команды.
      *

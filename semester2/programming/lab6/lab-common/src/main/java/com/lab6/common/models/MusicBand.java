@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class MusicBand extends Element implements Serializable {
     @Serial
-    private static final long serialVersionUID = 10L;
+    private static final long serialVersionUID = 20L;
 
     private Long id; // Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; // Поле не может быть null, Строка не может быть пустой

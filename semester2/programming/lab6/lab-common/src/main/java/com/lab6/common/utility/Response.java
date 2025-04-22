@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Response implements Serializable {
     @Serial
-    private static final long serialVersionUID = -10L;
+    private static final long serialVersionUID = 10L;
     private Map<String, Pair<ArgumentValidator, Boolean>> commandsData; // Второе значение - true, если команда требует ввода элемента коллекции
     private String message;
 

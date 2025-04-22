@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class EmptyValidator extends ArgumentValidator implements Serializable {
     @Serial
-    private static final long serialVersionUID = 5L;
+    private static final long serialVersionUID = 0L;
     /**
      * Проверяет корректность аргумента команды.
      *

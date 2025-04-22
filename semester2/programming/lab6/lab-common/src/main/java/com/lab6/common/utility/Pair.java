@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class Pair<A, B> implements Serializable {
     @Serial
-    private static final long serialVersionUID = 8L;
+    private static final long serialVersionUID = 12L;
 
     private A a;
     private B b;

@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class Studio implements Validatable, Serializable {
     @Serial
-    private static final long serialVersionUID = 13L;
+    private static final long serialVersionUID = 22L;
 
     private String name; // Поле не может быть null
     private String address; // Поле может быть null

@@ -2,15 +2,18 @@ package com.lab6.server;
 
 import com.lab6.server.utility.AskingCommand;
 import com.lab6.server.managers.CommandManager;
-import com.lab6.common.utility.*;
 
+import com.lab6.common.utility.Console;
+import com.lab6.common.utility.ExecutionStatus;
+import com.lab6.common.utility.Pair;
+import com.lab6.common.utility.Request;
+import com.lab6.common.utility.Response;
+import com.lab6.common.utility.StandartConsole;
 import com.lab6.common.validators.ArgumentValidator;
-import com.lab6.server.commands.*;
-import com.lab6.server.commands.askingCommands.Add;
-import com.lab6.server.commands.askingCommands.AddIfMin;
-import com.lab6.server.commands.askingCommands.Update;
-import com.lab6.server.managers.ServerNetworkManager;
 
+import com.lab6.server.commands.*;
+import com.lab6.server.commands.askingCommands.*;
+import com.lab6.server.managers.ServerNetworkManager;
 import com.lab6.server.managers.Executer;
 import com.lab6.server.managers.CollectionManager;
 import com.lab6.server.managers.DumpManager;
@@ -20,9 +23,13 @@ import com.lab6.server.utility.CommandNames;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.net.SocketException;
-import java.nio.channels.*;
+import java.nio.channels.CancelledKeyException;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.nio.channels.SelectionKey;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -77,7 +84,6 @@ public final class Server {
             register(CommandNames.UPDATE.getName(), new Update(console, collectionManager));
             register(CommandNames.REMOVE_BY_ID.getName(), new RemoveById(collectionManager));
             register(CommandNames.CLEAR.getName(), new Clear(collectionManager));
-            register(CommandNames.SAVE.getName(), new Save(collectionManager));
             register(CommandNames.EXECUTE_SCRIPT.getName(), new ExecuteScript());
             register(CommandNames.EXIT.getName(), new Exit());
             register(CommandNames.REMOVE_FIRST.getName(), new RemoveFirst(collectionManager));
@@ -103,6 +109,7 @@ public final class Server {
 
             // Регистрация серверного канала в селекторе для обработки входящих соединений
             networkManager.getServerSocketChannel().register(selector, SelectionKey.OP_ACCEPT);
+
             console.println("Сервер запущен на " + SERVER_HOST + ":" + PORT);
 
             while (true) {
@@ -129,31 +136,20 @@ public final class Server {
 
                                 try {
                                     request = networkManager.receive(clientChannel, key);
-                                } catch (ClassNotFoundException | IOException e) {
+                                } catch (ServerNetworkManager.NullRequestException | SocketException | NullPointerException e) {
                                     console.printError("Ошибка при получении запроса от клиента: " + e.getMessage());
-                                } catch (NullPointerException e) {
-                                    console.printError("Клиент отключился от сервера: " + e.getMessage());
                                     key.cancel();
-                                }
-                                if (request == null) {
-                                    console.printError("Запрос от клиента не получен."); //todo исправить
-                                    continue;
+                                    continue;//todo проверить обработку ошибок
                                 }
                                 console.println("Получен запрос от клиента: " + request);
-                                ExecutionStatus validationStatus = executer.validateCommand(request.getCommand());
-                                if (!validationStatus.isSuccess()) {
-                                    response = new Response(validationStatus.getMessage());
-                                    console.printError(validationStatus.getMessage());
+                                ExecutionStatus executionStatus = executer.runCommand(request.getCommand(), request.getBand());
+                                response = new Response(executionStatus.getMessage());
+                                if (!executionStatus.isSuccess()) {
+                                    console.printError(executionStatus.getMessage());
+                                } else {
+                                    console.println("Команда выполнена успешно");
                                 }
-                                else {
-                                    ExecutionStatus executionStatus = executer.runCommand(request.getCommand(), request.getBand());
-                                    response = new Response(executionStatus.getMessage());
-                                    if (!executionStatus.isSuccess()) {
-                                        console.printError(executionStatus.getMessage());
-                                    } else {
-                                        console.println("Команда выполнена успешно");
-                                    }
-                                }
+
                                 clientChannel.register(selector, SelectionKey.OP_WRITE);
 
                             } else if (key.isWritable()) {
@@ -166,6 +162,7 @@ public final class Server {
                                     clientChannel.register(selector, SelectionKey.OP_READ);
                                 } catch (IOException e) {
                                     console.printError("Ошибка при отправке ответа клиенту: " + e.getMessage());
+                                    key.cancel();
                                 } catch (NullPointerException e) {
                                     console.printError("Клиент отключился от сервера: " + e.getMessage());
                                     key.cancel();
@@ -174,21 +171,19 @@ public final class Server {
                         }
                     } catch (SocketException | CancelledKeyException e) {
                         console.printError("Клиент " + key.channel().toString() + " отключился");//todo try-with-resources
+                        executer.runCommand(new String[]{"save"}, null);
                         key.cancel();
                     } finally {
-                        keys.remove(); // todo gpt насрал
-                        //selector.wakeup();
+                        keys.remove();
                     }
                 }
             }
         } catch (EOFException e) {
             console.printError("Клиент отключился от сервера: " + e.getMessage());
-        } catch (NotSerializableException e) {
-            console.printError("Объект не сериализуемый (СУКААААААААААААААА): " + e.getMessage());
         } catch (IOException e) {
             console.printError("Ошибка при запуске сервера: " + e.getMessage());
         } catch (NullPointerException e) {
-            console.printError("СУКАПИЗДАЗАЕБАЛА" + e.getMessage());
+            console.printError("Ошибка хз чего" + e.getMessage());
         } catch (ClassNotFoundException e) {
             console.printError("Хз что произошло: " + e.getMessage()); // todo исправить
         }
@@ -198,16 +193,13 @@ public final class Server {
     private static void InitialCommandsData(SocketChannel clientChannel, SelectionKey key) throws ClosedChannelException {
         try {
             Map<String, Pair<ArgumentValidator, Boolean>> commandsData = new HashMap<>();
-            for (Map.Entry<String, Command<?>> pair : commandManager.getCommandsMap().entrySet()) {
-                boolean isAskingCommand = AskingCommand.class.isAssignableFrom(pair.getValue().getClass());
-                commandsData.put(pair.getKey(), new Pair<>(pair.getValue().getArgumentValidator(), isAskingCommand));
+            for (Map.Entry<String, Command<?>> entrySet : commandManager.getCommandsMap().entrySet()) {
+                boolean isAskingCommand = AskingCommand.class.isAssignableFrom(entrySet.getValue().getClass());
+                commandsData.put(entrySet.getKey(), new Pair<>(entrySet.getValue().getArgumentValidator(), isAskingCommand));
             }
             networkManager.send(new Response(commandsData), clientChannel); //todo понять как это работает
             console.println("Клиенту отправлен список команд: " + clientChannel.getRemoteAddress());
             clientChannel.register(selector, SelectionKey.OP_READ);
-        } catch (NotSerializableException e) {
-            console.printError("Какой-то класс не сериализован: " + e.getMessage()); // todo пофиксить отлавливание ошибок
-            key.cancel();
         } catch (IOException e) {
             console.printError("Ошибка при отправке клиенту списка команд: " + e.getMessage());
             key.cancel();

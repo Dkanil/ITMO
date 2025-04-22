@@ -22,12 +22,9 @@ public class Executer {
         this.console = console;
         this.commandManager = commandManager;
     }
-    //todo убрать дубль кода
-    public ExecutionStatus validateCommand(String[] userCommand) {
+
+    private ExecutionStatus validateCommand(String[] userCommand) {
         try {
-            if (userCommand[0].equals("execute_script")) {
-                return new ExecutionStatus(true, "Введена команда 'execute_script'. Валидация аргументов не требуется.");
-            }
             Command<?> command = commandManager.getCommand(userCommand[0]);
             if (command == null) {
                 return new ExecutionStatus(false, "Команда '" + userCommand[0] + "' не найдена! Для показа списка команд введите 'help'.");
@@ -38,41 +35,26 @@ public class Executer {
         } catch (NullPointerException e) {
             return new ExecutionStatus(false, "Введено недостаточно аргументов для выполнения последней команды!");
         }
-        catch (Exception e) {
-            return new ExecutionStatus(false, "Произошла ошибка при выполнении команды!");
-        }
     }
 
     /**
      * Выполняет команду.
      * @param userCommand массив строк, представляющий команду
+     * @param musicBand объект MusicBand, если команда требует его
      * @return статус выполнения команды
      */
     public ExecutionStatus runCommand(String[] userCommand, MusicBand musicBand) {
-        try {
-            ExecutionStatus validateStatus = validateCommand(userCommand);
-            if (validateStatus.isSuccess()) {
-//                if (userCommand[0].equals("execute_script")) { //todo проверить
-//                    return runScript(userCommand[1]);
-//                }
-                var command = commandManager.getCommand(userCommand[0]);
-                if (command == null) {
-                    return new ExecutionStatus(false, "Команда '" + userCommand[0] + "' не найдена! Для показа списка команд введите 'help'.");
-                } else {
-                    console.println("Выполнение команды '" + userCommand[0] + "'");
-                    if (AskingCommand.class.isAssignableFrom(command.getClass())) {
-                        return ((AskingCommand<?>) command).run(userCommand[1], musicBand); // todo если команда из скрипта то нужно исправить
-                    } else {
-                        return command.run(userCommand[1]);
-                    }
-                }
+        ExecutionStatus validateStatus = validateCommand(userCommand);
+        if (validateStatus.isSuccess()) {
+            var command = commandManager.getCommand(userCommand[0]);
+            console.println("Выполнение команды '" + userCommand[0] + "'");
+            if (AskingCommand.class.isAssignableFrom(command.getClass())) {
+                return ((AskingCommand<?>) command).run(userCommand[1], musicBand);
             } else {
-                return new ExecutionStatus(false, validateStatus.getMessage());
+                return command.run(userCommand[1]);
             }
-        } catch (NullPointerException e) {
-            return new ExecutionStatus(false, "Введено недостаточно аргументов для выполнения последней команды!");
-        } catch (Exception e) {
-            return new ExecutionStatus(false, "Произошла ошибка при выполнении команды!");
+        } else {
+            return new ExecutionStatus(false, validateStatus.getMessage());
         }
     }
 }

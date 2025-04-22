@@ -1,4 +1,6 @@
-package com.lab6.common.utility;
+package com.lab6.client.utility;
+
+import com.lab6.common.utility.Console;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,7 +8,7 @@ import java.io.IOException;
 /**
  * Класс для чтения данных из файла, реализующий интерфейс Console. Заглушает стандартный поток вывода.
  */
-public class FileConsole implements Console { //todo кинуть на клиент
+public class FileConsole implements Console {
     private final BufferedReader input;
 
     /**

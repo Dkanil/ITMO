@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class Coordinates implements Validatable, Serializable {
     @Serial
-    private static final long serialVersionUID = 11L;
+    private static final long serialVersionUID = 21L;
     private double x; // Значение поля должно быть больше -980
     private Integer y; // Максимальное значение поля: 295, Поле не может быть null
 

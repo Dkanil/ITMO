@@ -1,18 +1,18 @@
-package com.lab6.common.managers;
+package com.lab6.client.managers;
 
+import com.lab6.client.utility.FileConsole;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.models.MusicGenre;
 import com.lab6.common.models.Coordinates;
 import com.lab6.common.models.Studio;
 import com.lab6.common.utility.Console;
-import com.lab6.common.utility.FileConsole;
 
 import java.time.LocalDateTime;
 
 /**
  * Класс, запрашивающий у пользователя данные для создания объектов.
  */
-public class Asker { //todo кинуть в клиент (нужно отвязать от AskingCommand)
+public class Asker {
     /**
      * Исключение, выбрасываемое для прерывания ввода.
      */

@@ -1,12 +1,17 @@
 package com.lab6.client;
 
+import com.lab6.client.managers.NetworkManager;
+import com.lab6.client.utility.ElementValidator;
 import com.lab6.common.models.MusicBand;
-import com.lab6.common.utility.*;
+import com.lab6.common.utility.Console;
+import com.lab6.common.utility.ExecutionStatus;
+import com.lab6.common.utility.Pair;
+import com.lab6.common.utility.Request;
+import com.lab6.common.utility.Response;
+import com.lab6.common.utility.StandartConsole;
 import com.lab6.common.validators.ArgumentValidator;
-import com.lab6.common.validators.ElementValidator;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.Map;
 
 //Вариант 88347
@@ -17,59 +22,61 @@ public final class Client {
     private static Map<String, Pair<ArgumentValidator, Boolean>> commandsData;
     private static NetworkManager networkManager = new NetworkManager(SERVER_PORT, SERVER_HOST);
     private static int scriptStackCounter = 0;
+    private static int attempts = 1;
 
     public static void main(String[] args) {
 
-        try {
-            networkManager.connect();
-            console.println("Connected to " + SERVER_HOST + ":" + SERVER_PORT);
+        do {
+            try {
+                networkManager.connect();
+                attempts = 1;
+                console.println("Connected to " + SERVER_HOST + ":" + SERVER_PORT);
 
-            // todo добавить обработку если сервер резко отключился
-            commandsData = networkManager.receive().getCommandsMap();
+                commandsData = networkManager.receive().getCommandsMap();
 
-            while (true) {
-                console.println("Введите команду:");
-                String inputCommand = console.readln();
-                String[] commands = (inputCommand.trim() + " ").split(" ", 2);
-                ExecutionStatus argumentStatus = validateCommand((inputCommand.trim() + " ").split(" ", 2));
-                if (!argumentStatus.isSuccess()) {
-                    console.printError(argumentStatus.getMessage());
-                }
-                else {
-                    Request request;
-                    if (commandsData.get(commands[0]).getSecond()) {
-                        // Если команда требует построчного ввода
-                        request = askingRequest(inputCommand);
-                        if (request == null) {
-                            continue; // Прерываем выполнение команды, если валидация не прошла
-                        }
+                while (true) {
+                    console.println("Введите команду:");
+                    String inputCommand = console.readln();
+                    String[] commands = (inputCommand.trim() + " ").split(" ", 2);
+                    ExecutionStatus argumentStatus = validateCommand((inputCommand.trim() + " ").split(" ", 2));
+                    if (!argumentStatus.isSuccess()) {
+                        console.printError(argumentStatus.getMessage());
                     }
                     else {
-                        request = new Request(inputCommand);
+                        Request request;
+                        if (commandsData.get(commands[0]).getSecond()) {
+                            // Если команда требует построчного ввода
+                            request = askingRequest(inputCommand);
+                            if (request == null) {
+                                continue; // Прерываем выполнение команды, если валидация не прошла
+                            }
+                        }
+                        else {
+                            request = new Request(inputCommand);
+                        }
+                        networkManager.send(request);
+
+                        Response response = networkManager.receive();
+                        console.println(response.getMessage());
                     }
-                    networkManager.send(request);
-
-                    Response response = networkManager.receive();
-                    console.println(response.getMessage());
                 }
+
+            } catch (IOException e) {
+                console.printError("Не удалось подключиться к серверу. Проверьте, запущен ли сервер и доступен ли он по адресу " + SERVER_HOST + ":" + SERVER_PORT);
+                try {
+                    Thread.sleep(2000);
+                    attempts++;
+                } catch (InterruptedException ignored) {}
+            } catch (ClassNotFoundException e) {
+                console.printError("Ошибка при работе с сервером: " + e.getMessage());
             }
-
-        } catch (ConnectException e) {
-            console.printError("Не удалось подключиться к серверу. Проверьте, запущен ли сервер и доступен ли он по адресу " + SERVER_HOST + ":" + SERVER_PORT);
-//            try { todo сделать попытки переподключения
-//                Thread.sleep(1000);
-//            } catch (InterruptedException ex) {
-//                throw new RuntimeException(ex);
-//            }
-        } catch (IOException | ClassNotFoundException e) {
-            console.printError("Ошибка при работе с сервером: " + e.getMessage());
-        }
-
+        } while (attempts <= 5);
+        console.printError("Превышено максимальное количество попыток подключения к серверу.");
     }
 
     public static Request askingRequest(String inputCommand) {
         ElementValidator elementValidator = new ElementValidator();
-        Pair<ExecutionStatus, MusicBand> validationStatusPair = elementValidator.validateAsking(console, 1L);
+        Pair<ExecutionStatus, MusicBand> validationStatusPair = elementValidator.validateAsking(console, 1L); //На клиенте вводится id=1L, на сервере он меняется на корректный
         if (!validationStatusPair.getFirst().isSuccess()) {
             console.printError(validationStatusPair.getFirst().getMessage());
             return null;
@@ -80,21 +87,27 @@ public final class Client {
 
     public static ExecutionStatus validateCommand(String[] userCommand) {
         try {
-            if (userCommand[0].equals("execute_script")) {
+            if (userCommand[0].equals("exit")) {
+                console.println("Завершение работы клиента...");
+                try {
+                    networkManager.close();
+                } catch (IOException e) {
+                    console.printError("Не удалось закрыть соединение с сервером.");
+                }
+                System.exit(0);
+                return null;
+            } else if (userCommand[0].equals("execute_script")) {
                 return new ExecutionStatus(true, "Введена команда 'execute_script'. Валидация аргументов не требуется.");
             } else {
-                var argumentValidator = commandsData.get(userCommand[0]).getFirst();
+                var argumentValidator = commandsData.get(userCommand[0]);
                 if (argumentValidator == null) {
                     return new ExecutionStatus(false, "Команда '" + userCommand[0] + "' не найдена! Для показа списка команд введите 'help'.");
                 } else {
-                    return argumentValidator.validate(userCommand[1].trim(), userCommand[0]);
+                    return argumentValidator.getFirst().validate(userCommand[1].trim(), userCommand[0]);
                 }
             }
         } catch (NullPointerException e) {
             return new ExecutionStatus(false, "Введено недостаточно аргументов для выполнения последней команды!");
-        }
-        catch (Exception e) {
-            return new ExecutionStatus(false, "Произошла ошибка при вводе команды!"); //todo убрать мб
         }
     }
 /*

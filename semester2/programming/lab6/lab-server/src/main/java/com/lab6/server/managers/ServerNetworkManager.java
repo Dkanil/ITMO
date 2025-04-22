@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
@@ -21,9 +20,6 @@ public class ServerNetworkManager {
     private final int PORT;
     private final String SERVER_HOST;
     private ServerSocketChannel serverChannel;
-    private Socket socket;
-    private ObjectInputStream inputStream;
-    private ObjectOutputStream outputStream;
 
     public ServerNetworkManager(int port, String SERVER_HOST) {
         this.PORT = port;
@@ -35,33 +31,9 @@ public class ServerNetworkManager {
         serverChannel.bind(new InetSocketAddress(SERVER_HOST, PORT));
         serverChannel.configureBlocking(false);
     }
-    public SocketChannel getSocketChannel() throws IOException {
-        return serverChannel.accept();
-    }
 
     public ServerSocketChannel getServerSocketChannel() {
         return serverChannel;
-    }
-
-    public void connect() throws IOException {
-        socket = new Socket(SERVER_HOST, PORT);
-        inputStream = new ObjectInputStream(socket.getInputStream());
-        outputStream = new ObjectOutputStream(socket.getOutputStream());
-    }
-
-    public void close() throws IOException {
-        if (inputStream != null) {
-            inputStream.close();
-        }
-        if (outputStream != null) {
-            outputStream.close();
-        }
-        if (socket != null) {
-            socket.close();
-        }
-        if (serverChannel != null) {
-            serverChannel.close();
-        }
     }
 
     public void send(Response response, SocketChannel clientChannel) throws IOException, ClassNotFoundException {
@@ -95,13 +67,18 @@ public class ServerNetworkManager {
         }
     }
 
-    public Request receive(SocketChannel clientChannel, SelectionKey key) throws IOException, ClassNotFoundException { //todo: проверить
+    public static class NullRequestException extends Exception {
+        public NullRequestException(String message) {
+            super(message);
+        }
+    }
+    public Request receive(SocketChannel clientChannel, SelectionKey key) throws IOException, ClassNotFoundException, NullRequestException { //todo: проверить
         ByteBuffer clientData = ByteBuffer.allocate(2048);
 
         int bytesRead = clientChannel.read(clientData);
         if (bytesRead == -1) {
             key.cancel();
-            return null; // Клиент закрыл соединение
+            throw new NullRequestException("Клиент закрыл соединение");
         }
         clientData.flip(); // Переключаем ByteBuffer в режим чтения
 
@@ -109,7 +86,7 @@ public class ServerNetworkManager {
             return (Request) clientDataIn.readObject();
         } catch (StreamCorruptedException e) {
             key.cancel();
-            return null;
+            throw new NullRequestException("Запрос не был получен от клиента");
         }
     }
 }

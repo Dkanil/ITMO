@@ -1,4 +1,4 @@
-package com.lab6.client;
+package com.lab6.client.managers;
 
 import com.lab6.common.utility.Request;
 import com.lab6.common.utility.Response;

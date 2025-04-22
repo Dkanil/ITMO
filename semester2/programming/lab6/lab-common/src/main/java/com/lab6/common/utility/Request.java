@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class Request implements Serializable {
     @Serial
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 11L;
     private String string;
     private MusicBand band = null;
 

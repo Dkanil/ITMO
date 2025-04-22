@@ -3,9 +3,7 @@ package com.lab6.server.utility;
 import com.lab6.server.managers.CollectionManager;
 import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.common.utility.Pair;
 import com.lab6.common.validators.ArgumentValidator;
-import com.lab6.common.validators.ElementValidator;
 import com.lab6.common.validators.IdValidator;
 import com.lab6.common.models.MusicBand;
 
@@ -86,24 +84,7 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
     }
 
     @Override
-    public ExecutionStatus run(String arg) { //todo ДУБЛЬ КОДА
-        ExecutionStatus argumentStatus = argumentValidator.validate(arg, getName());
-        if (argumentStatus.isSuccess()) {
-            Long id;
-            if (argumentValidator instanceof IdValidator) {
-                id = Long.parseLong(arg);
-            } else {
-                id = collectionManager.getFreeId();
-            }
-            ElementValidator elementValidator = new ElementValidator();
-            Pair<ExecutionStatus, MusicBand> validationStatusPair = elementValidator.validateAsking(console, id);
-            if (!validationStatusPair.getFirst().isSuccess()) {
-                return validationStatusPair.getFirst();
-            } else {
-                return runInternal(validationStatusPair.getSecond());
-            }
-        } else {
-            return argumentStatus;
-        }
+    public ExecutionStatus run(String arg) {
+        return null; //todo проверить
     }
 }

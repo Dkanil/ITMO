@@ -1,20 +1,15 @@
-package com.lab6.common.validators;
+package com.lab6.client.utility;
 
-import com.lab6.common.managers.Asker;
+import com.lab6.client.managers.Asker;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.utility.Pair;
 
-import java.io.Serial;
-import java.io.Serializable;
-
 /**
  * Валидатор для проверки корректности элемента коллекции.
  */
-public class ElementValidator implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 4L;
+public class ElementValidator {
     /**
      * Проверяет корректность введенного элемента коллекции.
      *
