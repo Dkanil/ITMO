@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 /**
  * Класс, запрашивающий у пользователя данные для создания объектов.
  */
-public class Asker {
+public class Asker { //todo кинуть в клиент (нужно отвязать от AskingCommand)
     /**
      * Исключение, выбрасываемое для прерывания ввода.
      */

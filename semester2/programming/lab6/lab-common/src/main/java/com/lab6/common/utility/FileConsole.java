@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * Класс для чтения данных из файла, реализующий интерфейс Console. Заглушает стандартный поток вывода.
  */
-public class FileConsole implements Console {
+public class FileConsole implements Console { //todo кинуть на клиент
     private final BufferedReader input;
 
     /**

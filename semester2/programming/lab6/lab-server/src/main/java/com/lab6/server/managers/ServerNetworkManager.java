@@ -1,6 +1,7 @@
 package com.lab6.server.managers;
 
 import com.lab6.common.utility.Request;
+import com.lab6.common.utility.Response;
 
 import java.util.Arrays;
 import java.io.IOException;
@@ -63,19 +64,11 @@ public class ServerNetworkManager {
         }
     }
 
-    public void send(Request request, SocketChannel clientChannel) throws IOException, ClassNotFoundException {
-//        try(ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//            ObjectOutputStream out = new ObjectOutputStream(bytes)) {
-//
-//            out.writeObject(request);
-//            ByteBuffer dataToSend = ByteBuffer.wrap(bytes.toByteArray());
-//            socketChannel.write(dataToSend); // отправляем серверу запрос
-//            out.flush();
-//        }
+    public void send(Response response, SocketChannel clientChannel) throws IOException, ClassNotFoundException {
 
         try (ByteArrayOutputStream bytes = new ByteArrayOutputStream();
              ObjectOutputStream clientDataOut = new ObjectOutputStream(bytes)) {
-            clientDataOut.writeObject(request);
+            clientDataOut.writeObject(response);
 
             var byteResponse = bytes.toByteArray();
 

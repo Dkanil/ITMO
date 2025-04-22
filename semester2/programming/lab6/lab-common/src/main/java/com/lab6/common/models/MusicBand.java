@@ -49,6 +49,10 @@ public class MusicBand extends Element implements Serializable {
         this.studio = studio;
     }
 
+    public void updateId(Long id) {
+       this.id = id;
+    }
+
     /**
      * Возвращает идентификатор группы.
      *

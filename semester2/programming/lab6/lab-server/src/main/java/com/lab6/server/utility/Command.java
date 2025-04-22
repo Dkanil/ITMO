@@ -1,19 +1,15 @@
-package com.lab6.common.utility;
+package com.lab6.server.utility;
 
+import com.lab6.common.utility.ExecutionStatus;
+import com.lab6.common.utility.Pair;
 import com.lab6.common.validators.ArgumentValidator;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * Абстрактный класс для всех команд.
  *
  * @param <T> Тип валидатора аргументов, который должен расширять {@link ArgumentValidator}.
  */
-public abstract class Command<T extends ArgumentValidator> implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 2L;
-
+public abstract class Command<T extends ArgumentValidator> {
     private final Pair<String, String> nameAndDescription;
     public final T argumentValidator;
 

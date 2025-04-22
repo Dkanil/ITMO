@@ -2,15 +2,10 @@ package com.lab6.common.validators;
 
 import com.lab6.common.utility.ExecutionStatus;
 
-import java.io.Serial;
-import java.io.Serializable;
-
 /**
  * Абстрактный класс для валидаторов аргументов команд.
  */
-public abstract class ArgumentValidator implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 3L;
+public abstract class ArgumentValidator {
     /**
      * Проверяет аргумент команды.
      *

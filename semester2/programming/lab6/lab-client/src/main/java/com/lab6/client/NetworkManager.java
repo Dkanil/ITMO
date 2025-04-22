@@ -1,6 +1,7 @@
 package com.lab6.client;
 
 import com.lab6.common.utility.Request;
+import com.lab6.common.utility.Response;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -44,7 +45,7 @@ public class NetworkManager {
         }
     }
 
-    public Request receive() throws IOException, ClassNotFoundException {
+    public Response receive() throws IOException, ClassNotFoundException {
         ByteBuffer dataToReceiveLength = ByteBuffer.allocate(8);
         channel.read(dataToReceiveLength); // читаем длину ответа от сервера
         dataToReceiveLength.flip();
@@ -62,7 +63,7 @@ public class NetworkManager {
         }
 
         try(ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(responseBytes.array()))){
-            return (Request) in.readObject();
+            return (Response) in.readObject();
         }
     }
 }

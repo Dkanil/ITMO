@@ -1,11 +1,9 @@
 package com.lab6.common.utility;
 
-import java.io.Serializable;
-
 /**
  * Класс, представляющий стандартную консоль для ввода и вывода данных.
  */
-public class StandartConsole implements Console, Serializable { //todo: убрать Serializable
+public class StandartConsole implements Console {
 
     /**
      * Выводит объект в стандартный поток вывода.

@@ -1,12 +1,11 @@
 package com.lab6.server.managers;
 
-import com.lab6.common.managers.CommandManager;
 import com.lab6.common.models.MusicBand;
-import com.lab6.common.utility.Command;
+import com.lab6.server.utility.Command;
 import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.validators.ArgumentValidator;
-import com.lab6.common.utility.AskingCommand;
+import com.lab6.server.utility.AskingCommand;
 
 /**
  * Класс, выполняющий команды и скрипты.
@@ -34,7 +33,7 @@ public class Executer {
                 return new ExecutionStatus(false, "Команда '" + userCommand[0] + "' не найдена! Для показа списка команд введите 'help'.");
             } else {
                 ArgumentValidator argumentValidator = command.getArgumentValidator();
-                return argumentValidator.validate(userCommand[1], command.getName());
+                return argumentValidator.validate(userCommand[1].trim(), command.getName());
             }
         } catch (NullPointerException e) {
             return new ExecutionStatus(false, "Введено недостаточно аргументов для выполнения последней команды!");

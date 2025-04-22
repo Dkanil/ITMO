@@ -1,9 +1,12 @@
-package com.lab6.common.utility;
+package com.lab6.server.utility;
 
+import com.lab6.server.managers.CollectionManager;
+import com.lab6.common.utility.Console;
+import com.lab6.common.utility.ExecutionStatus;
+import com.lab6.common.utility.Pair;
 import com.lab6.common.validators.ArgumentValidator;
 import com.lab6.common.validators.ElementValidator;
 import com.lab6.common.validators.IdValidator;
-import com.lab6.common.managers.ICollectionManager;
 import com.lab6.common.models.MusicBand;
 
 /**
@@ -11,7 +14,7 @@ import com.lab6.common.models.MusicBand;
  * @param <T> Тип валидатора аргументов.
  */
 public abstract class AskingCommand<T extends ArgumentValidator> extends Command<T> {
-    protected final ICollectionManager collectionManager;
+    protected final CollectionManager collectionManager;
     private Console console;
 
     /**
@@ -23,7 +26,7 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
      * @param argumentValidator Валидатор аргументов команды.
      * @param collectionManager Менеджер коллекции.
      */
-    public AskingCommand(String name, String description, Console console, T argumentValidator, ICollectionManager collectionManager) {
+    public AskingCommand(String name, String description, Console console, T argumentValidator, CollectionManager collectionManager) {
         super(name, description, argumentValidator);
         this.console = console;
         this.collectionManager = collectionManager;
@@ -46,7 +49,7 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
      * @param console Консоль ввода-вывода.
      */
     public void updateConsole(Console console) {
-        this.console = console;
+        this.console = console; //todo убрать
     }
 
     /**
@@ -75,6 +78,7 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
             } else {
                 id = collectionManager.getFreeId();
             }
+            band.updateId(id);
             return runInternal(band);
         } else {
             return argumentStatus;
@@ -82,7 +86,7 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
     }
 
     @Override
-    public ExecutionStatus run(String arg) {
+    public ExecutionStatus run(String arg) { //todo ДУБЛЬ КОДА
         ExecutionStatus argumentStatus = argumentValidator.validate(arg, getName());
         if (argumentStatus.isSuccess()) {
             Long id;

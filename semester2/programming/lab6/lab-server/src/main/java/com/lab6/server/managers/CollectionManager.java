@@ -1,7 +1,5 @@
 package com.lab6.server.managers;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,15 +9,11 @@ import java.util.TreeMap;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.models.MusicGenre;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.common.managers.ICollectionManager;
 
 /**
  * Класс, управляющий коллекцией музыкальных групп.
  */
-public class CollectionManager implements Serializable, ICollectionManager {
-    @Serial
-    private static final long serialVersionUID = 0L; //TODO разобраться нахуя это?
-
+public class CollectionManager {
     private Long id = 1L;
     private final DumpManager dumpManager;
     private Map<Long, MusicBand> Bands = new HashMap<>();
@@ -69,7 +63,6 @@ public class CollectionManager implements Serializable, ICollectionManager {
      * Возвращает свободный идентификатор.
      * @return Свободный идентификатор.
      */
-    @Override
     public Long getFreeId() {
         while (Bands.containsKey(id)) {
             id++;
@@ -106,7 +99,6 @@ public class CollectionManager implements Serializable, ICollectionManager {
      * @param id Идентификатор музыкальной группы.
      * @return Музыкальная группа с указанным идентификатором.
      */
-    @Override
     public MusicBand getById(Long id) {
         return Bands.get(id);
     }

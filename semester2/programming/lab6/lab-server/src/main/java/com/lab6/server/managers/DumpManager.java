@@ -12,9 +12,7 @@ import java.util.Stack;
 /**
  * Класс, управляющий сохранением и загрузкой коллекции музыкальных групп.
  */
-public class DumpManager implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 0L; //TODO разобраться нахуя это?
+public class DumpManager {
     private final String fileName;
     private final Console console;
 

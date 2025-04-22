@@ -1,10 +1,9 @@
 package com.lab6.server.commands;
 
-import com.lab6.common.utility.Command;
-import com.lab6.common.utility.CommandNames;
+import com.lab6.server.utility.Command;
+import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.GenreValidator;
 import com.lab6.common.models.MusicGenre;
-import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.server.managers.CollectionManager;
 

@@ -1,6 +1,6 @@
-package com.lab6.common.managers;
+package com.lab6.server.managers;
 
-import com.lab6.common.utility.Command;
+import com.lab6.server.utility.Command;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
  * Класс, управляющий регистрацией и получением команд.
  */
 public class CommandManager {
-    private Map<String, Command<?>> commands = new HashMap<>();
+    private final Map<String, Command<?>> commands = new HashMap<>();
 
     /**
      * Регистрирует команду.
@@ -18,10 +18,6 @@ public class CommandManager {
      */
     public void register(String commandName, Command<?> command) {
         commands.put(commandName, command);
-    }
-
-    public void setCommandsMap(Map<String, Command<?>> commands) {
-        this.commands = commands;
     }
 
     /**
