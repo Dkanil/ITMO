@@ -5,7 +5,6 @@ import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.common.utility.Console;
 import com.lab6.server.managers.CollectionManager;
 
 /**
@@ -14,11 +13,10 @@ import com.lab6.server.managers.CollectionManager;
 public class Add extends AskingCommand<EmptyValidator> {
     /**
      * Конструктор команды add.
-     * @param console Консоль для ввода/вывода.
      * @param collectionManager Менеджер коллекции.
      */
-    public Add(Console console, CollectionManager collectionManager) {
-        super(CommandNames.ADD.getName() + " {element}", CommandNames.ADD.getDescription(), console, new EmptyValidator(), collectionManager);
+    public Add(CollectionManager collectionManager) {
+        super(CommandNames.ADD.getName() + " {element}", CommandNames.ADD.getDescription(), new EmptyValidator(), collectionManager);
     }
 
     /**

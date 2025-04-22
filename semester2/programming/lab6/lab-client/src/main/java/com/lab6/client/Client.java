@@ -17,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.Map;
 
 //Вариант 88347
@@ -26,7 +25,7 @@ public final class Client {
     private static final int SERVER_PORT = 12345;
     private static final String SERVER_HOST = "localhost";
     private static Map<String, Pair<ArgumentValidator, Boolean>> commandsData;
-    private static NetworkManager networkManager = new NetworkManager(SERVER_PORT, SERVER_HOST);
+    private static final NetworkManager networkManager = new NetworkManager(SERVER_PORT, SERVER_HOST);
     private static int scriptStackCounter = 0;
     private static int attempts = 1;
 
@@ -143,7 +142,6 @@ public final class Client {
             console.println("Запуск скрипта '" + fileName + "'");
             try (BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
                 Console FileConsole = new FileConsole(input);
-                // todo Подменяем консоль для команд, которые требуют построчного ввода пользователя
                 while (scriptStackCounter > 0) {
                     String line = input.readLine();
                     if (!line.equals("exit")) {
@@ -180,6 +178,6 @@ public final class Client {
             return new ExecutionStatus(true, "");
         } catch (Exception e) {
             return new ExecutionStatus(false, "Произошла ошибка при запуске скрипта!");
-        } //todo проверить надо ли через finally менять консоль
+        }
     }
 }

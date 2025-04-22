@@ -1,8 +1,8 @@
 package com.lab6.server.managers;
 
 import com.lab6.common.models.MusicBand;
+import com.lab6.server.Server;
 import com.lab6.server.utility.Command;
-import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.validators.ArgumentValidator;
 import com.lab6.server.utility.AskingCommand;
@@ -11,15 +11,12 @@ import com.lab6.server.utility.AskingCommand;
  * Класс, выполняющий команды и скрипты.
  */
 public class Executer {
-    private final Console console;
     private final CommandManager commandManager;
 
     /**
      * Конструктор для создания объекта Executer.
-     * @param console консоль для ввода и вывода данных
      */
-    public Executer(Console console, CommandManager commandManager) {
-        this.console = console;
+    public Executer(CommandManager commandManager) {
         this.commandManager = commandManager;
     }
 
@@ -47,7 +44,7 @@ public class Executer {
         ExecutionStatus validateStatus = validateCommand(userCommand);
         if (validateStatus.isSuccess()) {
             var command = commandManager.getCommand(userCommand[0]);
-            console.println("Выполнение команды '" + userCommand[0] + "'");
+            Server.logger.info("Выполнение команды '" + userCommand[0] + "'");
             if (AskingCommand.class.isAssignableFrom(command.getClass())) {
                 return ((AskingCommand<?>) command).run(userCommand[1], musicBand);
             } else {

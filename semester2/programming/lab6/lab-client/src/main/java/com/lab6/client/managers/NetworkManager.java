@@ -33,7 +33,7 @@ public class NetworkManager {
             channel.close();
         }
     }
-
+    //todo разобраться
     public void send(Request request) throws IOException, ClassNotFoundException {
         try(ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bytes)) {
@@ -44,7 +44,7 @@ public class NetworkManager {
             out.flush();
         }
     }
-
+    //todo разобраться
     public Response receive() throws IOException, ClassNotFoundException {
         ByteBuffer dataToReceiveLength = ByteBuffer.allocate(8);
         channel.read(dataToReceiveLength); // читаем длину ответа от сервера

@@ -33,16 +33,37 @@ import java.nio.channels.SelectionKey;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.ConsoleHandler;
 
 //Вариант 88347
 public final class Server {
+    public static final Logger logger = Logger.getLogger(Server.class.getName());
+    static {
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setFormatter(new Formatter() {
+            @Override
+            public String format(LogRecord record) {
+                String color = switch (record.getLevel().getName()) {
+                    case "SEVERE" -> "\u001B[31m"; // Красный
+                    case "WARNING" -> "\u001B[33m"; // Желтый
+                    case "INFO" -> "\u001B[32m"; // Зеленый
+                    default -> "\u001B[0m"; // Сброс цвета
+                };
+                return color + "[" + record.getLevel() + "] " + formatMessage(record) + "\u001B[0m\n";
+            }
+        });
+        logger.setUseParentHandlers(false);
+        logger.addHandler(consoleHandler);
+    }
     private static final int PORT = 12345;
     private static final String SERVER_HOST = "localhost";
     private static CommandManager commandManager;
     private static Save saveCommand;
     private static ServerNetworkManager networkManager;
     private static Selector selector;
-    private static Request request;
     private static Response response;
     private static final Console console = new StandartConsole();
 
@@ -52,16 +73,16 @@ public final class Server {
 
         // Проверка наличия и корректности переменной окружения LAB5_FILE_PATH
         if (filePath == null) {
-            console.printError("Переменная окружения LAB5_FILE_PATH не найдена!");
+            logger.severe("Переменная окружения LAB5_FILE_PATH не найдена!");
             System.exit(1);
         } else if (filePath.isEmpty()) {
-            console.printError("Переменная окружения LAB5_FILE_PATH не содержит пути к файлу!");
+            logger.severe("Переменная окружения LAB5_FILE_PATH не содержит пути к файлу!");
             System.exit(1);
         } else if (!filePath.endsWith(".csv")) {
-            console.printError("Файл должен быть формата .csv!");
+            logger.severe("Файл должен быть формата .csv!");
             System.exit(1);
         } else if (!new File(filePath).exists()) {
-            console.printError("Файл по указанному пути не найден!");
+            logger.severe("Файл по указанному пути не найден!");
             System.exit(1);
         }
 
@@ -72,23 +93,23 @@ public final class Server {
 
         // Проверка успешности загрузки коллекции
         if (!loadStatus.isSuccess()) {
-            console.printError(loadStatus.getMessage());
+            logger.severe(loadStatus.getMessage());
             System.exit(1);
         }
-
+        logger.info("Файл коллекции успешно загружен!");
         // Регистрация команд
         commandManager = new CommandManager() {{
             register(CommandNames.HELP.getName(), new Help(this));
             register(CommandNames.INFO.getName(), new Info(collectionManager));
             register(CommandNames.SHOW.getName(), new Show(collectionManager));
-            register(CommandNames.ADD.getName(), new Add(console, collectionManager));
-            register(CommandNames.UPDATE.getName(), new Update(console, collectionManager));
+            register(CommandNames.ADD.getName(), new Add(collectionManager));
+            register(CommandNames.UPDATE.getName(), new Update(collectionManager));
             register(CommandNames.REMOVE_BY_ID.getName(), new RemoveById(collectionManager));
             register(CommandNames.CLEAR.getName(), new Clear(collectionManager));
             register(CommandNames.EXECUTE_SCRIPT.getName(), new ExecuteScript());
             register(CommandNames.EXIT.getName(), new Exit());
             register(CommandNames.REMOVE_FIRST.getName(), new RemoveFirst(collectionManager));
-            register(CommandNames.ADD_IF_MIN.getName(), new AddIfMin(console, collectionManager));
+            register(CommandNames.ADD_IF_MIN.getName(), new AddIfMin(collectionManager));
             register(CommandNames.SORT.getName(), new Sort(collectionManager));
             register(CommandNames.REMOVE_ALL_BY_GENRE.getName(), new RemoveAllByGenre(collectionManager));
             register(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), new PrintFieldAscendingDescription(collectionManager));
@@ -97,12 +118,12 @@ public final class Server {
 
         saveCommand = new Save(collectionManager);
 
-        Executer executer = new Executer(console, commandManager);
+        Executer executer = new Executer(commandManager);
 
-        run(console, executer);
+        run(executer);
     }
 
-    public static void run(Console console, Executer executer) {
+    public static void run(Executer executer) {
         try {
             // Создание селектора для обработки нескольких каналов
             selector = Selector.open();
@@ -113,21 +134,21 @@ public final class Server {
             // Регистрация серверного канала в селекторе для обработки входящих соединений
             networkManager.getServerSocketChannel().register(selector, SelectionKey.OP_ACCEPT);
 
-            console.println("Сервер запущен на " + SERVER_HOST + ":" + PORT);
-
+            logger.info("Селектор запущен");
             while (true) {
                 selector.select();
                 Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
                 while (keys.hasNext()) {
                     SelectionKey key = keys.next();
-                    console.println("Обработка ключа: " + key);
+                    logger.info("Обработка ключа: " + key);
                     try {
+                        //todo разобраться
                         if (key.isValid()) {
                             if (key.isAcceptable()) {
                                 // Принимаем новое соединение
-                                ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel(); //todo try-with-resources
+                                ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
                                 SocketChannel clientChannel = serverSocketChannel.accept();
-                                console.println("Клиент подключен: " + clientChannel.getRemoteAddress());
+                                logger.info("Клиент подключен: " + clientChannel.getRemoteAddress());
 
                                 // Настройка канала для неблокирующего режима
                                 clientChannel.configureBlocking(false);
@@ -137,21 +158,22 @@ public final class Server {
                                 SocketChannel clientChannel = (SocketChannel) key.channel();
                                 clientChannel.configureBlocking(false);
 
+                                Request request;
                                 try {
                                     request = networkManager.receive(clientChannel, key);
                                 } catch (ServerNetworkManager.NullRequestException | SocketException | NullPointerException e) {
-                                    console.printError("Ошибка при получении запроса от клиента: " + e.getMessage());
-                                    console.println(saveCommand.run("").getMessage());
+                                    logger.severe("Ошибка при получении запроса от клиента: " + e.getMessage());
+                                    logger.info(saveCommand.run("").getMessage());
                                     key.cancel();
-                                    continue;//todo проверить обработку ошибок
+                                    continue;
                                 }
-                                console.println("Получен запрос от клиента: " + request);
+                                logger.info("Получен запрос от клиента: " + request);
                                 ExecutionStatus executionStatus = executer.runCommand(request.getCommand(), request.getBand());
                                 response = new Response(executionStatus);
                                 if (!executionStatus.isSuccess()) {
-                                    console.printError(executionStatus.getMessage());
+                                    logger.severe(executionStatus.getMessage());
                                 } else {
-                                    console.println("Команда выполнена успешно");
+                                    logger.info("Команда выполнена успешно");
                                 }
                                 clientChannel.register(selector, SelectionKey.OP_WRITE);
 
@@ -161,18 +183,18 @@ public final class Server {
 
                                 try {
                                     networkManager.send(response, clientChannel);
-                                    console.println("Ответ отправлен клиенту: " + clientChannel.getRemoteAddress());
+                                    logger.info("Ответ отправлен клиенту: " + clientChannel.getRemoteAddress());
                                     clientChannel.register(selector, SelectionKey.OP_READ);
                                 } catch (IOException e) {
-                                    console.printError("Ошибка при отправке ответа клиенту: " + e.getMessage());
-                                    console.println(saveCommand.run("").getMessage());
+                                    logger.severe("Ошибка при отправке ответа клиенту: " + e.getMessage());
+                                    logger.info(saveCommand.run("").getMessage());
                                     key.cancel();
                                 }
                             }
                         }
                     } catch (SocketException | CancelledKeyException e) {
-                        console.printError("Клиент " + key.channel().toString() + " отключился");//todo try-with-resources
-                        console.println(saveCommand.run("").getMessage());
+                        logger.severe("Клиент " + key.channel().toString() + " отключился");
+                        logger.info(saveCommand.run("").getMessage());
                         key.cancel();
                     } finally {
                         keys.remove();
@@ -180,15 +202,13 @@ public final class Server {
                 }
             }
         } catch (EOFException e) {
-            console.printError("Клиент отключился от сервера: " + e.getMessage());
-        } catch (IOException e) {
-            console.printError("Ошибка при запуске сервера: " + e.getMessage());
-        } catch (NullPointerException e) {
-            console.printError("Ошибка хз чего" + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            console.printError("Хз что произошло: " + e.getMessage()); // todo исправить
+            logger.info(saveCommand.run("").getMessage());
+            logger.severe(e.getMessage());
+            System.exit(1);
         }
-
+        catch (IOException | NullPointerException | ClassNotFoundException e) {
+            logger.severe("Ошибка при работе сервера: " + e.getMessage());
+        }
     }
 
     private static void InitialCommandsData(SocketChannel clientChannel, SelectionKey key) throws ClosedChannelException {
@@ -198,18 +218,17 @@ public final class Server {
                 boolean isAskingCommand = AskingCommand.class.isAssignableFrom(entrySet.getValue().getClass());
                 commandsData.put(entrySet.getKey(), new Pair<>(entrySet.getValue().getArgumentValidator(), isAskingCommand));
             }
-            networkManager.send(new Response(commandsData), clientChannel); //todo понять как это работает
-            console.println("Клиенту отправлен список команд: " + clientChannel.getRemoteAddress());
-            clientChannel.register(selector, SelectionKey.OP_READ);
+            networkManager.send(new Response(commandsData), clientChannel);
+            logger.info("Клиенту отправлен список команд: " + clientChannel.getRemoteAddress());
         } catch (IOException e) {
-            console.printError("Ошибка при отправке клиенту списка команд: " + e.getMessage());
+            logger.severe("Ошибка при отправке клиенту списка команд: " + e.getMessage());
             key.cancel();
         } catch (NullPointerException e) {
-            console.printError("Клиент отключился от сервера: " + e.getMessage());
+            logger.severe("Клиент отключился от сервера: " + e.getMessage());
             key.cancel();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        clientChannel.register(selector, SelectionKey.OP_READ); //todo убрать мб
+        clientChannel.register(selector, SelectionKey.OP_READ);
     }
 }

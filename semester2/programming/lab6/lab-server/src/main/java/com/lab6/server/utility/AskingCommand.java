@@ -1,7 +1,6 @@
 package com.lab6.server.utility;
 
 import com.lab6.server.managers.CollectionManager;
-import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.validators.ArgumentValidator;
 import com.lab6.common.validators.IdValidator;
@@ -13,20 +12,17 @@ import com.lab6.common.models.MusicBand;
  */
 public abstract class AskingCommand<T extends ArgumentValidator> extends Command<T> {
     protected final CollectionManager collectionManager;
-    private Console console;
 
     /**
      * Конструктор команды AskingCommand.
      *
      * @param name Имя команды.
      * @param description Описание команды.
-     * @param console Консоль для ввода/вывода.
      * @param argumentValidator Валидатор аргументов команды.
      * @param collectionManager Менеджер коллекции.
      */
-    public AskingCommand(String name, String description, Console console, T argumentValidator, CollectionManager collectionManager) {
+    public AskingCommand(String name, String description, T argumentValidator, CollectionManager collectionManager) {
         super(name, description, argumentValidator);
-        this.console = console;
         this.collectionManager = collectionManager;
     }
 
@@ -39,15 +35,6 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
     @Override
     protected ExecutionStatus runInternal(String arg) {
         return null;
-    }
-
-    /**
-     * Обновляет консоль ввода-вывода.
-     *
-     * @param console Консоль ввода-вывода.
-     */
-    public void updateConsole(Console console) {
-        this.console = console; //todo убрать
     }
 
     /**
@@ -85,6 +72,6 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
 
     @Override
     public ExecutionStatus run(String arg) {
-        return null; //todo проверить
+        return new ExecutionStatus(false, "Метод должен вызываться с аргументом MusicBand!");
     }
 }
