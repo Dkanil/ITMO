@@ -1,11 +1,7 @@
 package com.lab6.server.managers;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.lab6.common.models.MusicBand;
@@ -18,7 +14,7 @@ import com.lab6.common.utility.ExecutionStatus;
 public class CollectionManager {
     private Long id = 1L;
     private final DumpManager dumpManager;
-    private Map<Long, MusicBand> Bands = new HashMap<>();
+    private final Map<Long, MusicBand> Bands = new HashMap<>();
     private Stack<MusicBand> collection = new Stack<>();
     private LocalDateTime InitializationDate;
     private LocalDateTime lastSaveDate;
@@ -108,14 +104,12 @@ public class CollectionManager {
      * @return Количество удалённых групп.
      */
     public int removeAllByGenre(MusicGenre genre) {
-        List<MusicBand> toRemove = collection.stream()
-                .filter(band -> band.getGenre().equals(genre))
-                .collect(Collectors.toList());
-        toRemove.forEach(band -> Bands.remove(band.getId()));
+        int initialSize = collection.size();
         collection = collection.stream()
                 .filter(band -> !band.getGenre().equals(genre))
                 .collect(Collectors.toCollection(Stack::new));
-        return toRemove.size();
+        Bands.entrySet().removeIf(entry -> entry.getValue().getGenre().equals(genre));
+        return initialSize - collection.size();
     }
 
     /**
