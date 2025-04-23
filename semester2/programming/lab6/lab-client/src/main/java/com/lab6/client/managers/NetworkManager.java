@@ -33,7 +33,6 @@ public class NetworkManager {
             channel.close();
         }
     }
-    //todo разобраться
     public void send(Request request) throws IOException, ClassNotFoundException {
         try(ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bytes)) {
@@ -44,20 +43,19 @@ public class NetworkManager {
             out.flush();
         }
     }
-    //todo разобраться
     public Response receive() throws IOException, ClassNotFoundException {
         ByteBuffer dataToReceiveLength = ByteBuffer.allocate(8);
         channel.read(dataToReceiveLength); // читаем длину ответа от сервера
-        dataToReceiveLength.flip();
+        dataToReceiveLength.flip(); // переводим в режим чтения
         int responseLength = dataToReceiveLength.getInt(); // достаём её из буфера
 
-        ByteBuffer responseBytes = ByteBuffer.allocate(responseLength); // создаем буфер нужной нам длины
+        ByteBuffer responseBytes = ByteBuffer.allocate(responseLength); // создаем буфер для ответа от сервера
         ByteBuffer packetFromServer = ByteBuffer.allocate(256);
 
         while (true){
             channel.read(packetFromServer);
-            if (packetFromServer.position() == 2 && packetFromServer.get(0) == 28 && packetFromServer.get(1) == 28) break;
-            packetFromServer.flip();
+            if (packetFromServer.position() == 2 && packetFromServer.get(0) == 69 && packetFromServer.get(1) == 69) break;
+            packetFromServer.flip(); // переводим в режим чтения
             responseBytes.put(packetFromServer);
             packetFromServer.clear();
         }

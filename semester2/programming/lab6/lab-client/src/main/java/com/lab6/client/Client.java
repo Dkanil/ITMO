@@ -154,7 +154,6 @@ public final class Client {
                         Response response = networkManager.receive();
                         ExecutionStatus commandStatus = response.getExecutionStatus();
 
-
                         if (response.getExecutionStatus().isSuccess()) {
                             console.println(commandStatus.getMessage());
                         } else {

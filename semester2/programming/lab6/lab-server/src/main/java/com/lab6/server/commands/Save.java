@@ -29,6 +29,6 @@ public class Save extends Command<EmptyValidator> {
     @Override
     protected ExecutionStatus runInternal(String argument) {
         collectionManager.saveCollection();
-        return new ExecutionStatus(true, "Коллекция успешно сохранена!");
+        return new ExecutionStatus(true, "Collection successfully saved!");
     }
 }
