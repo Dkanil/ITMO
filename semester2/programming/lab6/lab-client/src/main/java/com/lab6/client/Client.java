@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
+import java.nio.BufferUnderflowException;
 import java.util.Map;
 
 //Вариант 88347
@@ -34,11 +35,9 @@ public final class Client {
         do {
             try {
                 networkManager.connect();
+                commandsData = networkManager.receive().getCommandsMap();
                 attempts = 1;
                 console.println("Connected to " + SERVER_HOST + ":" + SERVER_PORT);
-
-                commandsData = networkManager.receive().getCommandsMap();
-
                 while (true) {
                     console.println("Введите команду:");
                     String inputCommand = console.readln();
@@ -62,7 +61,7 @@ public final class Client {
                     }
                 }
 
-            } catch (IOException e) {
+            } catch (BufferUnderflowException | IOException e) {
                 console.printError("Не удалось подключиться к серверу. Проверьте, запущен ли сервер и доступен ли он по адресу " + SERVER_HOST + ":" + SERVER_PORT);
                 try {
                     Thread.sleep(2000);

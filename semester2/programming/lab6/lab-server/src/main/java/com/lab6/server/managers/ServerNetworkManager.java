@@ -19,19 +19,17 @@ import java.nio.channels.SocketChannel;
 
 public class ServerNetworkManager {
     private final int PORT;
-    private final String SERVER_HOST;
     private ServerSocketChannel serverChannel;
 
-    public ServerNetworkManager(int port, String SERVER_HOST) {
+    public ServerNetworkManager(int port) {
         this.PORT = port;
-        this.SERVER_HOST = SERVER_HOST;
     }
 
     public void startServer() throws IOException {
         serverChannel = ServerSocketChannel.open();
-        serverChannel.bind(new InetSocketAddress(SERVER_HOST, PORT));
+        serverChannel.bind(new InetSocketAddress(PORT));
         serverChannel.configureBlocking(false);
-        Server.logger.info("Server started on " + SERVER_HOST + ":" + PORT);
+        Server.logger.info("Server started on Port:" + PORT);
     }
 
     public void close() throws IOException {

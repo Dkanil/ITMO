@@ -23,9 +23,6 @@ import com.lab6.server.utility.CommandNames;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
 import java.net.SocketException;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
@@ -81,7 +78,6 @@ public final class Server {
     }
 
     private static final int PORT = 12345;
-    private static final String SERVER_HOST = "localhost";
     private static CommandManager commandManager;
     private static Save saveCommand;
     private static ServerNetworkManager networkManager;
@@ -113,7 +109,7 @@ public final class Server {
         DumpManager dumpManager = new DumpManager(filePath, console);
         collectionManager = new CollectionManager(dumpManager);
         ExecutionStatus loadStatus = collectionManager.loadCollection();
-        networkManager = new ServerNetworkManager(PORT, SERVER_HOST);
+        networkManager = new ServerNetworkManager(PORT);
 
         // Проверка успешности загрузки коллекции
         if (!loadStatus.isSuccess()) {

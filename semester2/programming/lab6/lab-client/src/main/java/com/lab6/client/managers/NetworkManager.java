@@ -6,7 +6,9 @@ import com.lab6.common.utility.Response;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
@@ -25,7 +27,7 @@ public class NetworkManager {
 
     public void connect() throws IOException {
         channel = SocketChannel.open();
-        channel.connect(new InetSocketAddress(SERVER_HOST, PORT));
+        channel.connect(new InetSocketAddress(InetAddress.getByName(SERVER_HOST), PORT));
     }
 
     public void close() throws IOException {
@@ -43,7 +45,7 @@ public class NetworkManager {
             out.flush();
         }
     }
-    public Response receive() throws IOException, ClassNotFoundException {
+    public Response receive() throws IOException, ClassNotFoundException, BufferUnderflowException {
         ByteBuffer dataToReceiveLength = ByteBuffer.allocate(8);
         channel.read(dataToReceiveLength); // читаем длину ответа от сервера
         dataToReceiveLength.flip(); // переводим в режим чтения
