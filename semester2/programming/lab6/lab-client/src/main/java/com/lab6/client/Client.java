@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
+import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.util.Map;
 
@@ -60,8 +61,7 @@ public final class Client {
                         }
                     }
                 }
-
-            } catch (BufferUnderflowException | IOException e) {
+            } catch (BufferOverflowException | BufferUnderflowException | IOException e) {
                 console.printError("Не удалось подключиться к серверу. Проверьте, запущен ли сервер и доступен ли он по адресу " + SERVER_HOST + ":" + SERVER_PORT);
                 try {
                     Thread.sleep(2000);
