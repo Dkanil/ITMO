@@ -3,12 +3,10 @@ package com.lab6.server;
 import com.lab6.server.utility.AskingCommand;
 import com.lab6.server.managers.CommandManager;
 
-import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.utility.Pair;
 import com.lab6.common.utility.Request;
 import com.lab6.common.utility.Response;
-import com.lab6.common.utility.StandartConsole;
 import com.lab6.common.validators.ArgumentValidator;
 
 import com.lab6.server.commands.*;
@@ -16,12 +14,10 @@ import com.lab6.server.commands.askingCommands.*;
 import com.lab6.server.managers.ServerNetworkManager;
 import com.lab6.server.managers.Executer;
 import com.lab6.server.managers.CollectionManager;
-import com.lab6.server.managers.DumpManager;
 import com.lab6.server.utility.Command;
 import com.lab6.server.utility.CommandNames;
 
 import java.io.EOFException;
-import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.channels.CancelledKeyException;
@@ -40,13 +36,12 @@ import java.util.logging.Logger;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.SimpleFormatter;
-import java.util.concurrent.CountDownLatch;
 
 //Вариант 88347
 public final class Server {
     public static final Logger logger = Logger.getLogger(Server.class.getName());
-    static { initLogger(logger);}
-    private static void initLogger(Logger logger) {
+    static { initLogger();}
+    private static void initLogger() {
         try {
             ConsoleHandler consoleHandler = new ConsoleHandler();
             consoleHandler.setFormatter(new Formatter() {
@@ -69,45 +64,24 @@ public final class Server {
             fileHandler.setFormatter(new SimpleFormatter()); // Устанавливаем простой форматтер
 
             // Добавление обработчиков в логгер
-            logger.setUseParentHandlers(false);
-            logger.addHandler(consoleHandler);
-            logger.addHandler(fileHandler);
+            Server.logger.setUseParentHandlers(false);
+            Server.logger.addHandler(consoleHandler);
+            Server.logger.addHandler(fileHandler);
         } catch (IOException e) {
             System.err.println("Failed to initialize file handler for logger: " + e.getMessage());
         }
     }
 
-    private static final int PORT = 12345;
+    private static final int PORT = 13876;
     private static CommandManager commandManager;
-    private static Save saveCommand;
     private static ServerNetworkManager networkManager;
     private static Selector selector;
     private static Response response;
-    private static final Console console = new StandartConsole();
-    private static CollectionManager collectionManager;
+    private static final CollectionManager collectionManager = CollectionManager.getInstance();
 
     private static volatile boolean isRunning = true;
     public static void main(String[] args) {
 
-        String filePath = System.getenv("LAB5_FILE_PATH");
-
-        // Проверка наличия и корректности переменной окружения LAB5_FILE_PATH
-        if (filePath == null) {
-            logger.severe("Environment variable LAB5_FILE_PATH not found!");
-            System.exit(1);
-        } else if (filePath.isEmpty()) {
-            logger.severe("Environment variable LAB5_FILE_PATH does not contain a file path!");
-            System.exit(1);
-        } else if (!filePath.endsWith(".csv")) {
-            logger.severe("The file must be in .csv format!");
-            System.exit(1);
-        } else if (!new File(filePath).exists()) {
-            logger.severe("The file at the specified path was not found!");
-            System.exit(1);
-        }
-
-        DumpManager dumpManager = new DumpManager(filePath, console);
-        collectionManager = new CollectionManager(dumpManager);
         ExecutionStatus loadStatus = collectionManager.loadCollection();
         networkManager = new ServerNetworkManager(PORT);
 
@@ -120,23 +94,21 @@ public final class Server {
         // Регистрация команд
         commandManager = new CommandManager() {{
             register(CommandNames.HELP.getName(), new Help(this));
-            register(CommandNames.INFO.getName(), new Info(collectionManager));
-            register(CommandNames.SHOW.getName(), new Show(collectionManager));
-            register(CommandNames.ADD.getName(), new Add(collectionManager));
-            register(CommandNames.UPDATE.getName(), new Update(collectionManager));
-            register(CommandNames.REMOVE_BY_ID.getName(), new RemoveById(collectionManager));
-            register(CommandNames.CLEAR.getName(), new Clear(collectionManager));
+            register(CommandNames.INFO.getName(), new Info());
+            register(CommandNames.SHOW.getName(), new Show());
+            register(CommandNames.ADD.getName(), new Add());
+            register(CommandNames.UPDATE.getName(), new Update());
+            register(CommandNames.REMOVE_BY_ID.getName(), new RemoveById());
+            register(CommandNames.CLEAR.getName(), new Clear());
             register(CommandNames.EXECUTE_SCRIPT.getName(), new ExecuteScript());
             register(CommandNames.EXIT.getName(), new Exit());
-            register(CommandNames.REMOVE_FIRST.getName(), new RemoveFirst(collectionManager));
-            register(CommandNames.ADD_IF_MIN.getName(), new AddIfMin(collectionManager));
-            register(CommandNames.SORT.getName(), new Sort(collectionManager));
-            register(CommandNames.REMOVE_ALL_BY_GENRE.getName(), new RemoveAllByGenre(collectionManager));
-            register(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), new PrintFieldAscendingDescription(collectionManager));
-            register(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), new PrintFieldDescendingDescription(collectionManager));
+            register(CommandNames.REMOVE_FIRST.getName(), new RemoveFirst());
+            register(CommandNames.ADD_IF_MIN.getName(), new AddIfMin());
+            register(CommandNames.SORT.getName(), new Sort());
+            register(CommandNames.REMOVE_ALL_BY_GENRE.getName(), new RemoveAllByGenre());
+            register(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), new PrintFieldAscendingDescription());
+            register(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), new PrintFieldDescendingDescription());
         }};
-
-        saveCommand = new Save(collectionManager);
 
         Executer executer = new Executer(commandManager);
 
@@ -151,7 +123,7 @@ public final class Server {
             }
             finally {
                 if (logger.getHandlers().length == 0) {
-                    initLogger(logger);
+                    initLogger();
                 }
                 logger.info("Server shutdown complete.");
             }
@@ -177,6 +149,7 @@ public final class Server {
             logger.info("Selector started");
             logger.info("To stop the server, press [Ctrl + C]");
             while (isRunning) {
+                
                 selector.select();
                 Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
                 while (keys.hasNext()) {
@@ -186,14 +159,14 @@ public final class Server {
                         if (key.isValid()) {
                             if (key.isAcceptable()) {
                                 // Принимаем новое соединение
-                                ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-                                SocketChannel clientChannel = serverSocketChannel.accept();
-                                logger.info("Client connected: " + clientChannel.getRemoteAddress());
+                                try (ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel()) {
+                                    SocketChannel clientChannel = serverSocketChannel.accept();
+                                    logger.info("Client connected: " + clientChannel.getRemoteAddress());
 
-                                // Настройка канала для неблокирующего режима
-                                clientChannel.configureBlocking(false);
-                                InitialCommandsData(clientChannel, key); //  отправка клиенту списка команд
-
+                                    // Настройка канала для неблокирующего режима
+                                    clientChannel.configureBlocking(false);
+                                    InitialCommandsData(clientChannel, key); //  отправка клиенту списка команд
+                                }
                             } else if (key.isReadable()) {
                                 SocketChannel clientChannel = (SocketChannel) key.channel();
                                 clientChannel.configureBlocking(false);
@@ -204,7 +177,8 @@ public final class Server {
                                 } catch (ServerNetworkManager.NullRequestException | SocketException |
                                          NullPointerException e) {
                                     logger.severe("Error receiving request from client: " + e.getMessage());
-                                    logger.info(saveCommand.run("").getMessage());
+                                    collectionManager.saveCollection();
+                                    logger.info("Collection saved successfully");
                                     key.cancel();
                                     continue;
                                 }
@@ -228,15 +202,19 @@ public final class Server {
                                     clientChannel.register(selector, SelectionKey.OP_READ);
                                 } catch (IOException e) {
                                     logger.severe("Error sending response to client: " + e.getMessage());
-                                    logger.info(saveCommand.run("").getMessage());
+                                    collectionManager.saveCollection();
+                                    logger.info("Collection saved successfully");
                                     key.cancel();
                                 }
                             }
                         }
                     } catch (SocketException | CancelledKeyException e) {
-                        logger.severe("Client " + key.channel().toString() + " disconnected");
-                        logger.info(saveCommand.run("").getMessage());
-                        key.cancel();
+                        try (var channel = key.channel()) {
+                            logger.severe("Client " + channel.toString() + " disconnected");
+                            collectionManager.saveCollection();
+                            logger.info("Collection saved successfully");
+                            key.cancel();
+                        }
                     } finally {
                         keys.remove();
                     }
@@ -245,7 +223,8 @@ public final class Server {
         } catch (ClosedSelectorException e) {
             logger.warning("Selector was closed.");
         } catch (EOFException e) {
-            logger.info(saveCommand.run("").getMessage());
+            collectionManager.saveCollection();
+            logger.info("Collection saved successfully");
             logger.severe(e.getMessage());
             System.exit(1);
         } catch (IOException | NullPointerException | ClassNotFoundException e) {

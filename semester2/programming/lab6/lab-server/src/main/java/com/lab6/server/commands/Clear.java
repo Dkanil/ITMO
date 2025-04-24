@@ -4,21 +4,17 @@ import com.lab6.server.utility.Command;
 import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.server.managers.CollectionManager;
 
 /**
  * Класс команды для очистки коллекции.
  */
 public class Clear extends Command<EmptyValidator> {
-    CollectionManager collectionManager;
 
     /**
      * Конструктор команды clear.
-     * @param collectionManager Менеджер коллекции.
      */
-    public Clear(CollectionManager collectionManager) {
+    public Clear() {
         super(CommandNames.CLEAR.getName(), CommandNames.CLEAR.getDescription(), new EmptyValidator());
-        this.collectionManager = collectionManager;
     }
 
     /**

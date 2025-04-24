@@ -4,21 +4,17 @@ import com.lab6.server.utility.Command;
 import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.server.managers.CollectionManager;
 
 /**
  * Класс команды для удаления первого элемента из коллекции.
  */
 public class RemoveFirst extends Command<EmptyValidator> {
-    CollectionManager collectionManager;
 
     /**
      * Конструктор команды removeFirst.
-     * @param collectionManager Менеджер коллекции.
      */
-    public RemoveFirst(CollectionManager collectionManager) {
+    public RemoveFirst() {
         super(CommandNames.REMOVE_FIRST.getName(), CommandNames.REMOVE_FIRST.getDescription(), new EmptyValidator());
-        this.collectionManager = collectionManager;
     }
 
     /**

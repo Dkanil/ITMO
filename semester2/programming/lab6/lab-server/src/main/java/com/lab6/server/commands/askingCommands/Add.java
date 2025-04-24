@@ -13,10 +13,9 @@ import com.lab6.server.managers.CollectionManager;
 public class Add extends AskingCommand<EmptyValidator> {
     /**
      * Конструктор команды add.
-     * @param collectionManager Менеджер коллекции.
      */
-    public Add(CollectionManager collectionManager) {
-        super(CommandNames.ADD.getName() + " {element}", CommandNames.ADD.getDescription(), new EmptyValidator(), collectionManager);
+    public Add() {
+        super(CommandNames.ADD.getName() + " {element}", CommandNames.ADD.getDescription(), new EmptyValidator());
     }
 
     /**
@@ -26,7 +25,7 @@ public class Add extends AskingCommand<EmptyValidator> {
      */
     @Override
     protected ExecutionStatus runInternal(MusicBand band) {
-        collectionManager.add(band);
+        CollectionManager.getInstance().add(band);
         return new ExecutionStatus(true, "Элемент успешно добавлен в коллекцию!");
     }
 }

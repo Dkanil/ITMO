@@ -5,21 +5,17 @@ import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.GenreValidator;
 import com.lab6.common.models.MusicGenre;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.server.managers.CollectionManager;
 
 /**
  * Класс команды для удаления всех элементов из коллекции по заданному жанру.
  */
 public class RemoveAllByGenre extends Command<GenreValidator> {
-    CollectionManager collectionManager;
 
     /**
      * Конструктор команды removeAllByGenre.
-     * @param collectionManager Менеджер коллекции.
      */
-    public RemoveAllByGenre(CollectionManager collectionManager) {
+    public RemoveAllByGenre() {
         super(CommandNames.REMOVE_ALL_BY_GENRE.getName() + " genre", CommandNames.REMOVE_ALL_BY_GENRE.getDescription(), new GenreValidator());
-        this.collectionManager = collectionManager;
     }
 
     /**

@@ -2,7 +2,6 @@ package com.lab6.client.utility;
 
 import com.lab6.client.managers.Asker;
 import com.lab6.common.models.MusicBand;
-import com.lab6.common.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.utility.Pair;
 

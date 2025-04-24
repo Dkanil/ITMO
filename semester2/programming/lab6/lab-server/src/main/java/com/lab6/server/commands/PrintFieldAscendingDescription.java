@@ -4,21 +4,16 @@ import com.lab6.server.utility.Command;
 import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.server.managers.CollectionManager;
 
 /**
  * Класс команды для вывода значений поля description всех элементов в порядке возрастания.
  */
 public class PrintFieldAscendingDescription extends Command<EmptyValidator> {
-    CollectionManager collectionManager;
-
     /**
      * Конструктор команды printFieldAscendingDescription.
-     * @param collectionManager Менеджер коллекции.
      */
-    public PrintFieldAscendingDescription(CollectionManager collectionManager) {
+    public PrintFieldAscendingDescription() {
         super(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getDescription(), new EmptyValidator());
-        this.collectionManager = collectionManager;
     }
 
     /**
@@ -29,7 +24,7 @@ public class PrintFieldAscendingDescription extends Command<EmptyValidator> {
     @Override
     protected ExecutionStatus runInternal(String argument) {
         if (collectionManager.getBands().isEmpty()) {
-            return new ExecutionStatus(false, "Коллекция пуста!");
+            return new ExecutionStatus(true, "Коллекция пуста!");
         }
         collectionManager.sort();
         StringBuilder helpMessage = new StringBuilder();

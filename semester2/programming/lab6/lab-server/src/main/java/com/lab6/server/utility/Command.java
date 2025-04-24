@@ -3,6 +3,7 @@ package com.lab6.server.utility;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.utility.Pair;
 import com.lab6.common.validators.ArgumentValidator;
+import com.lab6.server.managers.CollectionManager;
 
 /**
  * Абстрактный класс для всех команд.
@@ -11,13 +12,14 @@ import com.lab6.common.validators.ArgumentValidator;
  */
 public abstract class Command<T extends ArgumentValidator> {
     private final Pair<String, String> nameAndDescription;
+    protected static CollectionManager collectionManager = CollectionManager.getInstance();
     public final T argumentValidator;
 
     /**
      * Конструктор команды.
      *
      * @param name Имя команды.
-     * @param description Описание команды..
+     * @param description Описание команды.
      * @param argumentValidator Валидатор аргументов.
      */
     public Command(String name, String description, T argumentValidator) {

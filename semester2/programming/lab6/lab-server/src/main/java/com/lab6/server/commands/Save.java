@@ -10,15 +10,12 @@ import com.lab6.server.managers.CollectionManager;
  * Класс команды для сохранения коллекции в файл.
  */
 public class Save extends Command<EmptyValidator> {
-    CollectionManager collectionManager;
-
+    CollectionManager collectionManager = CollectionManager.getInstance();
     /**
      * Конструктор команды save.
-     * @param collectionManager Менеджер коллекции.
      */
-    public Save(CollectionManager collectionManager) {
+    public Save() {
         super(CommandNames.SAVE.getName(), CommandNames.SAVE.getDescription(), new EmptyValidator());
-        this.collectionManager = collectionManager;
     }
 
     /**
@@ -28,7 +25,6 @@ public class Save extends Command<EmptyValidator> {
      */
     @Override
     protected ExecutionStatus runInternal(String argument) {
-        collectionManager.saveCollection();
-        return new ExecutionStatus(true, "Collection successfully saved!");
+        return collectionManager.saveCollection();
     }
 }

@@ -4,12 +4,12 @@ import com.lab6.client.managers.NetworkManager;
 import com.lab6.client.utility.ElementValidator;
 import com.lab6.client.utility.FileConsole;
 import com.lab6.common.models.MusicBand;
-import com.lab6.common.utility.Console;
+import com.lab6.client.utility.Console;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.utility.Pair;
 import com.lab6.common.utility.Request;
 import com.lab6.common.utility.Response;
-import com.lab6.common.utility.StandartConsole;
+import com.lab6.client.utility.StandartConsole;
 import com.lab6.common.validators.ArgumentValidator;
 
 import java.io.BufferedReader;
@@ -24,7 +24,7 @@ import java.util.Map;
 //Вариант 88347
 public final class Client {
     private static final Console console = new StandartConsole();
-    private static final int SERVER_PORT = 12345;
+    private static final int SERVER_PORT = 13876;
     private static final String SERVER_HOST = "localhost";
     private static Map<String, Pair<ArgumentValidator, Boolean>> commandsData;
     private static final NetworkManager networkManager = new NetworkManager(SERVER_PORT, SERVER_HOST);
@@ -55,7 +55,12 @@ public final class Client {
                         networkManager.send(request);
                         Response response = networkManager.receive();
                         if (response.getExecutionStatus().isSuccess()) {
-                            console.println(response.getExecutionStatus().getMessage());
+                            if (response.getExecutionStatus().getMessage() == null) {
+                                response.getExecutionStatus().getCollection().forEach(item -> console.println(item.toString()));
+                            }
+                            else {
+                                console.println(response.getExecutionStatus().getMessage());
+                            }
                         } else {
                             console.printError(response.getExecutionStatus().getMessage());
                         }

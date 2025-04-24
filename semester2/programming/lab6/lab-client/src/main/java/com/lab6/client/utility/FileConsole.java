@@ -1,7 +1,5 @@
 package com.lab6.client.utility;
 
-import com.lab6.common.utility.Console;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 

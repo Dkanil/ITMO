@@ -5,7 +5,6 @@ import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.EmptyValidator;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.utility.ExecutionStatus;
-import com.lab6.server.managers.CollectionManager;
 
 import java.util.Comparator;
 import java.util.Stack;
@@ -16,11 +15,9 @@ import java.util.Stack;
 public class AddIfMin extends AskingCommand<EmptyValidator> {
     /**
      * Конструктор команды addIfMin.
-     *
-     * @param collectionManager Менеджер коллекции.
      */
-    public AddIfMin(CollectionManager collectionManager) {
-        super(CommandNames.ADD_IF_MIN.getName() + " {element}", CommandNames.ADD_IF_MIN.getDescription(), new EmptyValidator(), collectionManager);
+    public AddIfMin() {
+        super(CommandNames.ADD_IF_MIN.getName() + " {element}", CommandNames.ADD_IF_MIN.getDescription(), new EmptyValidator());
     }
 
     /**

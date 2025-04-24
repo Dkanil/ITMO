@@ -3,22 +3,18 @@ package com.lab6.server.commands;
 import com.lab6.server.utility.Command;
 import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.EmptyValidator;
-import com.lab6.server.managers.CollectionManager;
 import com.lab6.common.utility.ExecutionStatus;
 
 /**
  * Класс команды для вывода информации о коллекции.
  */
 public class Info extends Command<EmptyValidator> {
-    CollectionManager collectionManager;
 
     /**
      * Конструктор команды info.
-     * @param collectionManager Менеджер коллекции.
      */
-    public Info(CollectionManager collectionManager) {
+    public Info() {
         super(CommandNames.INFO.getName(), CommandNames.INFO.getDescription(), new EmptyValidator());
-        this.collectionManager = collectionManager;
     }
 
     /**

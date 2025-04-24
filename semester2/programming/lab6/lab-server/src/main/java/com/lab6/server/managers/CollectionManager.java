@@ -1,7 +1,10 @@
 package com.lab6.server.managers;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.lab6.common.models.MusicBand;
@@ -12,8 +15,9 @@ import com.lab6.common.utility.ExecutionStatus;
  * Класс, управляющий коллекцией музыкальных групп.
  */
 public class CollectionManager {
+    private static volatile CollectionManager instance;
     private Long id = 1L;
-    private final DumpManager dumpManager;
+    private final DumpManager dumpManager = DumpManager.getInstance();
     private final Map<Long, MusicBand> Bands = new HashMap<>();
     private Stack<MusicBand> collection = new Stack<>();
     private LocalDateTime InitializationDate;
@@ -21,10 +25,22 @@ public class CollectionManager {
 
     /**
      * Конструктор класса CollectionManager.
-     * @param dumpManager Менеджер для сохранения и загрузки коллекции.
      */
-    public CollectionManager(DumpManager dumpManager) {
-        this.dumpManager = dumpManager;
+    private CollectionManager() { }
+
+    /**
+     * Возвращает единственный экземпляр CollectionManager.
+     * @return Экземпляр CollectionManager.
+     */
+    public static CollectionManager getInstance() {
+        if (instance == null) {
+            synchronized (CollectionManager.class) {
+                if (instance == null) {
+                    instance = new CollectionManager();
+                }
+            }
+        }
+        return instance;
     }
 
     /**
@@ -115,9 +131,12 @@ public class CollectionManager {
     /**
      * Сохраняет коллекцию музыкальных групп.
      */
-    public void saveCollection() {
-        dumpManager.WriteCollection(collection);
-        lastSaveDate = LocalDateTime.now();
+    public ExecutionStatus saveCollection() {
+        ExecutionStatus savingStatus = dumpManager.WriteCollection(collection);
+        if (savingStatus.isSuccess()){
+            lastSaveDate = LocalDateTime.now();
+        }
+        return savingStatus;
     }
 
     /**
@@ -127,18 +146,23 @@ public class CollectionManager {
     public ExecutionStatus loadCollection() {
         collection.clear();
         Bands.clear();
-        dumpManager.ReadCollection(collection);
-        InitializationDate = LocalDateTime.now();
-        lastSaveDate = LocalDateTime.now();
+        ExecutionStatus loadStatus = dumpManager.ReadCollection(collection);
+        if (loadStatus.isSuccess()) {
+            InitializationDate = LocalDateTime.now();
+            lastSaveDate = LocalDateTime.now();
 
-        boolean hasDuplicates = collection.stream()
-                .anyMatch(band -> Bands.putIfAbsent(band.getId(), band) != null);
+            boolean hasDuplicates = collection.stream()
+                    .anyMatch(band -> Bands.putIfAbsent(band.getId(), band) != null);
 
-        if (hasDuplicates) {
-            return new ExecutionStatus(false, "Ошибка загрузки коллекции: обнаружены дубликаты id!");
+            if (hasDuplicates) {
+                return new ExecutionStatus(false, "Ошибка загрузки коллекции: обнаружены дубликаты id!");
+            }
+
+            return loadStatus;
         }
-
-        return new ExecutionStatus(true, "Коллекция успешно загружена!");
+        else {
+            return loadStatus;
+        }
     }
 
     /**

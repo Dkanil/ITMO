@@ -3,7 +3,6 @@ package com.lab6.server.commands.askingCommands;
 import com.lab6.server.utility.AskingCommand;
 import com.lab6.server.utility.CommandNames;
 import com.lab6.common.validators.IdValidator;
-import com.lab6.server.managers.CollectionManager;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.utility.ExecutionStatus;
 
@@ -13,11 +12,9 @@ import com.lab6.common.utility.ExecutionStatus;
 public class Update extends AskingCommand<IdValidator> {
     /**
      * Конструктор команды update.
-     *
-     * @param collectionManager Менеджер коллекции.
      */
-    public Update(CollectionManager collectionManager) {
-        super(CommandNames.UPDATE.getName() + " id {element}", CommandNames.UPDATE.getDescription(), new IdValidator(), collectionManager);
+    public Update() {
+        super(CommandNames.UPDATE.getName() + " id {element}", CommandNames.UPDATE.getDescription(), new IdValidator());
     }
 
     /**

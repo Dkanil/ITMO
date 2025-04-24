@@ -24,7 +24,6 @@ public class Exit extends Command<EmptyValidator> {
      */
     @Override
     protected ExecutionStatus runInternal(String argument) {
-        //System.exit(0); Заглушено, чтобы не завершать сервер
         return new ExecutionStatus(true, "Данную команду нельзя отправить на сервер");
     }
 }

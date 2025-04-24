@@ -25,6 +25,6 @@ public class ExecuteScript extends Command<EmptyValidator> {
      */
     @Override
     public ExecutionStatus runInternal(String arg) {
-        return null;
+        return new ExecutionStatus(true, "Данную команду нельзя отправить на сервер");
     }
 }

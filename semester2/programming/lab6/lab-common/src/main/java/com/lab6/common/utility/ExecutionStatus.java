@@ -1,7 +1,10 @@
 package com.lab6.common.utility;
 
+import com.lab6.common.models.MusicBand;
+
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Stack;
 
 /**
  * Класс, представляющий статус выполнения операции.
@@ -9,7 +12,9 @@ import java.io.Serializable;
 public class ExecutionStatus implements Serializable {
     @Serial
     private static final long serialVersionUID = 13L;
-    private Pair<Boolean, String> status;
+    private final boolean status;
+    private String message;
+    private Stack<MusicBand> collection;
 
     /**
      * Конструктор для создания объекта ExecutionStatus.
@@ -18,7 +23,13 @@ public class ExecutionStatus implements Serializable {
      * @param message сообщение о результате выполнения операции
      */
     public ExecutionStatus(boolean success, String message) {
-        this.status = new Pair<>(success, message);
+        this.status = success;
+        this.message = message;
+    }
+
+    public ExecutionStatus(boolean success, Stack<MusicBand> collection) {
+        this.status = success;
+        this.collection = collection;
     }
 
     /**
@@ -27,7 +38,12 @@ public class ExecutionStatus implements Serializable {
      * @return true, если операция была успешной, иначе false
      */
     public boolean isSuccess() {
-        return status.getFirst();
+        return status;
+    }
+
+
+    public Stack<MusicBand> getCollection() {
+        return collection;
     }
 
     /**
@@ -36,6 +52,6 @@ public class ExecutionStatus implements Serializable {
      * @return сообщение о результате выполнения операции
      */
     public String getMessage() {
-        return status.getSecond();
+        return message;
     }
 }

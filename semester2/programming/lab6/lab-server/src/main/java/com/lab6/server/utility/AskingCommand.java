@@ -1,6 +1,5 @@
 package com.lab6.server.utility;
 
-import com.lab6.server.managers.CollectionManager;
 import com.lab6.common.utility.ExecutionStatus;
 import com.lab6.common.validators.ArgumentValidator;
 import com.lab6.common.validators.IdValidator;
@@ -11,7 +10,6 @@ import com.lab6.common.models.MusicBand;
  * @param <T> Тип валидатора аргументов.
  */
 public abstract class AskingCommand<T extends ArgumentValidator> extends Command<T> {
-    protected final CollectionManager collectionManager;
 
     /**
      * Конструктор команды AskingCommand.
@@ -19,11 +17,9 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
      * @param name Имя команды.
      * @param description Описание команды.
      * @param argumentValidator Валидатор аргументов команды.
-     * @param collectionManager Менеджер коллекции.
      */
-    public AskingCommand(String name, String description, T argumentValidator, CollectionManager collectionManager) {
+    public AskingCommand(String name, String description, T argumentValidator) {
         super(name, description, argumentValidator);
-        this.collectionManager = collectionManager;
     }
 
     /**
