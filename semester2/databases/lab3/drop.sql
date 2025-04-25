@@ -7,3 +7,4 @@ DROP TABLE IF EXISTS engine;
 DROP TABLE IF EXISTS spaceship;
 DROP TABLE IF EXISTS location;
 DROP TABLE IF EXISTS weather;
+DROP FUNCTION IF EXISTS check_battery_charge();
