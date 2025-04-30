@@ -6,7 +6,12 @@ import com.lab6.server.Server;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.FileNotFoundException;
 import java.util.Stack;
 
 
@@ -15,7 +20,7 @@ import java.util.Stack;
  */
 public class DumpManager {
     private final String filePath;
-    private static DumpManager instance;
+    private static volatile DumpManager instance;
 
     /**
      * Конструктор для создания объекта DumpManager.
@@ -40,7 +45,11 @@ public class DumpManager {
 
     public static DumpManager getInstance() {
         if (instance == null) {
-            instance = new DumpManager();
+            synchronized (DumpManager.class) {
+                if (instance == null) {
+                    instance = new DumpManager();
+                }
+            }
         }
         return instance;
     }
