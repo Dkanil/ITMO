@@ -32,7 +32,6 @@ public final class Client {
     private static int attempts = 1;
 
     public static void main(String[] args) {
-
         do {
             try {
                 networkManager.connect();

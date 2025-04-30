@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.lab6.common.models.MusicBand;
 import com.lab6.common.models.MusicGenre;
 import com.lab6.common.utility.ExecutionStatus;
+import com.lab6.server.Server;
 
 /**
  * Класс, управляющий коллекцией музыкальных групп.
@@ -18,18 +19,20 @@ public class CollectionManager {
     private static volatile CollectionManager instance;
     private Long id = 1L;
     private final DumpManager dumpManager = DumpManager.getInstance();
-    private final Map<Long, MusicBand> Bands = new HashMap<>();
+    private final Map<Long, MusicBand> bands = new HashMap<>();
     private Stack<MusicBand> collection = new Stack<>();
-    private LocalDateTime InitializationDate;
+    private LocalDateTime initializationDate;
     private LocalDateTime lastSaveDate;
 
     /**
      * Конструктор класса CollectionManager.
      */
-    private CollectionManager() { }
+    private CollectionManager() {
+    }
 
     /**
      * Возвращает единственный экземпляр CollectionManager.
+     *
      * @return Экземпляр CollectionManager.
      */
     public static CollectionManager getInstance() {
@@ -45,6 +48,7 @@ public class CollectionManager {
 
     /**
      * Возвращает коллекцию музыкальных групп.
+     *
      * @return Коллекция музыкальных групп.
      */
     public Stack<MusicBand> getBands() {
@@ -55,27 +59,26 @@ public class CollectionManager {
      * Сортирует коллекцию музыкальных групп.
      */
     public void sort() {
-        collection = collection.stream()
-                .sorted(Comparator.comparing(MusicBand::getId))
-                .collect(Collectors.toCollection(Stack::new));
+        collection.sort(Comparator.comparing(MusicBand::getId));
     }
 
     /**
      * Удаляет первую музыкальную группу из коллекции.
      */
     public void removeFirst() {
-        if (!collection.isEmpty()) {
-            Bands.remove(collection.firstElement().getId());
-            collection.remove(0);
-        }
+        collection.stream().findFirst().ifPresent(band -> {
+            bands.remove(band.getId());
+            collection = collection.stream().skip(1).collect(Collectors.toCollection(Stack::new));
+        });
     }
 
     /**
      * Возвращает свободный идентификатор.
+     *
      * @return Свободный идентификатор.
      */
     public Long getFreeId() {
-        while (Bands.containsKey(id)) {
+        while (bands.containsKey(id)) {
             id++;
         }
         return id;
@@ -83,14 +86,16 @@ public class CollectionManager {
 
     /**
      * Возвращает дату инициализации коллекции.
+     *
      * @return Дата инициализации коллекции.
      */
     public LocalDateTime getInitializationDate() {
-        return InitializationDate;
+        return initializationDate;
     }
 
     /**
      * Возвращает дату последнего сохранения коллекции.
+     *
      * @return Дата последнего сохранения коллекции.
      */
     public LocalDateTime getLastSaveDate() {
@@ -99,6 +104,7 @@ public class CollectionManager {
 
     /**
      * Возвращает коллекцию музыкальных групп.
+     *
      * @return Коллекция музыкальных групп.
      */
     public Stack<MusicBand> getCollection() {
@@ -107,62 +113,58 @@ public class CollectionManager {
 
     /**
      * Возвращает музыкальную группу по идентификатору.
+     *
      * @param id Идентификатор музыкальной группы.
      * @return Музыкальная группа с указанным идентификатором.
      */
     public MusicBand getById(Long id) {
-        return Bands.get(id);
+        return bands.get(id);
     }
 
     /**
      * Удаляет все музыкальные группы с указанным жанром.
+     *
      * @param genre Жанр музыкальных групп для удаления.
      * @return Количество удалённых групп.
      */
     public int removeAllByGenre(MusicGenre genre) {
         int initialSize = collection.size();
-        collection = collection.stream()
-                .filter(band -> !band.getGenre().equals(genre))
-                .collect(Collectors.toCollection(Stack::new));
-        Bands.entrySet().removeIf(entry -> entry.getValue().getGenre().equals(genre));
+        collection = collection.stream().filter(band -> !band.getGenre().equals(genre)).collect(Collectors.toCollection(Stack::new));
+        bands.entrySet().removeIf(entry -> entry.getValue().getGenre().equals(genre));
         return initialSize - collection.size();
     }
 
     /**
      * Сохраняет коллекцию музыкальных групп.
      */
-    public ExecutionStatus saveCollection() {
+    public void saveCollection() {
         ExecutionStatus savingStatus = dumpManager.WriteCollection(collection);
-        if (savingStatus.isSuccess()){
+        if (savingStatus.isSuccess()) {
             lastSaveDate = LocalDateTime.now();
+            Server.logger.info("Collection saved successfully");
+        } else {
+            Server.logger.severe("Error saving collection: " + savingStatus.getMessage());
         }
-        return savingStatus;
     }
 
     /**
      * Загружает коллекцию музыкальных групп.
+     *
      * @return Статус выполнения загрузки коллекции.
      */
     public ExecutionStatus loadCollection() {
         collection.clear();
-        Bands.clear();
+        bands.clear();
         ExecutionStatus loadStatus = dumpManager.ReadCollection(collection);
         if (loadStatus.isSuccess()) {
-            InitializationDate = LocalDateTime.now();
+            initializationDate = LocalDateTime.now();
             lastSaveDate = LocalDateTime.now();
-
-            boolean hasDuplicates = collection.stream()
-                    .anyMatch(band -> Bands.putIfAbsent(band.getId(), band) != null);
-
+            boolean hasDuplicates = collection.stream().anyMatch(band -> bands.putIfAbsent(band.getId(), band) != null);
             if (hasDuplicates) {
                 return new ExecutionStatus(false, "Ошибка загрузки коллекции: обнаружены дубликаты id!");
             }
-
-            return loadStatus;
         }
-        else {
-            return loadStatus;
-        }
+        return loadStatus;
     }
 
     /**
@@ -170,18 +172,19 @@ public class CollectionManager {
      */
     public void clear() {
         collection.clear();
-        Bands.clear();
+        bands.clear();
     }
 
     /**
      * Добавляет музыкальную группу в коллекцию.
+     *
      * @param band Музыкальная группа для добавления.
      * @return true, если группа успешно добавлена, иначе false.
      */
     public boolean add(MusicBand band) {
-        if ((band != null) && band.validate() && !Bands.containsKey(band.getId())) {
+        if ((band != null) && band.validate() && !bands.containsKey(band.getId())) {
             collection.push(band);
-            Bands.put(band.getId(), band);
+            bands.put(band.getId(), band);
             return true;
         } else {
             return false;
@@ -190,12 +193,11 @@ public class CollectionManager {
 
     /**
      * Удаляет музыкальную группу по идентификатору.
+     *
      * @param elementId Идентификатор музыкальной группы для удаления.
      */
     public void removeById(Long elementId) {
-        collection = collection.stream()
-                .filter(band -> !band.getId().equals(elementId))
-                .collect(Collectors.toCollection(Stack::new));
-        Bands.remove(elementId);
+        collection = collection.stream().filter(band -> !band.getId().equals(elementId)).collect(Collectors.toCollection(Stack::new));
+        bands.remove(elementId);
     }
 }

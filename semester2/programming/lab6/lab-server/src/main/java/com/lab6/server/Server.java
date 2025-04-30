@@ -40,25 +40,14 @@ import java.util.logging.SimpleFormatter;
 //Вариант 88347
 public final class Server {
     public static final Logger logger = Logger.getLogger(Server.class.getName());
-    static { initLogger();}
+
+    static {
+        initLogger();
+    }
+
     private static void initLogger() {
         try {
-            ConsoleHandler consoleHandler = new ConsoleHandler();
-            consoleHandler.setFormatter(new Formatter() {
-                @Override
-                public String format(LogRecord record) {
-                    String color = switch (record.getLevel().getName()) {
-                        case "SEVERE" -> "\u001B[31m"; // Красный
-                        case "WARNING" -> "\u001B[33m"; // Желтый
-                        case "INFO" -> "\u001B[32m"; // Зеленый
-                        default -> "\u001B[0m"; // Сброс цвета
-                    };
-                    return color + "[" + record.getLevel() + "] " +
-                            "[" + Thread.currentThread().getName() + "] " +
-                            "[" + new java.util.Date(record.getMillis()) + "] " +
-                            formatMessage(record) + "\u001B[0m\n";
-                }
-            });
+            ConsoleHandler consoleHandler = getConsoleHandler();
             // Настройка FileHandler
             FileHandler fileHandler = new FileHandler("server_logs.log", true); // true для добавления логов в конец файла
             fileHandler.setFormatter(new SimpleFormatter()); // Устанавливаем простой форматтер
@@ -70,6 +59,26 @@ public final class Server {
         } catch (IOException e) {
             System.err.println("Failed to initialize file handler for logger: " + e.getMessage());
         }
+    }
+
+    private static ConsoleHandler getConsoleHandler() {
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setFormatter(new Formatter() {
+            @Override
+            public String format(LogRecord record) {
+                String color = switch (record.getLevel().getName()) {
+                    case "SEVERE" -> "\u001B[31m"; // Красный
+                    case "WARNING" -> "\u001B[33m"; // Желтый
+                    case "INFO" -> "\u001B[32m"; // Зеленый
+                    default -> "\u001B[0m"; // Сброс цвета
+                };
+                return color + "[" + record.getLevel() + "] " +
+                        "[" + Thread.currentThread().getName() + "] " +
+                        "[" + new java.util.Date(record.getMillis()) + "] " +
+                        formatMessage(record) + "\u001B[0m\n";
+            }
+        });
+        return consoleHandler;
     }
 
     private static final int PORT = 13876;
@@ -132,9 +141,6 @@ public final class Server {
         run(executer);
     }
 
-
-
-
     public static void run(Executer executer) {
         try {
             // Создание селектора для обработки нескольких каналов
@@ -178,7 +184,6 @@ public final class Server {
                                          NullPointerException e) {
                                     logger.severe("Error receiving request from client: " + e.getMessage());
                                     collectionManager.saveCollection();
-                                    logger.info("Collection saved successfully");
                                     key.cancel();
                                     continue;
                                 }
@@ -203,7 +208,6 @@ public final class Server {
                                 } catch (IOException e) {
                                     logger.severe("Error sending response to client: " + e.getMessage());
                                     collectionManager.saveCollection();
-                                    logger.info("Collection saved successfully");
                                     key.cancel();
                                 }
                             }
@@ -212,7 +216,6 @@ public final class Server {
                         try (var channel = key.channel()) {
                             logger.severe("Client " + channel.toString() + " disconnected");
                             collectionManager.saveCollection();
-                            logger.info("Collection saved successfully");
                             key.cancel();
                         }
                     } finally {
@@ -224,7 +227,6 @@ public final class Server {
             logger.warning("Selector was closed.");
         } catch (EOFException e) {
             collectionManager.saveCollection();
-            logger.info("Collection saved successfully");
             logger.severe(e.getMessage());
             System.exit(1);
         } catch (IOException | NullPointerException | ClassNotFoundException e) {
@@ -247,8 +249,6 @@ public final class Server {
         } catch (NullPointerException e) {
             logger.severe("The client disconnected from the server: " + e.getMessage());
             key.cancel();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
         clientChannel.register(selector, SelectionKey.OP_READ);
     }

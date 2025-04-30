@@ -12,7 +12,7 @@ import com.lab6.server.managers.CollectionManager;
  */
 public abstract class Command<T extends ArgumentValidator> {
     private final Pair<String, String> nameAndDescription;
-    protected static CollectionManager collectionManager = CollectionManager.getInstance();
+    protected static final CollectionManager collectionManager = CollectionManager.getInstance();
     public final T argumentValidator;
 
     /**

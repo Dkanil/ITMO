@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class Request implements Serializable {
     @Serial
     private static final long serialVersionUID = 11L;
-    private String string;
+    private final String string;
     private MusicBand band = null;
 
     public Request(String string) {
@@ -27,14 +27,6 @@ public class Request implements Serializable {
 
     public MusicBand getBand() {
         return band;
-    }
-
-    public void setCommand(String command) {
-        this.string = command;
-    }
-
-    public void setBand(MusicBand band) {
-        this.band = band;
     }
 
     @Override

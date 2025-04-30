@@ -43,7 +43,7 @@ public class ServerNetworkManager {
         return serverChannel;
     }
 
-    public void send(Response response, SocketChannel clientChannel) throws IOException, ClassNotFoundException {
+    public void send(Response response, SocketChannel clientChannel) throws IOException {
         try (ByteArrayOutputStream bytes = new ByteArrayOutputStream();
              ObjectOutputStream clientDataOut = new ObjectOutputStream(bytes)) {
             clientDataOut.writeObject(response);

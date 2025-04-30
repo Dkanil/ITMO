@@ -35,7 +35,7 @@ public class NetworkManager {
             channel.close();
         }
     }
-    public void send(Request request) throws IOException, ClassNotFoundException {
+    public void send(Request request) throws IOException {
         try(ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bytes)) {
 
