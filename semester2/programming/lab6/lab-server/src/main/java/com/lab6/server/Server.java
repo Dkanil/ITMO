@@ -165,13 +165,18 @@ public final class Server {
                         if (key.isValid()) {
                             if (key.isAcceptable()) {
                                 // Принимаем новое соединение
-                                try (ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel()) {
+                                try {
+                                    ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
                                     SocketChannel clientChannel = serverSocketChannel.accept();
                                     logger.info("Client connected: " + clientChannel.getRemoteAddress());
 
                                     // Настройка канала для неблокирующего режима
                                     clientChannel.configureBlocking(false);
                                     InitialCommandsData(clientChannel, key); //  отправка клиенту списка команд
+                                } catch (IOException e) {
+                                    logger.severe("Error accepting client connection: " + e.getMessage());
+                                    collectionManager.saveCollection();
+                                    key.cancel();
                                 }
                             } else if (key.isReadable()) {
                                 SocketChannel clientChannel = (SocketChannel) key.channel();
