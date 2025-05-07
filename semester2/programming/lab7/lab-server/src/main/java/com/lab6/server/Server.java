@@ -37,7 +37,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.SimpleFormatter;
 
-//Вариант 88347
+//Вариант 7995
 public final class Server {
     public static final Logger logger = Logger.getLogger(Server.class.getName());
 
