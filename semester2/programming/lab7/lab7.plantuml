@@ -1,55 +1,60 @@
 @startuml
 package lab-client {
     class Asker {
-      + askBand(Console, Long): MusicBand
       - askStudio(Console): Studio
+      + askBand(Console): MusicBand
       - askCoordinates(Console): Coordinates
     }
+    class AuthenticationManager {
+      + authenticateUser(NetworkManager, Console): Pair<String, String>
+      - getHash(String): String
+    }
     class Client {
-      - networkManager: NetworkManager
-      - attempts: int
-      - SERVER_PORT: int
-      - scriptStackCounter: int
       - console: Console
-      - commandsData: Map<String, Pair<ArgumentValidator, Boolean>>
       - SERVER_HOST: String
-      - askingRequest(Console, String): Request
+      - networkManager: NetworkManager
+      + user: Pair<String, String>
+      - commandsData: Map<String, Pair<ArgumentValidator, Boolean>>
+      - SERVER_PORT: int
+      - attempts: int
+      - scriptStackCounter: int
       - validateCommand(String[]): ExecutionStatus
-      + main(String[]): void
       - prepareRequest(Console, String): Request
       - runScript(String): ExecutionStatus
+      - askingRequest(Console, String): Request
+      + main(String[]): void
     }
     interface Console << interface >> {
-      + println(Object): void
       + printError(Object): void
+      + println(Object): void
       + readln(): String
       + print(Object): void
     }
     class ElementValidator {
       + validating(MusicBand): Pair<ExecutionStatus, MusicBand>
-      + validateAsking(Console, Long): Pair<ExecutionStatus, MusicBand>
+      + validateAsking(Console): Pair<ExecutionStatus, MusicBand>
     }
     class FileConsole {
       - input: BufferedReader
-      + print(Object): void
-      + readln(): String
-      + printError(Object): void
       + println(Object): void
+      + readln(): String
+      + print(Object): void
+      + printError(Object): void
     }
     class NetworkManager {
-      - channel: SocketChannel
       - PORT: int
+      - channel: SocketChannel
       - SERVER_HOST: String
+      + send(Request): void
       + connect(): void
       + close(): void
       + receive(): Response
-      + send(Request): void
     }
     class StandartConsole {
       + println(Object): void
+      + readln(): String
       + print(Object): void
       + printError(Object): void
-      + readln(): String
     }
 }
 
@@ -58,15 +63,15 @@ package lab-common {
       + validate(String, String): ExecutionStatus
     }
     class Coordinates {
+      - x: double
       - serialVersionUID: long
       - y: Integer
-      - x: double
-      + equals(Object): boolean
-      + getX(): double
-      + toString(): String
-      + hashCode(): int
       + validate(): boolean
+      + getX(): double
+      + hashCode(): int
+      + toString(): String
       + getY(): Integer
+      + equals(Object): boolean
     }
     class Element {
       + getID(): Long
@@ -76,13 +81,13 @@ package lab-common {
       + validate(String, String): ExecutionStatus
     }
     class ExecutionStatus {
-      - serialVersionUID: long
       - message: String
-      - status: boolean
       - collection: Stack<MusicBand>
+      - serialVersionUID: long
+      - status: boolean
       + isSuccess(): boolean
-      + getCollection(): Stack<MusicBand>
       + getMessage(): String
+      + getCollection(): Stack<MusicBand>
     }
     class GenreValidator {
       - serialVersionUID: long
@@ -93,78 +98,88 @@ package lab-common {
       + validate(String, String): ExecutionStatus
     }
     class MusicBand {
-      - description: String
-      - serialVersionUID: long
-      - name: String
-      - creationDate: LocalDateTime
-      - albumsCount: Long
-      - studio: Studio
-      - numberOfParticipants: Long
+      - user: String
       - id: Long
       - coordinates: Coordinates
+      - numberOfParticipants: Long
+      - description: String
+      - creationDate: LocalDateTime
+      - studio: Studio
       - genre: MusicGenre
-      + toArray(MusicBand): String[]
-      + hashCode(): int
-      + getId(): Long
-      + toString(): String
-      + getGenre(): MusicGenre
-      + validate(): boolean
-      + fromArray(String[]): MusicBand
-      + getName(): String
-      + compareTo(Element): int
-      + getAlbumsCount(): Long
-      + equals(Object): boolean
-      + getCreationDate(): LocalDateTime
-      + getNumberOfParticipants(): Long
-      + updateId(Long): void
-      + getDescription(): String
+      - serialVersionUID: long
+      - name: String
+      - albumsCount: Long
       + getStudio(): Studio
+      + setGenre(MusicGenre): void
+      + getCreationDate(): LocalDateTime
+      + validate(): boolean
+      + setStudio(Studio): void
+      + equals(Object): boolean
+      + hashCode(): int
+      + toString(): String
+      + getNumberOfParticipants(): Long
+      + getDescription(): String
+      + getId(): Long
+      + setNumberOfParticipants(Long): void
       + getCoordinates(): Coordinates
+      + getGenre(): MusicGenre
+      + setCoordinates(Coordinates): void
+      + compareTo(Element): int
+      + getName(): String
+      + setId(Long): void
+      + setAlbumsCount(Long): void
+      + setDescription(String): void
       + getID(): Long
+      + getAlbumsCount(): Long
+      + setName(String): void
+      + getUser(): String
     }
     enum MusicGenre << enumeration >> {
-      + JAZZ:
       + MATH_ROCK:
       + BRIT_POP:
+      + JAZZ:
+      + list(): String
       + values(): MusicGenre[]
       + valueOf(String): MusicGenre
-      + list(): String
     }
     class Pair<A, B> {
       - b: B
       - serialVersionUID: long
       - a: A
-      + setSecond(B): void
       + getFirst(): A
-      + setFirst(A): void
       + getSecond(): B
+      + setFirst(A): void
+      + setSecond(B): void
     }
     class Request {
+      - band: MusicBand
+      - user: Pair<String, String>
       - string: String
       - serialVersionUID: long
-      - band: MusicBand
-      + getCommand(): String[]
       + getBand(): MusicBand
+      + getUser(): Pair<String, String>
       + toString(): String
+      + getCommand(): String[]
     }
     class Response {
-      - serialVersionUID: long
-      - executionStatus: ExecutionStatus
       - commandsData: Map<String, Pair<ArgumentValidator, Boolean>>
-      + toString(): String
-      + getCommandsMap(): Map<String, Pair<ArgumentValidator, Boolean>>
+      - User: Pair<String, String>
+      - executionStatus: ExecutionStatus
+      - serialVersionUID: long
       + getExecutionStatus(): ExecutionStatus
+      + getCommandsMap(): Map<String, Pair<ArgumentValidator, Boolean>>
+      + toString(): String
     }
     class Studio {
       - name: String
       - serialVersionUID: long
       - address: String
-      + validate(): boolean
-      + toString(): String
-      + equals(Object): boolean
+      + hashCode(): int
       + getName(): String
       + getAddress(): String
-      + hashCode(): int
+      + toString(): String
+      + validate(): boolean
+      + equals(Object): boolean
     }
     interface Validatable << interface >> {
       + validate(): boolean
@@ -173,157 +188,202 @@ package lab-common {
 
 package lab-server {
     class Add {
-      # runInternal(MusicBand): ExecutionStatus
+      # runInternal(MusicBand, Pair<String, String>): ExecutionStatus
     }
     class AddIfMin {
-      # runInternal(MusicBand): ExecutionStatus
+      # runInternal(MusicBand, Pair<String, String>): ExecutionStatus
     }
     class AskingCommand<T> {
-      # runInternal(String): ExecutionStatus
-      + run(String): ExecutionStatus
-      + run(String, MusicBand): ExecutionStatus
-      # runInternal(MusicBand): ExecutionStatus
+      + run(String, Pair<String, String>): ExecutionStatus
+      # runInternal(MusicBand, Pair<String, String>): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
+      + run(String, MusicBand, Pair<String, String>): ExecutionStatus
     }
     class Clear {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
-    class CollectionManager {
-      - bands: Map<Long, MusicBand>
-      - dumpManager: DumpManager
-      - lastSaveDate: LocalDateTime
-      - collection: Stack<MusicBand>
-      - instance: CollectionManager
-      - initializationDate: LocalDateTime
-      - id: Long
-      + getFreeId(): Long
+    interface CollectionManager << interface >> {
       + getBands(): Stack<MusicBand>
       + getInitializationDate(): LocalDateTime
+      + add(MusicBand, Pair<String, String>): ExecutionStatus
       + getById(Long): MusicBand
-      + sort(): void
-      + add(MusicBand): boolean
-      + loadCollection(): ExecutionStatus
-      + clear(): void
+      + removeById(Long, Pair<String, String>): ExecutionStatus
+      + removeFirst(Pair<String, String>): ExecutionStatus
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
       + getCollection(): Stack<MusicBand>
-      + saveCollection(): void
-      + removeAllByGenre(MusicGenre): int
-      + removeFirst(): void
       + getLastSaveDate(): LocalDateTime
-      + getInstance(): CollectionManager
-      + removeById(Long): void
+      + sort(): void
+      + loadCollection(): ExecutionStatus
+      + update(MusicBand, Pair<String, String>): ExecutionStatus
+      + clear(Pair<String, String>): ExecutionStatus
+    }
+    class CollectionManagerMain {
+      - initializationDate: LocalDateTime
+      - lastSaveDate: LocalDateTime
+      - dbManager: DBManager
+      - instance: CollectionManagerMain
+      - lock: ReadWriteLock
+      - bandsMap: Map<Long, MusicBand>
+      - collection: Stack<MusicBand>
+      + update(MusicBand, Pair<String, String>): ExecutionStatus
+      + clear(Pair<String, String>): ExecutionStatus
+      + getCollection(): Stack<MusicBand>
+      + loadCollection(): ExecutionStatus
+      + getBands(): Stack<MusicBand>
+      + add(MusicBand, Pair<String, String>): ExecutionStatus
+      + getInstance(): CollectionManagerMain
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + getLastSaveDate(): LocalDateTime
+      + removeById(Long, Pair<String, String>): ExecutionStatus
+      + sort(): void
+      + getInitializationDate(): LocalDateTime
+      + removeFirst(Pair<String, String>): ExecutionStatus
+      + getById(Long): MusicBand
+    }
+    class CollectionManagerProxy {
+      - bandsMap: Map<Long, MusicBand>
+      - collection: Stack<MusicBand>
+      - instance: CollectionManagerProxy
+      - collectionManagerMain: CollectionManagerMain
+      - isCacheValid: boolean
+      + removeFirst(Pair<String, String>): ExecutionStatus
+      + update(MusicBand, Pair<String, String>): ExecutionStatus
+      + getInitializationDate(): LocalDateTime
+      + add(MusicBand, Pair<String, String>): ExecutionStatus
+      + clear(Pair<String, String>): ExecutionStatus
+      + getById(Long): MusicBand
+      + loadCollection(): ExecutionStatus
+      + sort(): void
+      + removeById(Long, Pair<String, String>): ExecutionStatus
+      + getLastSaveDate(): LocalDateTime
+      - refreshCache(): void
+      + getBands(): Stack<MusicBand>
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + getCollection(): Stack<MusicBand>
+      + getInstance(): CollectionManagerProxy
     }
     class Command<T> {
       + argumentValidator: T
       # collectionManager: CollectionManager
       - nameAndDescription: Pair<String, String>
-      + run(String): ExecutionStatus
-      + hashCode(): int
       + getArgumentValidator(): T
-      # runInternal(String): ExecutionStatus
-      + equals(Object): boolean
-      + getDescription(): String
+      + hashCode(): int
+      # runInternal(String, Pair<String, String>): ExecutionStatus
       + toString(): String
+      + getDescription(): String
+      + equals(Object): boolean
+      + run(String, Pair<String, String>): ExecutionStatus
       + getName(): String
     }
     class CommandManager {
       - commands: Map<String, Command<?>>
-      + getCommand(String): Command<?>
       + getCommandsMap(): Map<String, Command<?>>
       + register(String, Command<?>): void
+      + getCommand(String): Command<?>
     }
     enum CommandNames << enumeration >> {
-      + REMOVE_FIRST:
-      + EXECUTE_SCRIPT:
-      + UPDATE:
-      + ADD:
-      + REMOVE_BY_ID:
       + ADD_IF_MIN:
-      + EXIT:
       + PRINT_FIELD_DESCENDING_DESCRIPTION:
-      + HELP:
-      + CLEAR:
-      + REMOVE_ALL_BY_GENRE:
-      + PRINT_FIELD_ASCENDING_DESCRIPTION:
+      + EXECUTE_SCRIPT:
+      + REMOVE_FIRST:
       + SHOW:
-      + SORT:
-      + INFO:
       - commandDescription: Pair<String, String>
-      + valueOf(String): CommandNames
+      + CLEAR:
+      + EXIT:
+      + UPDATE:
+      + SORT:
+      + REMOVE_BY_ID:
+      + HELP:
+      + INFO:
+      + REMOVE_ALL_BY_GENRE:
+      + ADD:
+      + PRINT_FIELD_ASCENDING_DESCRIPTION:
       + values(): CommandNames[]
+      + valueOf(String): CommandNames
       + getName(): String
       + getDescription(): String
     }
-    class DumpManager {
-      - instance: DumpManager
-      - filePath: String
-      + getInstance(): DumpManager
-      + WriteCollection(Stack<MusicBand>): ExecutionStatus
-      + ReadCollection(Stack<MusicBand>): ExecutionStatus
+    class DBManager {
+      - connection: Connection
+      - instance: DBManager
+      + getInstance(): DBManager
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + checkPassword(Pair<String, String>): ExecutionStatus
+      + clear(Pair<String, String>): ExecutionStatus
+      + loadCollection(Stack<MusicBand>): ExecutionStatus
+      + updateMusicBand(MusicBand, Pair<String, String>): ExecutionStatus
+      - checkUser(Pair<String, String>): ExecutionStatus
+      + addMusicBand(MusicBand, Pair<String, String>): ExecutionStatus
+      + addUser(Pair<String, String>): ExecutionStatus
+      + removeById(Long, Pair<String, String>): ExecutionStatus
     }
     class ExecuteScript {
-      + runInternal(String): ExecutionStatus
+      + runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class Executer {
       - commandManager: CommandManager
+      + runCommand(String[], MusicBand, Pair<String, String>): ExecutionStatus
       - validateCommand(String[]): ExecutionStatus
-      + runCommand(String[], MusicBand): ExecutionStatus
     }
     class Exit {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class Help {
       - commandManager: CommandManager
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class Info {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class PrintFieldAscendingDescription {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class PrintFieldDescendingDescription {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class RemoveAllByGenre {
-      + runInternal(String): ExecutionStatus
+      + runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class RemoveById {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class RemoveFirst {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class Server {
-      - response: Response
       - selector: Selector
-      - collectionManager: CollectionManager
       + logger: Logger
-      - isRunning: boolean
+      - networkManager: ServerNetworkManager
+      - executer: Executer
+      - collectionManager: CollectionManager
+      - responses: Map<SocketChannel, Response>
       - commandManager: CommandManager
       - PORT: int
-      - networkManager: ServerNetworkManager
-      + run(Executer): void
-      - getConsoleHandler(): ConsoleHandler
       - initLogger(): void
       + main(String[]): void
-      - InitialCommandsData(SocketChannel, SelectionKey): void
+      - getFormatter(): Formatter
+      - processRequest(SocketChannel, Request): void
+      - initialCommandsData(SocketChannel, SelectionKey): void
+      + run(): void
+      - getProcessRequestThread(SocketChannel, Request, SelectionKey): Thread
     }
     class ServerNetworkManager {
       - serverChannel: ServerSocketChannel
       - PORT: int
-      + receive(SocketChannel, SelectionKey): Request
       + close(): void
-      + startServer(): void
-      + getServerSocketChannel(): ServerSocketChannel
       + send(Response, SocketChannel): void
+      + receive(SocketChannel, SelectionKey): Request
+      + getServerSocketChannel(): ServerSocketChannel
+      + startServer(): void
     }
     class Show {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class Sort {
-      # runInternal(String): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class Update {
-      # runInternal(MusicBand): ExecutionStatus
+      # runInternal(MusicBand, Pair<String, String>): ExecutionStatus
     }
 }
 
@@ -332,6 +392,8 @@ AddIfMin                         -[#000082,plain]-^  AskingCommand
 AskingCommand                    -[#595959,dashed]->  ArgumentValidator
 AskingCommand                    -[#000082,plain]-^  Command
 Clear                            -[#000082,plain]-^  Command
+CollectionManagerMain            -[#008200,dashed]-^  CollectionManager
+CollectionManagerProxy           -[#008200,dashed]-^  CollectionManager
 Command                          -[#595959,dashed]->  ArgumentValidator
 Coordinates                      -[#008200,dashed]-^  Validatable
 Element                          -[#008200,dashed]-^  Validatable

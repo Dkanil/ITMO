@@ -1,9 +1,8 @@
-help
 show
 add
-sfgsfg
-20sfdgsf
-20
+BAOBAB FROM SCRIPT
+12
+-123
 5
 38
 krytie
@@ -11,4 +10,6 @@ JAZZ
 sTUDIO HOME
 Kronva
 show
+execute_script script.txt
 exit
+execute_script script2.txt

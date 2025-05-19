@@ -1,0 +1,239 @@
+мая 19, 2025 4:30:44 PM com.lab7.server.managers.DBManager <init>
+INFO: Connected to database successfully
+мая 19, 2025 4:30:44 PM com.lab7.server.Server main
+INFO: The collection file has been successfully loaded!
+мая 19, 2025 4:30:44 PM com.lab7.server.managers.ServerNetworkManager startServer
+INFO: Server started on Port:13876
+мая 19, 2025 4:30:44 PM com.lab7.server.Server run
+INFO: Selector started
+мая 19, 2025 4:30:44 PM com.lab7.server.Server run
+INFO: To stop the server, press [Ctrl + C]
+мая 19, 2025 4:30:51 PM com.lab7.server.Server run
+INFO: Processing key: channel=sun.nio.ch.ServerSocketChannelImpl[/[0:0:0:0:0:0:0:0]:13876], selector=sun.nio.ch.WEPollSelectorImpl@58134517, interestOps=16, readyOps=16
+мая 19, 2025 4:30:51 PM com.lab7.server.Server run
+INFO: Client connected: /127.0.0.1:56297
+мая 19, 2025 4:30:51 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet with message length sent: 997
+мая 19, 2025 4:30:51 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:30:51 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:30:51 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:30:52 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Last packet of bytes sent with length: 229
+мая 19, 2025 4:30:52 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Stop packet sent
+
+мая 19, 2025 4:30:52 PM com.lab7.server.Server initialCommandsData
+INFO: Command list sent to the client: /127.0.0.1:56297
+мая 19, 2025 4:31:00 PM com.lab7.server.Server run
+INFO: Processing key: channel=java.nio.channels.SocketChannel[connected local=/127.0.0.1:13876 remote=/127.0.0.1:56297], selector=sun.nio.ch.WEPollSelectorImpl@58134517, interestOps=1, readyOps=1
+мая 19, 2025 4:31:00 PM com.lab7.server.managers.ServerNetworkManager receive
+INFO: 305 bytes received from client
+мая 19, 2025 4:31:00 PM com.lab7.server.managers.ServerNetworkManager receive
+INFO: Request received from client
+мая 19, 2025 4:31:00 PM com.lab7.server.Server lambda$run$2
+INFO: Request received from client: Request{string='login', band=null}
+мая 19, 2025 4:31:00 PM com.lab7.server.Server processRequest
+INFO: Login successful!: com.lab7.common.utility.Pair@391b3625
+мая 19, 2025 4:31:00 PM com.lab7.server.Server run
+INFO: Processing key: channel=java.nio.channels.SocketChannel[connected local=/127.0.0.1:13876 remote=/127.0.0.1:56297], selector=sun.nio.ch.WEPollSelectorImpl@58134517, interestOps=4, readyOps=4
+мая 19, 2025 4:31:00 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet with message length sent: 341
+мая 19, 2025 4:31:00 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:00 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Last packet of bytes sent with length: 85
+мая 19, 2025 4:31:00 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Stop packet sent
+
+мая 19, 2025 4:31:00 PM com.lab7.server.Server lambda$run$3
+INFO: Response sent to client: /127.0.0.1:56297
+мая 19, 2025 4:31:02 PM com.lab7.server.Server run
+INFO: Processing key: channel=java.nio.channels.SocketChannel[connected local=/127.0.0.1:13876 remote=/127.0.0.1:56297], selector=sun.nio.ch.WEPollSelectorImpl@58134517, interestOps=1, readyOps=1
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager receive
+INFO: 304 bytes received from client
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager receive
+INFO: Request received from client
+мая 19, 2025 4:31:02 PM com.lab7.server.Server lambda$run$2
+INFO: Request received from client: Request{string='show', band=null}
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.Executer runCommand
+INFO: Выполнение команды 'show'
+мая 19, 2025 4:31:02 PM com.lab7.server.Server processRequest
+INFO: Command executed successfully
+мая 19, 2025 4:31:02 PM com.lab7.server.Server run
+INFO: Processing key: channel=java.nio.channels.SocketChannel[connected local=/127.0.0.1:13876 remote=/127.0.0.1:56297], selector=sun.nio.ch.WEPollSelectorImpl@58134517, interestOps=4, readyOps=4
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet with message length sent: 19505
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:02 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Packet of bytes sent with length: 256
+мая 19, 2025 4:31:03 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Last packet of bytes sent with length: 49
+мая 19, 2025 4:31:03 PM com.lab7.server.managers.ServerNetworkManager send
+INFO: Stop packet sent
+
+мая 19, 2025 4:31:03 PM com.lab7.server.Server lambda$run$3
+INFO: Response sent to client: /127.0.0.1:56297
+мая 19, 2025 4:31:08 PM com.lab7.server.Server run
+INFO: Processing key: channel=java.nio.channels.SocketChannel[connected local=/127.0.0.1:13876 remote=/127.0.0.1:56297], selector=sun.nio.ch.WEPollSelectorImpl@58134517, interestOps=1, readyOps=1
+мая 19, 2025 4:31:08 PM com.lab7.server.managers.ServerNetworkManager receive
+INFO: -1 bytes received from client
+мая 19, 2025 4:31:08 PM com.lab7.server.managers.ServerNetworkManager receive
+WARNING: Client closed the connection
+мая 19, 2025 4:31:08 PM com.lab7.server.Server lambda$run$2
+SEVERE: Error receiving request from client: Client closed the connection
+мая 19, 2025 4:31:08 PM com.lab7.server.Server run
+SEVERE: Client java.nio.channels.SocketChannel[connected local=/127.0.0.1:13876 remote=/127.0.0.1:56297] disconnected
+мая 19, 2025 4:31:13 PM com.lab7.server.Server lambda$main$0
+INFO: Server shutdown complete.
