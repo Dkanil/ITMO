@@ -43,7 +43,7 @@ public class DBManager {
         if (instance == null) {
             synchronized (DBManager.class) {
                 if (instance == null) {
-                    instance = new DBManager("jdbc:postgresql://localhost:5432/studs", "s466217", "");
+                    instance = new DBManager("jdbc:postgresql://pg:5432/studs", "s466217", ""); // пароль из файла .pgpass
                 }
             }
         }
@@ -148,7 +148,7 @@ public class DBManager {
                 return new ExecutionStatus(true, "Успешно удалено " + affectedRows + " элементов пользователя " + user.getFirst() + " с жанром " + genre + "!");
             }
             else {
-                return new ExecutionStatus(false, "У пользователя " + user.getFirst() + "элементы с указанным genre не найдены!");
+                return new ExecutionStatus(false, "У пользователя " + user.getFirst() + " элементы с указанным genre не найдены!");
             }
         } catch (SQLException | NullPointerException e) {
             return new ExecutionStatus(false, "Ошибка при удалении элемента коллекции из базы данных: " + e.getMessage());

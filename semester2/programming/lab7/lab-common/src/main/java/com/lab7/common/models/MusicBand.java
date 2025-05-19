@@ -23,7 +23,7 @@ public class MusicBand extends Element implements Serializable {
     private String description; // Поле не может быть null
     private MusicGenre genre; // Поле может быть null
     private Studio studio; //Поле не может быть null
-    private String user;
+    private final String user;
 
     public MusicBand(String name, Coordinates coordinates, LocalDateTime creationDate, Long numberOfParticipants, Long albumsCount, String description, MusicGenre genre, Studio studio, String user) {
         this.id = 1L; //Ставится значение по умолчанию, так как id присваивается в БД

@@ -11,7 +11,6 @@ public class Response implements Serializable {
     private static final long serialVersionUID = 10L;
     private Map<String, Pair<ArgumentValidator, Boolean>> commandsData; // Второе значение - true, если команда требует ввода элемента коллекции
     private ExecutionStatus executionStatus;
-    private Pair<String, String> User;
 
     public Response(Map<String, Pair<ArgumentValidator, Boolean>> commandsData) {
         this.commandsData = commandsData;

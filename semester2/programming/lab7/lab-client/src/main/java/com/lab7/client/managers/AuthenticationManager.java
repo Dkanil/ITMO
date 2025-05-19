@@ -27,25 +27,31 @@ public class AuthenticationManager {
         }
     }
 
+    public static Pair<String, String> sendAuthenticationRequest(NetworkManager networkManager, Console console, Pair<String, String> user, String inputCommand) throws IOException, ClassNotFoundException {
+        Request request = new Request(inputCommand, user);
+        networkManager.send(request);
+        Response authResponse = networkManager.receive();
+        if (authResponse.getExecutionStatus().isSuccess()) {
+            console.println(authResponse.getExecutionStatus().getMessage());
+            return user;
+        } else {
+            console.printError(authResponse.getExecutionStatus().getMessage());
+            return null;
+        }
+    }
+
     public static Pair<String, String> authenticateUser(NetworkManager networkManager, Console console) throws IOException, ClassNotFoundException {
         while (true) {
             console.println("Введите команду 'register' для регистрации или 'login' для авторизации:");
             String inputCommand = console.readln().trim().toLowerCase();
             if (inputCommand.equals("register") || inputCommand.equals("login")) {
-
                 console.println("Введите логин:");
                 String username = console.readln();
                 console.println("Введите пароль для авторизации:");
                 String password = getHash(console.readln());
-                Request request = new Request(inputCommand, new Pair<>(username, password));
-
-                networkManager.send(request);
-                Response authResponse = networkManager.receive();
-                if (authResponse.getExecutionStatus().isSuccess()) {
-                    console.println(authResponse.getExecutionStatus().getMessage());
-                    return new Pair<>(username, password);
-                } else {
-                    console.printError(authResponse.getExecutionStatus().getMessage());
+                Pair<String, String> user = sendAuthenticationRequest(networkManager, console, new Pair<>(username, password), inputCommand);
+                if (user != null) {
+                    return user;
                 }
             } else {
                 console.printError("Команда '" + inputCommand + "' не найдена!");

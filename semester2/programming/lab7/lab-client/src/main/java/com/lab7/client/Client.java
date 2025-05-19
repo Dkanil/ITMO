@@ -39,10 +39,13 @@ public final class Client {
             try {
                 networkManager.connect();
                 commandsData = networkManager.receive().getCommandsMap();
-                attempts = 1;
                 console.println("Connected to " + SERVER_HOST + ":" + SERVER_PORT);
-                user = AuthenticationManager.authenticateUser(networkManager, console);
-
+                if (attempts == 1) {
+                    user = AuthenticationManager.authenticateUser(networkManager, console);
+                } else {
+                    AuthenticationManager.sendAuthenticationRequest(networkManager, console, user, "login");
+                    attempts = 1;
+                }
                 while (true) {
                     console.println("Введите команду:");
                     String inputCommand = console.readln();

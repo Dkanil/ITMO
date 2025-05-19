@@ -16,7 +16,6 @@ public class CollectionManagerProxy implements CollectionManager {
     private final Map<Long, MusicBand> bandsMap = new HashMap<>();
     private Stack<MusicBand> collection = new Stack<>();
     private boolean isCacheValid = false;
-    //TODO сделать кэш
 
     /**
      * Конструктор класса CollectionManagerProxy.
