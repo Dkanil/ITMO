@@ -45,7 +45,7 @@ public class Executer {
         ExecutionStatus validateStatus = validateCommand(userCommand);
         if (validateStatus.isSuccess()) {
             var command = commandManager.getCommand(userCommand[0]);
-            Server.logger.info("Выполнение команды '" + userCommand[0] + "'");
+            Server.logger.info("Command '" + userCommand[0] + "' is running...");
             if (AskingCommand.class.isAssignableFrom(command.getClass())) {
                 return ((AskingCommand<?>) command).run(userCommand[1], musicBand, user);
             } else {

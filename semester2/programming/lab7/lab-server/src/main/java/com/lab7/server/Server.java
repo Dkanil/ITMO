@@ -35,9 +35,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -94,7 +94,7 @@ public final class Server {
     private static CommandManager commandManager;
     private static ServerNetworkManager networkManager;
     private static Selector selector;
-    private static final Map<SocketChannel, Response> responses = new ConcurrentHashMap<>();
+    private static final Map<SocketChannel, CompletableFuture<Response>> responseFutures = new ConcurrentHashMap<>();
     private static Executer executer;
     private static final CollectionManager collectionManager = CollectionManagerProxy.getInstance();
 
@@ -199,17 +199,16 @@ public final class Server {
                             } else if (key.isReadable()) {
                                 SocketChannel clientChannel = (SocketChannel) key.channel();
                                 clientChannel.configureBlocking(false);
-
-                                Future<?> readFuture = readPool.submit(() -> {
+                                if (responseFutures.get(clientChannel) != null) {
+                                    continue; // Пропускаем итерацию, если уже идёт обработка этого клиента
+                                }
+                                CompletableFuture<Response> responseFuture = new CompletableFuture<>();
+                                readPool.submit(() -> {
                                     try {
                                         Request request = networkManager.receive(clientChannel, key);
                                         logger.info("Request received from client: " + request);
-                                        Thread processRequestThread = getProcessRequestThread(clientChannel, request, key);
-                                        try {
-                                            processRequestThread.join();
-                                        } catch (InterruptedException e) {
-                                            logger.severe("Error while waiting for request processing: " + e.getMessage());
-                                        }
+                                        Thread processRequestThread = getProcessRequestThread(request, key, responseFuture);
+                                        processRequestThread.start();
                                     } catch (ServerNetworkManager.NullRequestException | SocketException | NullPointerException e) {
                                         logger.severe("Error receiving request from client: " + e.getMessage());
                                         key.cancel();
@@ -218,7 +217,7 @@ public final class Server {
                                         throw new RuntimeException(e);
                                     }
                                 });
-                                readFuture.get(); // Wait for the read operation to complete
+                                responseFutures.put(clientChannel, responseFuture);
                                 clientChannel.register(selector, SelectionKey.OP_WRITE);
                             } else if (key.isWritable()) {
                                 SocketChannel clientChannel = (SocketChannel) key.channel();
@@ -226,13 +225,23 @@ public final class Server {
 
                                 writePool.submit(() -> {
                                     try {
-                                        Response response = responses.remove(clientChannel);
-                                        networkManager.send(response, clientChannel);
-                                        logger.info("Response sent to client: " + clientChannel.getRemoteAddress());
-                                        clientChannel.register(selector, SelectionKey.OP_READ);
+                                        CompletableFuture<Response> responseFuture = responseFutures.get(clientChannel);
+                                        if (responseFuture != null) {
+                                            Response response = responseFuture.get();
+                                            networkManager.send(response, clientChannel);
+                                            logger.info("Response sent to client: " + clientChannel.getRemoteAddress());
+                                            //clientChannel.register(selector, SelectionKey.OP_READ);
+                                            responseFutures.remove(clientChannel);
+                                        }
+                                        else{
+                                            logger.severe("No response future found for client: " + clientChannel.getRemoteAddress());
+                                        }
                                     }  catch (IOException e) {
                                         logger.severe("Error sending response to client: " + e.getMessage());
                                         key.cancel();
+                                    } catch (ExecutionException | InterruptedException e) {
+                                        logger.severe("Error doing the command: " + e.getMessage());
+                                        throw new RuntimeException(e);
                                     }
                                 });
                                 clientChannel.register(selector, SelectionKey.OP_READ);
@@ -243,8 +252,6 @@ public final class Server {
                             logger.severe("Client " + channel.toString() + " disconnected");
                             key.cancel();
                         }
-                    } catch (ExecutionException | InterruptedException e) {
-                        throw new RuntimeException(e);
                     } finally {
                         keys.remove();
                     }
@@ -260,42 +267,39 @@ public final class Server {
         }
     }
 
-    private static synchronized Thread getProcessRequestThread(SocketChannel clientChannel, Request request, SelectionKey key) {
-        Thread processRequestThread = new Thread(() -> {
+    private static Thread getProcessRequestThread(Request request, SelectionKey key, CompletableFuture<Response> responseFuture) {
+        return new Thread(() -> {
             try {
-                processRequest(clientChannel, request);
+                Response response = processRequest(request);
+                responseFuture.complete(response);
             } catch (ClosedChannelException e) {
                 logger.severe("Error processing request: " + e.getMessage());
+                responseFuture.completeExceptionally(e);
                 key.cancel();
             }
         });
-        processRequestThread.start();
-        return processRequestThread;
     }
 
-    private static synchronized void processRequest(SocketChannel clientChannel, Request request) throws ClosedChannelException {
-        ExecutionStatus authStatus = null;
-        if (request.getCommand()[0].equals("register")) {
-            authStatus = DBManager.getInstance().addUser(request.getUser());
-        } else if (request.getCommand()[0].equals("login")) {
-            authStatus = DBManager.getInstance().checkPassword(request.getUser());
-        }
+    private static Response processRequest(Request request) throws ClosedChannelException {
         if (request.getCommand()[0].equals("register") || request.getCommand()[0].equals("login")) {
-            responses.put(clientChannel, new Response(authStatus));
+            ExecutionStatus authStatus = "register".equals(request.getCommand()[0])
+                    ? DBManager.getInstance().addUser(request.getUser())
+                    : DBManager.getInstance().checkPassword(request.getUser());
             if (authStatus.isSuccess()) {
-                logger.info(authStatus.getMessage() + ": " + request.getUser());
+                logger.info(authStatus.getMessage() + " User: " + request.getUser().getFirst());
             } else {
                 logger.warning(authStatus.getMessage());
             }
+            return new Response(authStatus);
         }
         else {
             ExecutionStatus executionStatus = executer.runCommand(request.getCommand(), request.getBand(), request.getUser());
-            responses.put(clientChannel, new Response(executionStatus));
             if (!executionStatus.isSuccess()) {
                 logger.severe(executionStatus.getMessage());
             } else {
                 logger.info("Command executed successfully");
             }
+            return new Response(executionStatus);
         }
     }
 

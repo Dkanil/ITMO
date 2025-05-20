@@ -30,4 +30,12 @@ public class Pair<A, B> implements Serializable {
     public void setSecond(B b) {
         this.b = b;
     }
+
+    @Override
+    public String toString() {
+        return "Pair{" +
+                a.getClass().getSimpleName() + "=" + a + ", " +
+                b.getClass().getSimpleName() + "=" + b +
+                '}';
+    }
 }

@@ -66,7 +66,7 @@ public class ServerNetworkManager {
             Server.logger.info("Last packet of bytes sent with length: " + packet.position());
             ByteBuffer stopPacket = ByteBuffer.wrap(new byte[]{69, 69});
             clientChannel.write(stopPacket);
-            Server.logger.info("Stop packet sent\n");
+            Server.logger.info("Stop packet sent");
         } catch (InterruptedException e) {
             Server.logger.severe("Error while sending data: " + e.getMessage());
             throw new RuntimeException(e);
@@ -79,7 +79,7 @@ public class ServerNetworkManager {
         }
     }
 
-    public synchronized Request receive(SocketChannel clientChannel, SelectionKey key) throws IOException, ClassNotFoundException, NullRequestException {
+    public synchronized Request receive(SocketChannel clientChannel, SelectionKey key) throws IOException, ClassNotFoundException, NullPointerException, NullRequestException {
         ByteBuffer clientData = ByteBuffer.allocate(2048);
         int bytesRead = clientChannel.read(clientData);
         Server.logger.info(bytesRead + " bytes received from client");
@@ -87,6 +87,9 @@ public class ServerNetworkManager {
             key.cancel();
             Server.logger.warning("Client closed the connection");
             throw new NullRequestException("Client closed the connection");
+        }
+        if (bytesRead == 0) {
+            throw new NullRequestException("No data received from client");
         }
         clientData.flip(); // Переключаем ByteBuffer в режим чтения
 

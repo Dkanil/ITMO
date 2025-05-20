@@ -39,6 +39,7 @@ public class Request implements Serializable {
         return "Request{" +
                 "string='" + string + '\'' +
                 ", band=" + band +
+                ", user=" + user +
                 '}';
     }
 }
