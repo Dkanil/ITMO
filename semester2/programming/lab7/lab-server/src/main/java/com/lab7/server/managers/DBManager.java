@@ -28,11 +28,8 @@ public class DBManager {
      */
     private DBManager(String url, String user, String password) {
         try {
-            Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(url, user, password);
             Server.logger.info("Connected to database successfully");
-        } catch (ClassNotFoundException e) {
-            Server.logger.severe("Driver PostgreSQL not found: " + e.getMessage());
         }
         catch (SQLException e) {
             Server.logger.severe("Failed to connect to database: " + e.getMessage());
