@@ -40,7 +40,7 @@ public final class Client {
                 networkManager.connect();
                 commandsData = networkManager.receive().getCommandsMap();
                 console.println("Connected to " + SERVER_HOST + ":" + SERVER_PORT);
-                if (attempts == 1) {
+                if (attempts == 1 || user == null) {
                     user = AuthenticationManager.authenticateUser(networkManager, console);
                 } else {
                     AuthenticationManager.sendAuthenticationRequest(networkManager, console, user, "login");

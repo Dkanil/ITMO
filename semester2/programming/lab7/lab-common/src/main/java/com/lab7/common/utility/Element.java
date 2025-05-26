@@ -8,5 +8,5 @@ public abstract class Element implements Comparable<Element>, Validatable {
      * Возвращает идентификатор элемента.
      * @return идентификатор элемента
      */
-    abstract public Long getID();
+    abstract public Long getId();
 }

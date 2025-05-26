@@ -13,11 +13,10 @@ import java.util.Objects;
 public class MusicBand extends Element implements Serializable {
     @Serial
     private static final long serialVersionUID = 20L;
-
     private Long id; // Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; // Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; // Поле не может быть null
-    private LocalDateTime creationDate; // Поле не может быть null, Значение этого поля должно генерироваться автоматически
+    private final LocalDateTime creationDate; // Поле не может быть null, Значение этого поля должно генерироваться автоматически
     private Long numberOfParticipants; // Поле может быть null, Значение поля должно быть больше 0
     private Long albumsCount; // Поле может быть null, Значение поля должно быть больше 0
     private String description; // Поле не может быть null
@@ -25,8 +24,8 @@ public class MusicBand extends Element implements Serializable {
     private Studio studio; //Поле не может быть null
     private final String user;
 
-    public MusicBand(String name, Coordinates coordinates, LocalDateTime creationDate, Long numberOfParticipants, Long albumsCount, String description, MusicGenre genre, Studio studio, String user) {
-        this.id = 1L; //Ставится значение по умолчанию, так как id присваивается в БД
+    protected MusicBand(Long id, String name, Coordinates coordinates, LocalDateTime creationDate, Long numberOfParticipants, Long albumsCount, String description, MusicGenre genre, Studio studio, String user) {
+        this.id = id; //Ставится значение по умолчанию, так как id присваивается в БД
         this.name = name;
         this.coordinates = coordinates;
         this.creationDate = creationDate;
@@ -38,61 +37,44 @@ public class MusicBand extends Element implements Serializable {
         this.user = user;
     }
 
-    /**
-     * Конструктор для создания объекта MusicBand.
-     *
-     * @param id                   идентификатор группы, не может быть null
-     * @param name                 название группы, не может быть null
-     * @param creationDate         дата создания группы, не может быть null
-     * @param numberOfParticipants количество участников, может быть null
-     * @param description          описание группы, не может быть null
-     * @param coordinates          координаты группы, не может быть null
-     * @param albumsCount          количество альбомов, может быть null
-     * @param genre                жанр музыки, может быть null
-     * @param studio               студия, не может быть null
-     */
-    public MusicBand(Long id, String name, Coordinates coordinates, LocalDateTime creationDate, Long numberOfParticipants, Long albumsCount, String description, MusicGenre genre, Studio studio, String user) {
-        this(name, coordinates, creationDate, numberOfParticipants, albumsCount, description, genre, studio, user);
+    public void updateId(Long id) {
         this.id = id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
+    public void updateName(String name) {
         this.name = name;
     }
 
-    public void setCoordinates(Coordinates coordinates) {
+    public void updateCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
     }
 
-    public void setNumberOfParticipants(Long numberOfParticipants) {
+    public void updateNumberOfParticipants(Long numberOfParticipants) {
         this.numberOfParticipants = numberOfParticipants;
     }
 
-    public void setAlbumsCount(Long albumsCount) {
+    public void updateAlbumsCount(Long albumsCount) {
         this.albumsCount = albumsCount;
     }
 
-    public void setDescription(String description) {
+    public void updateDescription(String description) {
         this.description = description;
     }
 
-    public void setGenre(MusicGenre genre) {
+    public void updateGenre(MusicGenre genre) {
         this.genre = genre;
     }
 
-    public void setStudio(Studio studio) {
+    public void updateStudio(Studio studio) {
         this.studio = studio;
     }
 
     /**
-     * Возвращает идентификатор группы.
+     * Возвращает идентификатор элемента.
      *
-     * @return идентификатор группы
+     * @return идентификатор элемента
      */
+    @Override
     public Long getId() {
         return id;
     }
@@ -239,16 +221,6 @@ public class MusicBand extends Element implements Serializable {
     }
 
     /**
-     * Возвращает идентификатор элемента.
-     *
-     * @return идентификатор элемента
-     */
-    @Override
-    public Long getID() {
-        return id;
-    }
-
-    /**
      * Сравнивает текущий объект с другим объектом.
      *
      * @param o объект для сравнения
@@ -256,6 +228,6 @@ public class MusicBand extends Element implements Serializable {
      */
     @Override
     public int compareTo(Element o) {
-        return (int) (this.id - o.getID());
+        return (int) (this.id - o.getId());
     }
 }

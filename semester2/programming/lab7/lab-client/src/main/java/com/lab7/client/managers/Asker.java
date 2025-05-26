@@ -7,6 +7,7 @@ import com.lab7.common.models.MusicBand;
 import com.lab7.common.models.MusicGenre;
 import com.lab7.common.models.Coordinates;
 import com.lab7.common.models.Studio;
+import com.lab7.common.models.MusicBandBuilder;
 
 import java.time.LocalDateTime;
 
@@ -43,6 +44,7 @@ public class Asker {
      * @throws IllegalInputException Исключение, выбрасываемое при некорректном вводе.
      */
     public static MusicBand askBand(Console console) throws Breaker, IllegalInputException {
+        MusicBandBuilder builder = new MusicBandBuilder();
         String name;
         do {
             console.println("Введите значение поля name:");
@@ -51,8 +53,9 @@ public class Asker {
                 throw new Breaker();
             }
         } while (name.isEmpty());
+        builder.setName(name);
 
-        Coordinates coordinates = askCoordinates(console);
+        builder.setCoordinates(askCoordinates(console));
 
         Long numberOfParticipants;
         do {
@@ -74,6 +77,7 @@ public class Asker {
                 console.printError("Некорректное значение поля numberOfParticipants!\nЗначение поля должно быть больше 0");
             }
         } while (numberOfParticipants <= 0);
+        builder.setNumberOfParticipants(numberOfParticipants);
 
         Long albumsCount;
         do {
@@ -95,6 +99,7 @@ public class Asker {
                 console.printError("Некорректное значение поля albumsCount!\nЗначение поля должно быть больше 0");
             }
         } while (albumsCount <= 0);
+        builder.setAlbumsCount(albumsCount);
 
         String description;
         do {
@@ -104,6 +109,7 @@ public class Asker {
                 throw new Breaker();
             }
         } while (description.isEmpty());
+        builder.setDescription(description);
 
         MusicGenre genre = null;
         do {
@@ -123,10 +129,10 @@ public class Asker {
                 }
             }
         } while (genre == null);
+        builder.setGenre(genre);
+        builder.setStudio(askStudio(console));
 
-        Studio studio = askStudio(console);
-
-        return new MusicBand(name, coordinates, LocalDateTime.now(), numberOfParticipants, albumsCount, description, genre, studio, Client.user.getFirst());
+        return builder.setUser(Client.user.getFirst()).setCreationDate(LocalDateTime.now()).build();
     }
 
     /**

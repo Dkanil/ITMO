@@ -1,5 +1,6 @@
 package com.lab7.server.managers;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -19,9 +20,9 @@ import com.lab7.server.Server;
 /**
  * Класс, управляющий коллекцией музыкальных групп.
  */
-public class CollectionManagerMain implements CollectionManager {
+class CollectionManagerMain implements CollectionManager {
     private static volatile CollectionManagerMain instance;
-    private final DBManager dbManager = DBManager.getInstance();
+    private final DBManagerInterface dbManager = DBManager.getInstance();
     private final Map<Long, MusicBand> bandsMap = new HashMap<>();
     private Stack<MusicBand> collection = new Stack<>();
     private LocalDateTime initializationDate;
@@ -70,8 +71,8 @@ public class CollectionManagerMain implements CollectionManager {
      */
     @Override
     public void sort() {
-        //Коллекция в бд хранятся уже в отсортированном виде, поэтому там ничего не делаем
-        lock.writeLock().lock(); // Блокировка записи
+        // Коллекция в бд хранятся уже в отсортированном виде, поэтому там ничего не делаем
+        lock.writeLock().lock();
         try {
             collection.sort(Comparator.comparing(MusicBand::getId));
         } finally {
@@ -186,7 +187,7 @@ public class CollectionManagerMain implements CollectionManager {
      */
     @Override
     public ExecutionStatus loadCollection() {
-        lock.writeLock().lock(); // Блокировка записи
+        lock.writeLock().lock();
         try {
             collection.clear();
             bandsMap.clear();
@@ -210,7 +211,7 @@ public class CollectionManagerMain implements CollectionManager {
      */
     @Override
     public ExecutionStatus clear(Pair<String, String> user) {
-        lock.writeLock().lock(); // Блокировка записи
+        lock.writeLock().lock();
         try {
             ExecutionStatus clearStatus = dbManager.clear(user);
             if (clearStatus.isSuccess()) {
@@ -227,12 +228,12 @@ public class CollectionManagerMain implements CollectionManager {
 
     @Override
     public ExecutionStatus add(MusicBand band, Pair<String, String> user) {
-        lock.writeLock().lock(); // Блокировка записи
+        lock.writeLock().lock();
         try {
             if ((band != null) && band.validate()) {
                 ExecutionStatus addStatus = dbManager.addMusicBand(band, user);
                 if (addStatus.isSuccess()) {
-                    band.setId(Long.parseLong(addStatus.getMessage()));
+                    band.updateId(Long.parseLong(addStatus.getMessage()));
                     lastSaveDate = LocalDateTime.now();
                     collection.push(band);
                     bandsMap.put(band.getId(), band);
@@ -241,6 +242,8 @@ public class CollectionManagerMain implements CollectionManager {
                 return new ExecutionStatus(false, "Произошла ошибка при добавлении коллекции в базу данных!");
             }
             return new ExecutionStatus(false, "Элемент коллекции введён неверно!");
+        } catch (SQLException e) {
+            return new ExecutionStatus(false, "Ошибка при сохранении элемента коллекции в базу данных: " + e.getMessage());
         } finally {
             lock.writeLock().unlock();
         }
@@ -248,23 +251,22 @@ public class CollectionManagerMain implements CollectionManager {
 
     @Override
     public ExecutionStatus update(MusicBand band, Pair<String, String> user) {
-        lock.writeLock().lock(); // Блокировка записи
+        lock.writeLock().lock();
         try {
             ExecutionStatus updStatus = dbManager.updateMusicBand(band, user);
             if (updStatus.isSuccess()) {
-                band.setId(Long.parseLong(updStatus.getMessage()));
                 lastSaveDate = LocalDateTime.now();
                 collection.stream()
                         .filter(existingBand -> existingBand.getId().equals(band.getId()))
                         .forEach(existingBand -> {
                             bandsMap.remove(existingBand.getId(), existingBand);
-                            existingBand.setName(band.getName());
-                            existingBand.setCoordinates(band.getCoordinates());
-                            existingBand.setNumberOfParticipants(band.getNumberOfParticipants());
-                            existingBand.setAlbumsCount(band.getAlbumsCount());
-                            existingBand.setDescription(band.getDescription());
-                            existingBand.setGenre(band.getGenre());
-                            existingBand.setStudio(band.getStudio());
+                            existingBand.updateName(band.getName());
+                            existingBand.updateCoordinates(band.getCoordinates());
+                            existingBand.updateNumberOfParticipants(band.getNumberOfParticipants());
+                            existingBand.updateAlbumsCount(band.getAlbumsCount());
+                            existingBand.updateDescription(band.getDescription());
+                            existingBand.updateGenre(band.getGenre());
+                            existingBand.updateStudio(band.getStudio());
                             bandsMap.put(band.getId(), band);
                         });
 
@@ -272,6 +274,8 @@ public class CollectionManagerMain implements CollectionManager {
                 Server.logger.severe("Error updating band in database: " + band.getName());
             }
             return updStatus;
+        } catch (SQLException e) {
+            return new ExecutionStatus(false, "Ошибка при сохранении элемента коллекции в базу данных: " + e.getMessage());
         } finally {
             lock.writeLock().unlock();
         }
@@ -284,7 +288,7 @@ public class CollectionManagerMain implements CollectionManager {
      */
     @Override
     public ExecutionStatus removeById(Long elementId, Pair<String, String> user) {
-        lock.writeLock().lock(); // Блокировка записи
+        lock.writeLock().lock();
         try {
             ExecutionStatus removeStatus = dbManager.removeById(elementId, user);
             if (removeStatus.isSuccess()) {

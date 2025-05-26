@@ -9,13 +9,17 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CollectionManagerProxy implements CollectionManager {
     private static volatile CollectionManagerProxy instance;
     private final CollectionManagerMain collectionManagerMain = CollectionManagerMain.getInstance();
     private final Map<Long, MusicBand> bandsMap = new HashMap<>();
     private Stack<MusicBand> collection = new Stack<>();
-    private boolean isCacheValid = false;
+    private final AtomicBoolean isCacheValid = new AtomicBoolean(false);
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * Конструктор класса CollectionManagerProxy.
@@ -40,11 +44,13 @@ public class CollectionManagerProxy implements CollectionManager {
     }
 
     private void refreshCache() {
-        if (!isCacheValid) {
+        if (!isCacheValid.get()) {
+            lock.writeLock().lock(); // Блокировка для обновления кэша
             collection = collectionManagerMain.getCollection();
             bandsMap.clear();
             collection.forEach(band -> bandsMap.put(band.getId(), band));
-            isCacheValid = true;
+            isCacheValid.set(true);
+            lock.writeLock().unlock();
         }
     }
 
@@ -57,14 +63,14 @@ public class CollectionManagerProxy implements CollectionManager {
     @Override
     public void sort() {
         collectionManagerMain.sort();
-        isCacheValid = false;
+        isCacheValid.set(false);
     }
 
     @Override
     public ExecutionStatus removeFirst(Pair<String, String> user) {
         ExecutionStatus status = collectionManagerMain.removeFirst(user);
         if (status.isSuccess()) {
-            isCacheValid = false;
+            isCacheValid.set(false);
         }
         return status;
     }
@@ -95,7 +101,7 @@ public class CollectionManagerProxy implements CollectionManager {
     public ExecutionStatus removeAllByGenre(MusicGenre genre, Pair<String, String> user) {
         ExecutionStatus status = collectionManagerMain.removeAllByGenre(genre, user);
         if (status.isSuccess()) {
-            isCacheValid = false;
+            isCacheValid.set(false);
         }
         return status;
     }
@@ -104,7 +110,7 @@ public class CollectionManagerProxy implements CollectionManager {
     public ExecutionStatus loadCollection() {
         ExecutionStatus status = collectionManagerMain.loadCollection();
         if (status.isSuccess()) {
-            isCacheValid = false;
+            isCacheValid.set(false);
         }
         return status;
     }
@@ -113,7 +119,7 @@ public class CollectionManagerProxy implements CollectionManager {
     public ExecutionStatus clear(Pair<String, String> user) {
         ExecutionStatus status = collectionManagerMain.clear(user);
         if (status.isSuccess()) {
-            isCacheValid = false;
+            isCacheValid.set(false);
         }
         return status;
     }
@@ -122,7 +128,7 @@ public class CollectionManagerProxy implements CollectionManager {
     public ExecutionStatus add(MusicBand band, Pair<String, String> user) {
         ExecutionStatus status = collectionManagerMain.add(band, user);
         if (status.isSuccess()) {
-            isCacheValid = false;
+            isCacheValid.set(false);
         }
         return status;
     }
@@ -131,7 +137,7 @@ public class CollectionManagerProxy implements CollectionManager {
     public ExecutionStatus update(MusicBand band, Pair<String, String> user) {
         ExecutionStatus status = collectionManagerMain.update(band, user);
         if (status.isSuccess()) {
-            isCacheValid = false;
+            isCacheValid.set(false);
         }
         return status;
     }
@@ -140,7 +146,7 @@ public class CollectionManagerProxy implements CollectionManager {
     public ExecutionStatus removeById(Long elementId, Pair<String, String> user) {
         ExecutionStatus status = collectionManagerMain.removeById(elementId, user);
         if (status.isSuccess()) {
-            isCacheValid = false;
+            isCacheValid.set(false);
         }
         return status;
     }

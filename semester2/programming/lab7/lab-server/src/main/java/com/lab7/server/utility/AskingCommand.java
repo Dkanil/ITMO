@@ -56,7 +56,7 @@ public abstract class AskingCommand<T extends ArgumentValidator> extends Command
                 if (collectionManager.getById(id) == null) {
                     return new ExecutionStatus(false, "Элемент с указанным id не найден!");
                 }
-                band.setId(id);
+                band.updateId(id);
             }
             return runInternal(band, user);
         } else {

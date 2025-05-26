@@ -4,6 +4,7 @@ import com.lab7.common.utility.Request;
 import com.lab7.common.utility.Response;
 import com.lab7.server.Server;
 
+import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,15 +19,26 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 public class ServerNetworkManager {
-    private final int PORT;
     private ServerSocketChannel serverChannel;
+    private static volatile ServerNetworkManager instance;
 
-    public ServerNetworkManager(int port) {
-        this.PORT = port;
+    private ServerNetworkManager() {
+    }
+
+    public static ServerNetworkManager getInstance() {
+        if (instance == null) {
+            synchronized (ServerNetworkManager.class) {
+                if (instance == null) {
+                    instance = new ServerNetworkManager();
+                }
+            }
+        }
+        return instance;
     }
 
     public void startServer() throws IOException {
         serverChannel = ServerSocketChannel.open();
+        int PORT = 13876;
         serverChannel.bind(new InetSocketAddress(PORT));
         serverChannel.configureBlocking(false);
         Server.logger.info("Server started on Port:" + PORT);
@@ -36,7 +48,7 @@ public class ServerNetworkManager {
         if (serverChannel != null) {
             serverChannel.close();
         }
-        Server.logger.info("Server shutdown complete");
+        Server.logger.info("ServerSocketChannel is closed");
     }
 
     public ServerSocketChannel getServerSocketChannel() {
