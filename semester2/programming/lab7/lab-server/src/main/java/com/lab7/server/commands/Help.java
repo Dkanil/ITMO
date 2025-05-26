@@ -1,7 +1,6 @@
 package com.lab7.server.commands;
 
 import com.lab7.common.utility.Pair;
-import com.lab7.common.utility.PermissionType;
 import com.lab7.server.managers.CommandManager;
 import com.lab7.server.managers.DBManager;
 import com.lab7.server.utility.Command;

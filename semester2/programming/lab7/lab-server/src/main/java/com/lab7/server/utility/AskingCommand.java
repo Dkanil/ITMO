@@ -2,11 +2,9 @@ package com.lab7.server.utility;
 
 import com.lab7.common.utility.ExecutionStatus;
 import com.lab7.common.utility.Pair;
-import com.lab7.common.utility.PermissionType;
 import com.lab7.common.validators.ArgumentValidator;
 import com.lab7.common.validators.IdValidator;
 import com.lab7.common.models.MusicBand;
-import com.lab7.server.managers.DBManager;
 
 /**
  * Абстрактный класс для команд, требующих ввода данных.
