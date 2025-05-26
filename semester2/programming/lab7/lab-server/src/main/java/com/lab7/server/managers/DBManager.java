@@ -4,6 +4,7 @@ import com.lab7.common.models.*;
 import com.lab7.common.utility.ExecutionStatus;
 import com.lab7.common.utility.Pair;
 import com.lab7.server.Server;
+import com.lab7.common.utility.PermissionType;
 import com.lab7.server.utility.Transactional;
 import com.lab7.server.utility.TransactionalProxy;
 
@@ -11,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.DriverManager;
@@ -112,6 +114,38 @@ public class DBManager implements DBManagerInterface {
         }
     }
 
+    public ExecutionStatus updateUserPermissions(String username, PermissionType permission) {
+        String query = "UPDATE users SET permissions = ? WHERE username = ?;";
+        try (PreparedStatement p = connection.prepareStatement(query)) {
+            p.setString(1, permission.name());
+            p.setString(2, username);
+            int affectedRows = p.executeUpdate();
+            if (affectedRows > 0) {
+                return new ExecutionStatus(true, "Права пользователя " + username + " успешно обновлены!");
+            } else {
+                return new ExecutionStatus(false, "Пользователь " + username + " не найден!");
+            }
+        } catch (SQLException | NullPointerException e) {
+            return new ExecutionStatus(false, "Ошибка при обновлении прав пользователя в базе данных: " + e.getMessage());
+        }
+    }
+
+    public ExecutionStatus checkUserPermission(Pair<String, String> user) {
+        String query = "SELECT permissions FROM users WHERE username = ?;";
+        try (PreparedStatement p = connection.prepareStatement(query)) {
+            p.setString(1, user.getFirst());
+            ResultSet res = p.executeQuery();
+            if (res.next()) {
+                String permission = res.getString("permissions");
+                return new ExecutionStatus(true, permission);
+            } else {
+                return new ExecutionStatus(false, "Пользователь не найден!");
+            }
+        } catch (SQLException | NullPointerException e) {
+            return new ExecutionStatus(false, "Ошибка при проверке прав пользователя в базе данных: " + e.getMessage());
+        }
+    }
+
     public ExecutionStatus clear(Pair<String, String> user) {
         String query = "DELETE FROM music_bands WHERE user_id IN (SELECT id FROM users WHERE username = ?);";
         try (PreparedStatement p = connection.prepareStatement(query)) {
@@ -127,11 +161,33 @@ public class DBManager implements DBManagerInterface {
         }
     }
 
+    public ExecutionStatus clearAll() {
+        String query = "TRUNCATE music_bands CASCADE;";
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(query);
+            return new ExecutionStatus(true, "Коллекция успешно очищена!");
+        } catch (SQLException e) {
+            return new ExecutionStatus(false, "Ошибка при очистке коллекции: " + e.getMessage());
+        }
+    }
+
     public ExecutionStatus removeById(Long id, Pair<String, String> user) {
-        String query = "DELETE FROM music_bands WHERE id = ? AND user_id IN (SELECT id FROM users WHERE username = ?);";
+        ExecutionStatus accessStatus = checkUserPermission(user);
+        if (!accessStatus.isSuccess()) {
+            return accessStatus;
+        }
+        String query;
+        if (accessStatus.getMessage().equals("USER")) {
+            query = "DELETE FROM music_bands WHERE id = ? AND user_id IN (SELECT id FROM users WHERE username = ?);";
+        }
+        else {
+            query = "DELETE FROM music_bands WHERE id = ?;";
+        }
         try (PreparedStatement p = connection.prepareStatement(query)) {
             p.setLong(1, id);
-            p.setString(2, user.getFirst());
+            if (accessStatus.getMessage().equals("USER")) {
+                p.setString(2, user.getFirst());
+            }
             int affectedRows = p.executeUpdate();
             if (affectedRows > 0) {
                 return new ExecutionStatus(true, "Элемент успешно удалён!");
@@ -150,9 +206,24 @@ public class DBManager implements DBManagerInterface {
             p.setString(2, user.getFirst());
             int affectedRows = p.executeUpdate();
             if (affectedRows > 0) {
-                return new ExecutionStatus(true, "Успешно удалено " + affectedRows + " элементов пользователя " + user.getFirst() + " с жанром " + genre + "!");
+                return new ExecutionStatus(true, "Успешно удалено " + affectedRows + " элементов с жанром " + genre + "!");
             } else {
-                return new ExecutionStatus(false, "У пользователя " + user.getFirst() + " элементы с указанным genre не найдены!");
+                return new ExecutionStatus(false, "Доступные для удаления элементы с указанным genre не найдены!");
+            }
+        } catch (SQLException | NullPointerException e) {
+            return new ExecutionStatus(false, "Ошибка при удалении элемента коллекции из базы данных: " + e.getMessage());
+        }
+    }
+
+    public ExecutionStatus removeAllByGenre(MusicGenre genre) {
+        String query = "DELETE FROM music_bands WHERE genre_id = ?;";
+        try (PreparedStatement p = connection.prepareStatement(query)) {
+            p.setLong(1, genre.ordinal() + 1);
+            int affectedRows = p.executeUpdate();
+            if (affectedRows > 0) {
+                return new ExecutionStatus(true, "Успешно удалено " + affectedRows + " элементов с жанром " + genre + "!");
+            } else {
+                return new ExecutionStatus(false, "Доступные для удаления элементы с указанным genre не найдены!");
             }
         } catch (SQLException | NullPointerException e) {
             return new ExecutionStatus(false, "Ошибка при удалении элемента коллекции из базы данных: " + e.getMessage());
@@ -212,12 +283,22 @@ public class DBManager implements DBManagerInterface {
         int coordinatesId;
         int studioId;
 
+        ExecutionStatus accessStatus = checkUserPermission(user);
+        if (!accessStatus.isSuccess()) {
+            return accessStatus;
+        }
+        String updateBandQuery;
+        if (accessStatus.getMessage().equals("USER")) {
+            updateBandQuery = "UPDATE music_bands SET name = ?, number_of_participants = ?, albums_count = ?, description = ?, genre_id = ? WHERE id = ? AND user_id IN (SELECT id FROM users WHERE username = ?) RETURNING coordinates_id, studio_id";
+        }
+        else {
+            updateBandQuery = "UPDATE music_bands SET name = ?, number_of_participants = ?, albums_count = ?, description = ?, genre_id = ? WHERE id = ? RETURNING coordinates_id, studio_id";
+        }
+
         String checkQuery = "SELECT COUNT(*) FROM music_bands WHERE id = ?;";
         // Обновление самой музыкальной группы
-        String updateBand = "UPDATE music_bands SET name = ?, number_of_participants = ?, albums_count = ?, " +
-                "description = ?, genre_id = ? WHERE id = ? AND user_id IN (SELECT id FROM users WHERE username = ?) RETURNING coordinates_id, studio_id";
         try (PreparedStatement checkStmt = connection.prepareStatement(checkQuery);
-             PreparedStatement bandStmt = connection.prepareStatement(updateBand)) {
+             PreparedStatement bandStmt = connection.prepareStatement(updateBandQuery)) {
             checkStmt.setLong(1, band.getId());
             ResultSet checkResult = checkStmt.executeQuery();
             if (checkResult.next() && checkResult.getInt(1) == 0) {
@@ -230,7 +311,9 @@ public class DBManager implements DBManagerInterface {
             bandStmt.setString(4, band.getDescription());
             bandStmt.setInt(5, band.getGenre().ordinal() + 1);
             bandStmt.setLong(6, band.getId());
+            if (accessStatus.getMessage().equals("USER")) {
             bandStmt.setString(7, user.getFirst());
+            }
             ResultSet rs = bandStmt.executeQuery();
             if (rs.next()) {
                 coordinatesId = rs.getInt("coordinates_id");

@@ -167,12 +167,26 @@ class CollectionManagerMain implements CollectionManager {
     public ExecutionStatus removeAllByGenre(MusicGenre genre, Pair<String, String> user) {
         lock.writeLock().lock();
         try {
-            ExecutionStatus removeStatus = dbManager.removeAllByGenre(genre, user);
-            if (removeStatus.isSuccess()) {
-                lastSaveDate = LocalDateTime.now();
-                collection = collection.stream().filter(band -> !band.getGenre().equals(genre) || !band.getUser().equals(user.getFirst()))
-                        .collect(Collectors.toCollection(Stack::new));
-                bandsMap.entrySet().removeIf(entry -> entry.getValue().getGenre().equals(genre));
+            ExecutionStatus accessStatus = dbManager.checkUserPermission(user);
+            if (!accessStatus.isSuccess()) {
+                return accessStatus;
+            }
+            ExecutionStatus removeStatus;
+            if (accessStatus.getMessage().equals("USER")) {
+                removeStatus = dbManager.removeAllByGenre(genre, user);
+                if (removeStatus.isSuccess()) {
+                    lastSaveDate = LocalDateTime.now();
+                    collection = collection.stream().filter(band -> !band.getGenre().equals(genre) || !band.getUser().equals(user.getFirst()))
+                            .collect(Collectors.toCollection(Stack::new));
+                    bandsMap.entrySet().removeIf(entry -> entry.getValue().getGenre().equals(genre) && entry.getValue().getUser().equals(user.getFirst()));
+                }
+            } else {
+                removeStatus = dbManager.removeAllByGenre(genre);
+                if (removeStatus.isSuccess()) {
+                    lastSaveDate = LocalDateTime.now();
+                    collection = collection.stream().filter(band -> !band.getGenre().equals(genre)).collect(Collectors.toCollection(Stack::new));
+                    bandsMap.entrySet().removeIf(entry -> entry.getValue().getGenre().equals(genre));
+                }
             }
             return removeStatus;
         } finally {
@@ -213,12 +227,26 @@ class CollectionManagerMain implements CollectionManager {
     public ExecutionStatus clear(Pair<String, String> user) {
         lock.writeLock().lock();
         try {
-            ExecutionStatus clearStatus = dbManager.clear(user);
-            if (clearStatus.isSuccess()) {
-                collection = collection.stream()
-                        .filter(band -> !band.getUser().equals(user.getFirst()))
-                        .collect(Collectors.toCollection(Stack::new));
-                bandsMap.entrySet().removeIf(entry -> entry.getValue().getUser().equals(user.getFirst()));
+            ExecutionStatus accessStatus = dbManager.checkUserPermission(user);
+            if (!accessStatus.isSuccess()) {
+                return accessStatus;
+            }
+            ExecutionStatus clearStatus;
+            if (accessStatus.getMessage().equals("USER")) {
+                clearStatus = dbManager.clear(user);
+                if (clearStatus.isSuccess()) {
+                    collection = collection.stream()
+                            .filter(band -> !band.getUser().equals(user.getFirst()))
+                            .collect(Collectors.toCollection(Stack::new));
+                    bandsMap.entrySet().removeIf(entry -> entry.getValue().getUser().equals(user.getFirst()));
+                }
+            }
+            else {
+                clearStatus = dbManager.clearAll();
+                if (clearStatus.isSuccess()) {
+                    collection.clear();
+                    bandsMap.clear();
+                }
             }
             return clearStatus;
         } finally {

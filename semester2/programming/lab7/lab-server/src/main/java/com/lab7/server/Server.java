@@ -7,7 +7,6 @@ import com.lab7.server.commands.askingCommands.Update;
 import com.lab7.server.managers.CollectionManagerProxy;
 import com.lab7.server.managers.CommandManager;
 import com.lab7.server.managers.ThreadManager;
-import com.lab7.server.managers.Executer;
 import com.lab7.server.managers.ServerNetworkManager;
 import com.lab7.server.utility.CommandNames;
 
@@ -67,15 +66,16 @@ public final class Server {
     public static void main(String[] args) {
         initLogger();
         ExecutionStatus loadStatus = CollectionManagerProxy.getInstance().loadCollection();
-        ServerNetworkManager networkManager = ServerNetworkManager.getInstance();
         if (!loadStatus.isSuccess()) {
             logger.severe(loadStatus.getMessage());
             System.exit(1);
         }
         logger.info("The collection has been successfully loaded!");
 
+        ServerNetworkManager networkManager = ServerNetworkManager.getInstance();
+
         // Регистрация команд
-        CommandManager commandManager = new CommandManager() {{
+        CommandManager standartCommandManager = new CommandManager() {{
             register(CommandNames.HELP.getName(), new Help(this));
             register(CommandNames.INFO.getName(), new Info());
             register(CommandNames.SHOW.getName(), new Show());
@@ -91,9 +91,8 @@ public final class Server {
             register(CommandNames.REMOVE_ALL_BY_GENRE.getName(), new RemoveAllByGenre());
             register(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), new PrintFieldAscendingDescription());
             register(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), new PrintFieldDescendingDescription());
+            register(CommandNames.UPDATE_USER_PERMISSION.getName(), new UpdateUserPermission());
         }};
-
-        Executer executer = new Executer(commandManager);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -107,16 +106,11 @@ public final class Server {
         }));
 
         try {
-            ThreadManager.getInstance().runServer(commandManager, executer);
+            ThreadManager.getInstance().runServer(standartCommandManager);
         } catch (ClosedSelectorException e) {
             logger.warning("Selector was closed.");
         } catch (IOException | NullPointerException e) {
             logger.severe("Error while running the server: " + e.getMessage());
         }
     }
-    /*
-    todo за респект: проверка сначала привилегию пользователя на удаление и изменение, а потом на изменение этого объекта
-    todo за респект: аутентификации сделать через декоратор
-    todo за респект: для пользователя сделать роли и права доступа(админ (может назначать и убирать права пользователей), обычный пользователь)
-    */
 }

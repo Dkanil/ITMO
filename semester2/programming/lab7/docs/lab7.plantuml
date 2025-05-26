@@ -1,34 +1,36 @@
 @startuml
+left to right direction
+
 package lab-client {
     class Asker {
-      - askStudio(Console): Studio
       + askBand(Console): MusicBand
       - askCoordinates(Console): Coordinates
+      - askStudio(Console): Studio
     }
     class AuthenticationManager {
+      + sendAuthenticationRequest(NetworkManager, Console, Pair<String, String>, String): Pair<String, String>
       + authenticateUser(NetworkManager, Console): Pair<String, String>
-      - getHash(String): String
     }
     class Client {
-      - console: Console
-      - SERVER_HOST: String
-      - networkManager: NetworkManager
-      + user: Pair<String, String>
-      - commandsData: Map<String, Pair<ArgumentValidator, Boolean>>
-      - SERVER_PORT: int
       - attempts: int
+      - console: Console
+      - networkManager: NetworkManager
       - scriptStackCounter: int
-      - validateCommand(String[]): ExecutionStatus
-      - prepareRequest(Console, String): Request
+      - SERVER_PORT: int
+      - commandsData: Map<String, Pair<ArgumentValidator, Boolean>>
+      + user: Pair<String, String>
+      - SERVER_HOST: String
       - runScript(String): ExecutionStatus
-      - askingRequest(Console, String): Request
       + main(String[]): void
+      - askingRequest(Console, String): Request
+      - prepareRequest(Console, String): Request
+      - validateCommand(String[]): ExecutionStatus
     }
     interface Console << interface >> {
       + printError(Object): void
+      + print(Object): void
       + println(Object): void
       + readln(): String
-      + print(Object): void
     }
     class ElementValidator {
       + validating(MusicBand): Pair<ExecutionStatus, MusicBand>
@@ -38,23 +40,23 @@ package lab-client {
       - input: BufferedReader
       + println(Object): void
       + readln(): String
-      + print(Object): void
       + printError(Object): void
+      + print(Object): void
     }
     class NetworkManager {
+      - SERVER_HOST: String
       - PORT: int
       - channel: SocketChannel
-      - SERVER_HOST: String
-      + send(Request): void
       + connect(): void
-      + close(): void
+      + send(Request): void
       + receive(): Response
+      + close(): void
     }
     class StandartConsole {
-      + println(Object): void
       + readln(): String
       + print(Object): void
       + printError(Object): void
+      + println(Object): void
     }
 }
 
@@ -63,18 +65,18 @@ package lab-common {
       + validate(String, String): ExecutionStatus
     }
     class Coordinates {
-      - x: double
-      - serialVersionUID: long
       - y: Integer
-      + validate(): boolean
+      - serialVersionUID: long
+      - x: double
+      + equals(Object): boolean
+      + getY(): Integer
       + getX(): double
       + hashCode(): int
       + toString(): String
-      + getY(): Integer
-      + equals(Object): boolean
+      + validate(): boolean
     }
     class Element {
-      + getID(): Long
+      + getId(): Long
     }
     class EmptyValidator {
       - serialVersionUID: long
@@ -85,9 +87,9 @@ package lab-common {
       - collection: Stack<MusicBand>
       - serialVersionUID: long
       - status: boolean
-      + isSuccess(): boolean
       + getMessage(): String
       + getCollection(): Stack<MusicBand>
+      + isSuccess(): boolean
     }
     class GenreValidator {
       - serialVersionUID: long
@@ -98,88 +100,125 @@ package lab-common {
       + validate(String, String): ExecutionStatus
     }
     class MusicBand {
-      - user: String
-      - id: Long
-      - coordinates: Coordinates
-      - numberOfParticipants: Long
-      - description: String
-      - creationDate: LocalDateTime
-      - studio: Studio
-      - genre: MusicGenre
-      - serialVersionUID: long
       - name: String
+      - user: String
+      - numberOfParticipants: Long
+      - coordinates: Coordinates
       - albumsCount: Long
-      + getStudio(): Studio
-      + setGenre(MusicGenre): void
-      + getCreationDate(): LocalDateTime
-      + validate(): boolean
-      + setStudio(Studio): void
-      + equals(Object): boolean
-      + hashCode(): int
-      + toString(): String
-      + getNumberOfParticipants(): Long
-      + getDescription(): String
-      + getId(): Long
-      + setNumberOfParticipants(Long): void
+      - genre: MusicGenre
+      - studio: Studio
+      - description: String
+      - id: Long
+      - serialVersionUID: long
+      - creationDate: LocalDateTime
       + getCoordinates(): Coordinates
       + getGenre(): MusicGenre
-      + setCoordinates(Coordinates): void
-      + compareTo(Element): int
+      + getNumberOfParticipants(): Long
+      + updateGenre(MusicGenre): void
+      + validate(): boolean
+      + updateId(Long): void
+      + toString(): String
+      + updateStudio(Studio): void
+      + updateCoordinates(Coordinates): void
+      + getDescription(): String
+      + getId(): Long
+      + getCreationDate(): LocalDateTime
+      + updateNumberOfParticipants(Long): void
+      + equals(Object): boolean
       + getName(): String
-      + setId(Long): void
-      + setAlbumsCount(Long): void
-      + setDescription(String): void
-      + getID(): Long
-      + getAlbumsCount(): Long
-      + setName(String): void
+      + getStudio(): Studio
+      + updateName(String): void
       + getUser(): String
+      + hashCode(): int
+      + compareTo(Element): int
+      + updateAlbumsCount(Long): void
+      + updateDescription(String): void
+      + getAlbumsCount(): Long
+    }
+    class MusicBandBuilder {
+      - albumsCount: Long
+      - coordinates: Coordinates
+      - user: String
+      - id: Long
+      - name: String
+      - studio: Studio
+      - creationDate: LocalDateTime
+      - genre: MusicGenre
+      - numberOfParticipants: Long
+      - description: String
+      + setNumberOfParticipants(Long): MusicBandBuilder
+      + setDescription(String): MusicBandBuilder
+      + setGenre(MusicGenre): MusicBandBuilder
+      + setId(Long): MusicBandBuilder
+      + setName(String): MusicBandBuilder
+      + setAlbumsCount(Long): MusicBandBuilder
+      + setCoordinates(Coordinates): MusicBandBuilder
+      + setCreationDate(LocalDateTime): MusicBandBuilder
+      + build(): MusicBand
+      + setUser(String): MusicBandBuilder
+      + setStudio(Studio): MusicBandBuilder
     }
     enum MusicGenre << enumeration >> {
-      + MATH_ROCK:
-      + BRIT_POP:
-      + JAZZ:
-      + list(): String
+      + BRIT_POP: 
+      + JAZZ: 
+      + MATH_ROCK: 
       + values(): MusicGenre[]
+      + list(): String
       + valueOf(String): MusicGenre
     }
     class Pair<A, B> {
+      - a: A
       - b: B
       - serialVersionUID: long
-      - a: A
-      + getFirst(): A
+      + setSecond(B): void
       + getSecond(): B
       + setFirst(A): void
-      + setSecond(B): void
+      + getFirst(): A
+      + toString(): String
+    }
+    enum PermissionType << enumeration >> {
+      - permissionLevel: int
+      + MODERATOR: 
+      + USER: 
+      + ADMIN: 
+      + ABOBA: 
+      + getAllPermissions(): String
+      + valueOf(String): PermissionType
+      + values(): PermissionType[]
+      + getPermissionLevel(): int
     }
     class Request {
       - band: MusicBand
-      - user: Pair<String, String>
-      - string: String
       - serialVersionUID: long
-      + getBand(): MusicBand
+      - string: String
+      - user: Pair<String, String>
       + getUser(): Pair<String, String>
-      + toString(): String
       + getCommand(): String[]
+      + getBand(): MusicBand
+      + toString(): String
     }
     class Response {
       - commandsData: Map<String, Pair<ArgumentValidator, Boolean>>
-      - User: Pair<String, String>
       - executionStatus: ExecutionStatus
       - serialVersionUID: long
       + getExecutionStatus(): ExecutionStatus
-      + getCommandsMap(): Map<String, Pair<ArgumentValidator, Boolean>>
       + toString(): String
+      + getCommandsMap(): Map<String, Pair<ArgumentValidator, Boolean>>
     }
     class Studio {
-      - name: String
       - serialVersionUID: long
       - address: String
-      + hashCode(): int
-      + getName(): String
+      - name: String
       + getAddress(): String
-      + toString(): String
-      + validate(): boolean
       + equals(Object): boolean
+      + hashCode(): int
+      + validate(): boolean
+      + getName(): String
+      + toString(): String
+    }
+    class UserPermissionValidator {
+      - serialVersionUID: long
+      + validate(String, String): ExecutionStatus
     }
     interface Validatable << interface >> {
       + validate(): boolean
@@ -194,136 +233,166 @@ package lab-server {
       # runInternal(MusicBand, Pair<String, String>): ExecutionStatus
     }
     class AskingCommand<T> {
-      + run(String, Pair<String, String>): ExecutionStatus
-      # runInternal(MusicBand, Pair<String, String>): ExecutionStatus
-      # runInternal(String, Pair<String, String>): ExecutionStatus
       + run(String, MusicBand, Pair<String, String>): ExecutionStatus
+      # runInternal(String, Pair<String, String>): ExecutionStatus
+      # runInternal(MusicBand, Pair<String, String>): ExecutionStatus
+      + run(String, Pair<String, String>): ExecutionStatus
+    }
+    class AuthenticatedExecutor {
+      - executor: Executor
+      + runCommand(String[], MusicBand, Pair<String, String>): ExecutionStatus
     }
     class Clear {
       # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     interface CollectionManager << interface >> {
-      + getBands(): Stack<MusicBand>
       + getInitializationDate(): LocalDateTime
-      + add(MusicBand, Pair<String, String>): ExecutionStatus
-      + getById(Long): MusicBand
-      + removeById(Long, Pair<String, String>): ExecutionStatus
-      + removeFirst(Pair<String, String>): ExecutionStatus
-      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
-      + getCollection(): Stack<MusicBand>
-      + getLastSaveDate(): LocalDateTime
-      + sort(): void
-      + loadCollection(): ExecutionStatus
-      + update(MusicBand, Pair<String, String>): ExecutionStatus
       + clear(Pair<String, String>): ExecutionStatus
+      + getById(Long): MusicBand
+      + getLastSaveDate(): LocalDateTime
+      + getBands(): Stack<MusicBand>
+      + removeById(Long, Pair<String, String>): ExecutionStatus
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + removeFirst(Pair<String, String>): ExecutionStatus
+      + add(MusicBand, Pair<String, String>): ExecutionStatus
+      + update(MusicBand, Pair<String, String>): ExecutionStatus
+      + sort(): void
+      + getCollection(): Stack<MusicBand>
+      + loadCollection(): ExecutionStatus
     }
     class CollectionManagerMain {
-      - initializationDate: LocalDateTime
-      - lastSaveDate: LocalDateTime
-      - dbManager: DBManager
-      - instance: CollectionManagerMain
       - lock: ReadWriteLock
       - bandsMap: Map<Long, MusicBand>
       - collection: Stack<MusicBand>
-      + update(MusicBand, Pair<String, String>): ExecutionStatus
-      + clear(Pair<String, String>): ExecutionStatus
-      + getCollection(): Stack<MusicBand>
-      + loadCollection(): ExecutionStatus
-      + getBands(): Stack<MusicBand>
+      - instance: CollectionManagerMain
+      - initializationDate: LocalDateTime
+      - dbManager: DBManagerInterface
+      - lastSaveDate: LocalDateTime
       + add(MusicBand, Pair<String, String>): ExecutionStatus
-      + getInstance(): CollectionManagerMain
-      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
-      + getLastSaveDate(): LocalDateTime
-      + removeById(Long, Pair<String, String>): ExecutionStatus
-      + sort(): void
-      + getInitializationDate(): LocalDateTime
+      + loadCollection(): ExecutionStatus
       + removeFirst(Pair<String, String>): ExecutionStatus
+      + update(MusicBand, Pair<String, String>): ExecutionStatus
+      + getLastSaveDate(): LocalDateTime
+      + getInitializationDate(): LocalDateTime
+      + sort(): void
+      + removeById(Long, Pair<String, String>): ExecutionStatus
+      + getInstance(): CollectionManagerMain
+      + clear(Pair<String, String>): ExecutionStatus
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + getBands(): Stack<MusicBand>
+      + getCollection(): Stack<MusicBand>
       + getById(Long): MusicBand
     }
     class CollectionManagerProxy {
-      - bandsMap: Map<Long, MusicBand>
       - collection: Stack<MusicBand>
-      - instance: CollectionManagerProxy
+      - lock: ReadWriteLock
+      - bandsMap: Map<Long, MusicBand>
       - collectionManagerMain: CollectionManagerMain
-      - isCacheValid: boolean
-      + removeFirst(Pair<String, String>): ExecutionStatus
+      - instance: CollectionManagerProxy
+      - isCacheValid: AtomicBoolean
       + update(MusicBand, Pair<String, String>): ExecutionStatus
-      + getInitializationDate(): LocalDateTime
-      + add(MusicBand, Pair<String, String>): ExecutionStatus
-      + clear(Pair<String, String>): ExecutionStatus
       + getById(Long): MusicBand
-      + loadCollection(): ExecutionStatus
+      + clear(Pair<String, String>): ExecutionStatus
+      + add(MusicBand, Pair<String, String>): ExecutionStatus
       + sort(): void
-      + removeById(Long, Pair<String, String>): ExecutionStatus
-      + getLastSaveDate(): LocalDateTime
-      - refreshCache(): void
       + getBands(): Stack<MusicBand>
-      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + getInitializationDate(): LocalDateTime
       + getCollection(): Stack<MusicBand>
+      + getLastSaveDate(): LocalDateTime
+      + removeFirst(Pair<String, String>): ExecutionStatus
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + removeById(Long, Pair<String, String>): ExecutionStatus
       + getInstance(): CollectionManagerProxy
+      + loadCollection(): ExecutionStatus
+      - refreshCache(): void
     }
     class Command<T> {
-      + argumentValidator: T
-      # collectionManager: CollectionManager
       - nameAndDescription: Pair<String, String>
-      + getArgumentValidator(): T
-      + hashCode(): int
-      # runInternal(String, Pair<String, String>): ExecutionStatus
-      + toString(): String
+      # collectionManager: CollectionManager
+      + argumentValidator: T
+      + getName(): String
       + getDescription(): String
       + equals(Object): boolean
+      + toString(): String
+      # runInternal(String, Pair<String, String>): ExecutionStatus
       + run(String, Pair<String, String>): ExecutionStatus
-      + getName(): String
+      + hashCode(): int
+      + getArgumentValidator(): T
+      # checkPermission(Pair<String, String>): ExecutionStatus
     }
     class CommandManager {
       - commands: Map<String, Command<?>>
-      + getCommandsMap(): Map<String, Command<?>>
       + register(String, Command<?>): void
+      + getCommandsMap(): Map<String, Command<?>>
       + getCommand(String): Command<?>
     }
     enum CommandNames << enumeration >> {
-      + ADD_IF_MIN:
-      + PRINT_FIELD_DESCENDING_DESCRIPTION:
-      + EXECUTE_SCRIPT:
       + REMOVE_FIRST:
-      + SHOW:
       - commandDescription: Pair<String, String>
-      + CLEAR:
-      + EXIT:
-      + UPDATE:
-      + SORT:
-      + REMOVE_BY_ID:
-      + HELP:
-      + INFO:
-      + REMOVE_ALL_BY_GENRE:
-      + ADD:
       + PRINT_FIELD_ASCENDING_DESCRIPTION:
-      + values(): CommandNames[]
-      + valueOf(String): CommandNames
+      + EXECUTE_SCRIPT:
+      + REMOVE_ALL_BY_GENRE:
+      + UPDATE:
+      + INFO:
+      + UPDATE_USER_PERMISSION:
+      + PRINT_FIELD_DESCENDING_DESCRIPTION:
+      + ADD:
+      + SORT:
+      + SHOW:
+      + ADD_IF_MIN:
+      + EXIT:
+      + CLEAR:
+      + HELP:
+      + REMOVE_BY_ID:
+      - requiredPermission: PermissionType
       + getName(): String
+      + valueOf(String): CommandNames
+      + values(): CommandNames[]
+      + getRequiredPermission(): PermissionType
       + getDescription(): String
     }
     class DBManager {
       - connection: Connection
-      - instance: DBManager
-      + getInstance(): DBManager
-      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
-      + checkPassword(Pair<String, String>): ExecutionStatus
-      + clear(Pair<String, String>): ExecutionStatus
-      + loadCollection(Stack<MusicBand>): ExecutionStatus
+      - instance: DBManagerInterface
       + updateMusicBand(MusicBand, Pair<String, String>): ExecutionStatus
+      + updateUserPermissions(String, PermissionType): ExecutionStatus
+      + clearAll(): ExecutionStatus
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + loadCollection(Stack<MusicBand>): ExecutionStatus
+      + checkUserPermission(Pair<String, String>): ExecutionStatus
+      + getInstance(): DBManagerInterface
+      + checkPassword(Pair<String, String>): ExecutionStatus
+      + addUser(Pair<String, String>): ExecutionStatus
       - checkUser(Pair<String, String>): ExecutionStatus
+      + removeAllByGenre(MusicGenre): ExecutionStatus
+      + clear(Pair<String, String>): ExecutionStatus
+      + removeById(Long, Pair<String, String>): ExecutionStatus
       + addMusicBand(MusicBand, Pair<String, String>): ExecutionStatus
+    }
+    interface DBManagerInterface << interface >> {
+      + removeAllByGenre(MusicGenre): ExecutionStatus
+      + clear(Pair<String, String>): ExecutionStatus
       + addUser(Pair<String, String>): ExecutionStatus
       + removeById(Long, Pair<String, String>): ExecutionStatus
+      + updateMusicBand(MusicBand, Pair<String, String>): ExecutionStatus
+      + addMusicBand(MusicBand, Pair<String, String>): ExecutionStatus
+      + checkPassword(Pair<String, String>): ExecutionStatus
+      + clearAll(): ExecutionStatus
+      + checkUserPermission(Pair<String, String>): ExecutionStatus
+      + removeAllByGenre(MusicGenre, Pair<String, String>): ExecutionStatus
+      + loadCollection(Stack<MusicBand>): ExecutionStatus
+      + updateUserPermissions(String, PermissionType): ExecutionStatus
     }
     class ExecuteScript {
       + runInternal(String, Pair<String, String>): ExecutionStatus
     }
-    class Executer {
+    class Executor {
       - commandManager: CommandManager
       + runCommand(String[], MusicBand, Pair<String, String>): ExecutionStatus
       - validateCommand(String[]): ExecutionStatus
+    }
+    interface ExecutorInterface << interface >> {
+      + runCommand(String[], MusicBand, Pair<String, String>): ExecutionStatus
     }
     class Exit {
       # runInternal(String, Pair<String, String>): ExecutionStatus
@@ -334,6 +403,9 @@ package lab-server {
     }
     class Info {
       # runInternal(String, Pair<String, String>): ExecutionStatus
+    }
+    class PasswordHasher {
+      + getHash(String): String
     }
     class PrintFieldAscendingDescription {
       # runInternal(String, Pair<String, String>): ExecutionStatus
@@ -351,30 +423,20 @@ package lab-server {
       # runInternal(String, Pair<String, String>): ExecutionStatus
     }
     class Server {
-      - selector: Selector
       + logger: Logger
-      - networkManager: ServerNetworkManager
-      - executer: Executer
-      - collectionManager: CollectionManager
-      - responses: Map<SocketChannel, Response>
-      - commandManager: CommandManager
-      - PORT: int
       - initLogger(): void
-      + main(String[]): void
       - getFormatter(): Formatter
-      - processRequest(SocketChannel, Request): void
-      - initialCommandsData(SocketChannel, SelectionKey): void
-      + run(): void
-      - getProcessRequestThread(SocketChannel, Request, SelectionKey): Thread
+      + main(String[]): void
     }
     class ServerNetworkManager {
       - serverChannel: ServerSocketChannel
-      - PORT: int
-      + close(): void
-      + send(Response, SocketChannel): void
-      + receive(SocketChannel, SelectionKey): Request
+      - instance: ServerNetworkManager
       + getServerSocketChannel(): ServerSocketChannel
+      + send(Response, SocketChannel): void
+      + close(): void
+      + getInstance(): ServerNetworkManager
       + startServer(): void
+      + receive(SocketChannel, SelectionKey): Request
     }
     class Show {
       # runInternal(String, Pair<String, String>): ExecutionStatus
@@ -382,8 +444,31 @@ package lab-server {
     class Sort {
       # runInternal(String, Pair<String, String>): ExecutionStatus
     }
+    class ThreadManager {
+      - readPool: ForkJoinPool
+      - executor: Executor
+      - instance: ThreadManager
+      - writePool: ForkJoinPool
+      - responseFutures: Map<SocketChannel, CompletableFuture<Response>>
+      + runServer(CommandManager): void
+      - getProcessRequestThread(Request, CompletableFuture<Response>): Thread
+      - writeMessage(SocketChannel, SelectionKey): void
+      + getInstance(): ThreadManager
+      - readMessage(SocketChannel, SelectionKey): CompletableFuture<Response>
+      - initialCommandsData(SocketChannel, SelectionKey, CommandManager): void
+    }
+    annotation Transactional << annotation >>
+    class TransactionalProxy {
+      - target: Object
+      - connection: Connection
+      + createProxy(T, Connection): T
+      + invoke(Object, Method, Object[]): Object
+    }
     class Update {
       # runInternal(MusicBand, Pair<String, String>): ExecutionStatus
+    }
+    class UpdateUserPermission {
+      + runInternal(String, Pair<String, String>): ExecutionStatus
     }
 }
 
@@ -391,14 +476,17 @@ Add                              -[#000082,plain]-^  AskingCommand
 AddIfMin                         -[#000082,plain]-^  AskingCommand                   
 AskingCommand                    -[#595959,dashed]->  ArgumentValidator
 AskingCommand                    -[#000082,plain]-^  Command
+AuthenticatedExecutor            -[#008200,dashed]-^  ExecutorInterface
 Clear                            -[#000082,plain]-^  Command
 CollectionManagerMain            -[#008200,dashed]-^  CollectionManager
 CollectionManagerProxy           -[#008200,dashed]-^  CollectionManager
 Command                          -[#595959,dashed]->  ArgumentValidator
 Coordinates                      -[#008200,dashed]-^  Validatable
+DBManager                        -[#008200,dashed]-^  DBManagerInterface
 Element                          -[#008200,dashed]-^  Validatable
 EmptyValidator                   -[#000082,plain]-^  ArgumentValidator
 ExecuteScript                    -[#000082,plain]-^  Command
+Executor                         -[#008200,dashed]-^  ExecutorInterface
 Exit                             -[#000082,plain]-^  Command
 FileConsole                      -[#008200,dashed]-^  Console
 GenreValidator                   -[#000082,plain]-^  ArgumentValidator
@@ -416,4 +504,6 @@ Sort                             -[#000082,plain]-^  Command
 StandartConsole                  -[#008200,dashed]-^  Console
 Studio                           -[#008200,dashed]-^  Validatable
 Update                           -[#000082,plain]-^  AskingCommand
+UpdateUserPermission             -[#000082,plain]-^  Command
+UserPermissionValidator          -[#000082,plain]-^  ArgumentValidator
 @enduml

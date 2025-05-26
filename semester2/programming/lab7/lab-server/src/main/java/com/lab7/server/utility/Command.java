@@ -2,9 +2,11 @@ package com.lab7.server.utility;
 
 import com.lab7.common.utility.ExecutionStatus;
 import com.lab7.common.utility.Pair;
+import com.lab7.common.utility.PermissionType;
 import com.lab7.common.validators.ArgumentValidator;
 import com.lab7.server.managers.CollectionManager;
 import com.lab7.server.managers.CollectionManagerProxy;
+import com.lab7.server.managers.DBManager;
 
 /**
  * Абстрактный класс для всех команд.
@@ -64,10 +66,27 @@ public abstract class Command<T extends ArgumentValidator> {
     public ExecutionStatus run(String arg, Pair<String, String> user) {
         ExecutionStatus argumentStatus = argumentValidator.validate(arg, getName());
         if (argumentStatus.isSuccess()) {
+            ExecutionStatus permissionStatus = checkPermission(user);
+            if (!permissionStatus.isSuccess()) {
+                return permissionStatus;
+            }
             return runInternal(arg, user);
         } else {
             return argumentStatus;
         }
+    }
+
+    protected ExecutionStatus checkPermission(Pair<String, String> user) {
+        ExecutionStatus accessStatus = DBManager.getInstance().checkUserPermission(user);
+        if (!accessStatus.isSuccess()) {
+            return accessStatus;
+        }
+        int accessPermissionLevel = PermissionType.valueOf(accessStatus.getMessage()).getPermissionLevel();
+        int requiredPermissionLevel = CommandNames.valueOf(getName().split(" ")[0].toUpperCase()).getRequiredPermission().getPermissionLevel();
+        if (accessPermissionLevel < requiredPermissionLevel) {
+            return new ExecutionStatus(false, "У вас недостаточно прав для выполнения этой команды.");
+        }
+        return new ExecutionStatus(true, "Доступ разрешён.");
     }
 
     /**

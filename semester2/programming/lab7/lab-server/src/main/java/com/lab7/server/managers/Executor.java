@@ -11,13 +11,13 @@ import com.lab7.server.utility.AskingCommand;
 /**
  * Класс, выполняющий команды и скрипты.
  */
-public class Executer {
+public class Executor implements ExecutorInterface {
     private final CommandManager commandManager;
 
     /**
      * Конструктор для создания объекта Executer.
      */
-    public Executer(CommandManager commandManager) {
+    public Executor(CommandManager commandManager) {
         this.commandManager = commandManager;
     }
 
@@ -41,6 +41,7 @@ public class Executer {
      * @param musicBand объект MusicBand, если команда требует его
      * @return статус выполнения команды
      */
+    @Override
     public ExecutionStatus runCommand(String[] userCommand, MusicBand musicBand, Pair<String, String> user) {
         ExecutionStatus validateStatus = validateCommand(userCommand);
         if (validateStatus.isSuccess()) {

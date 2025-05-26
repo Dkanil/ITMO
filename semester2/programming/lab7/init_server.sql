@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS users
 (
     id       SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    permissions VARCHAR(50) NOT NULL CHECK (permissions IN ('USER', 'ADMIN', 'MODERATOR', 'ABOBA'))
 );
 
 CREATE TABLE IF NOT EXISTS coordinates

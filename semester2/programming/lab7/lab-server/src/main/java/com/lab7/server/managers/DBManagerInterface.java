@@ -4,6 +4,7 @@ import com.lab7.common.models.MusicBand;
 import com.lab7.common.models.MusicGenre;
 import com.lab7.common.utility.ExecutionStatus;
 import com.lab7.common.utility.Pair;
+import com.lab7.common.utility.PermissionType;
 import com.lab7.server.utility.Transactional;
 
 import java.sql.SQLException;
@@ -12,9 +13,13 @@ import java.util.Stack;
 public interface DBManagerInterface {
     ExecutionStatus addUser(Pair<String, String> user);
     ExecutionStatus checkPassword(Pair<String, String> user);
+    ExecutionStatus updateUserPermissions(String user, PermissionType permission);
+    ExecutionStatus checkUserPermission(Pair<String, String> user);
     ExecutionStatus clear(Pair<String, String> user);
+    ExecutionStatus clearAll();
     ExecutionStatus removeById(Long id, Pair<String, String> user);
     ExecutionStatus removeAllByGenre(MusicGenre genre, Pair<String, String> user);
+    ExecutionStatus removeAllByGenre(MusicGenre genre);
 
     @Transactional
     ExecutionStatus addMusicBand(MusicBand band, Pair<String, String> user) throws SQLException;

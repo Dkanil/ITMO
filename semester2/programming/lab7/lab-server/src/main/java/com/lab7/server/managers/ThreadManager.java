@@ -9,11 +9,15 @@ import com.lab7.server.Server;
 import com.lab7.server.utility.AskingCommand;
 import com.lab7.server.utility.PasswordHasher;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
-import java.nio.channels.*;
-import java.nio.file.attribute.UserPrincipal;
+import java.nio.channels.CancelledKeyException;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.ClosedSelectorException;
+import java.nio.channels.Selector;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -25,8 +29,10 @@ import java.util.concurrent.ForkJoinPool;
 
 public class ThreadManager {
     private static volatile ThreadManager instance;
+    private final Map<SocketChannel, CompletableFuture<Response>> responseFutures = new ConcurrentHashMap<>();
     private final ForkJoinPool readPool;
     private final ForkJoinPool writePool;
+    private Executor executor;
 
     private ThreadManager() {
         readPool = new ForkJoinPool();
@@ -44,8 +50,8 @@ public class ThreadManager {
         return instance;
     }
 
-    public void runServer(CommandManager commandManager, Executer executer) throws IOException, ClosedSelectorException, NullPointerException {
-        final Map<SocketChannel, CompletableFuture<Response>> responseFutures = new ConcurrentHashMap<>();
+    public void runServer(CommandManager commandManager) throws IOException, ClosedSelectorException, NullPointerException {
+        executor = new Executor(commandManager);
         Selector selector = Selector.open();
         ServerNetworkManager.getInstance().startServer();
         ServerNetworkManager.getInstance().getServerSocketChannel().register(selector, SelectionKey.OP_ACCEPT);
@@ -73,13 +79,13 @@ public class ThreadManager {
                             if (responseFutures.get(clientChannel) != null) {
                                 continue; // Пропускаем итерацию, если уже идёт обработка этого клиента
                             }
-                            CompletableFuture<Response> responseFuture = ThreadManager.getInstance().readMessage(clientChannel, key, executer);
+                            CompletableFuture<Response> responseFuture = ThreadManager.getInstance().readMessage(clientChannel, key);
                             responseFutures.put(clientChannel, responseFuture);
                             clientChannel.register(selector, SelectionKey.OP_WRITE);
                         } else if (key.isWritable()) {
                             SocketChannel clientChannel = (SocketChannel) key.channel();
                             clientChannel.configureBlocking(false);
-                            ThreadManager.getInstance().writeMessage(clientChannel, key, responseFutures);
+                            ThreadManager.getInstance().writeMessage(clientChannel, key);
                             clientChannel.register(selector, SelectionKey.OP_READ);
                         }
                     }
@@ -121,22 +127,26 @@ public class ThreadManager {
         }
     }
 
-    private CompletableFuture<Response> readMessage(SocketChannel clientChannel, SelectionKey key, Executer executer) {
+    private CompletableFuture<Response> readMessage(SocketChannel clientChannel, SelectionKey key) {
         CompletableFuture<Response> responseFuture = new CompletableFuture<>();
         readPool.submit(() -> {
             try {
                 Request request = ServerNetworkManager.getInstance().receive(clientChannel, key);
-                if (request.getUser() != null) { // Шифруем пароль пользователя, если уже авторизован
+                if (request.getUser() != null) { // Шифруем пароль пользователя, но только если он уже авторизован
                     request.getUser().setSecond(PasswordHasher.getHash(request.getUser().getSecond()));
                 }
                 Server.logger.info("Request received from client: " + request);
-                Thread processRequestThread = getProcessRequestThread(request, key, responseFuture, executer);
+                Thread processRequestThread = getProcessRequestThread(request, responseFuture);
                 processRequestThread.start();
             } catch (ServerNetworkManager.NullRequestException | SocketException e) {
                 Server.logger.severe("Error receiving request from client: " + e.getMessage());
                 key.cancel();
             } catch (NullPointerException e) {
                 Server.logger.severe("Error receiving request from client: " + e.getMessage());
+            } catch (ClosedChannelException e) {
+                Server.logger.severe("Error processing request: " + e.getMessage());
+                responseFuture.completeExceptionally(e);
+                key.cancel();
             } catch (IOException | ClassNotFoundException e) {
                 Server.logger.severe("Fatal error: " + e.getMessage());
                 throw new RuntimeException(e);
@@ -145,50 +155,18 @@ public class ThreadManager {
         return responseFuture;
     }
 
-    private Thread getProcessRequestThread(Request request, SelectionKey key, CompletableFuture<Response> responseFuture, Executer executer) {
+    private Thread getProcessRequestThread(Request request, CompletableFuture<Response> responseFuture) {
         return new Thread(() -> {
-            try {
-                Response response = processRequest(request, executer);
-                responseFuture.complete(response);
-            } catch (ClosedChannelException e) {
-                Server.logger.severe("Error processing request: " + e.getMessage());
-                responseFuture.completeExceptionally(e);
-                key.cancel();
+            AuthenticatedExecutor authenticatedExecutor = new AuthenticatedExecutor(executor);
+            ExecutionStatus executionStatus = authenticatedExecutor.runCommand(request.getCommand(), request.getBand(), request.getUser());
+            if (!executionStatus.isSuccess()) {
+                Server.logger.severe(executionStatus.getMessage());
             }
+            responseFuture.complete(new Response(executionStatus));
         });
     }
 
-    private Response processRequest(Request request, Executer executer) throws ClosedChannelException {
-        if (request.getCommand()[0].equals("register") || request.getCommand()[0].equals("login")) {
-            ExecutionStatus authStatus = "register".equals(request.getCommand()[0])
-                    ? DBManager.getInstance().addUser(request.getUser())
-                    : DBManager.getInstance().checkPassword(request.getUser());
-            if (authStatus.isSuccess()) {
-                Server.logger.info(authStatus.getMessage() + " User: " + request.getUser().getFirst());
-            } else {
-                Server.logger.warning(authStatus.getMessage());
-            }
-            return new Response(authStatus);
-        }
-        else {
-            ExecutionStatus authStatus = DBManager.getInstance().checkPassword(request.getUser());
-            if (authStatus.isSuccess()) {
-                ExecutionStatus executionStatus = executer.runCommand(request.getCommand(), request.getBand(), request.getUser());
-                if (!executionStatus.isSuccess()) {
-                    Server.logger.severe(executionStatus.getMessage());
-                } else {
-                    Server.logger.info("Command executed successfully");
-                }
-                return new Response(executionStatus);
-            }
-            else {
-                Server.logger.warning(authStatus.getMessage());
-                return new Response(authStatus);
-            }
-        }
-    }
-
-    private void writeMessage(SocketChannel clientChannel, SelectionKey key, Map<SocketChannel, CompletableFuture<Response>> responseFutures) {
+    private void writeMessage(SocketChannel clientChannel, SelectionKey key) {
         writePool.submit(() -> {
             try {
                 CompletableFuture<Response> responseFuture = responseFutures.get(clientChannel);
