@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users
     id       SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    permissions VARCHAR(50) NOT NULL CHECK (permissions IN ('USER', 'ADMIN', 'MODERATOR', 'ABOBA'))
+    permissions VARCHAR(50) NOT NULL CHECK (permissions IN ('USER', 'ADMIN', 'MODERATOR', 'ABOBA')) DEFAULT 'USER'
 );
 
 CREATE TABLE IF NOT EXISTS coordinates
@@ -38,12 +38,26 @@ CREATE TABLE IF NOT EXISTS music_bands
     albums_count           BIGINT CHECK (albums_count > 0),
     description            TEXT                                NOT NULL,
     genre_id               INT                                 NOT NULL,
-    FOREIGN KEY (genre_id) REFERENCES music_genre (id) ON DELETE CASCADE,
+    FOREIGN KEY (genre_id) REFERENCES music_genre (id),
     studio_id              INT                                 NOT NULL,
     FOREIGN KEY (studio_id) REFERENCES studio (id) ON DELETE CASCADE,
     user_id                INT                                 NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
+
+CREATE OR REPLACE FUNCTION delete_related_records()
+    RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM coordinates WHERE id = OLD.coordinates_id;
+    DELETE FROM studio WHERE id = OLD.studio_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_music_bands_delete
+    AFTER DELETE ON music_bands
+    FOR EACH ROW
+EXECUTE FUNCTION delete_related_records();
 
 SELECT music_bands.id                     AS id,
        music_bands.name                   AS band_name,
