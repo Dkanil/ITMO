@@ -13,6 +13,7 @@ import java.util.Stack;
 public interface DBManagerInterface {
     ExecutionStatus addUser(Pair<String, String> user);
     ExecutionStatus checkPassword(Pair<String, String> user);
+    ExecutionStatus showUserList(Pair<String, String> user);
     ExecutionStatus updateUserPermissions(String user, PermissionType permission);
     ExecutionStatus checkUserPermission(Pair<String, String> user);
     ExecutionStatus clear(Pair<String, String> user);

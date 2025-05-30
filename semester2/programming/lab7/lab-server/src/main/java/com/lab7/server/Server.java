@@ -92,6 +92,7 @@ public final class Server {
             register(CommandNames.PRINT_FIELD_ASCENDING_DESCRIPTION.getName(), new PrintFieldAscendingDescription());
             register(CommandNames.PRINT_FIELD_DESCENDING_DESCRIPTION.getName(), new PrintFieldDescendingDescription());
             register(CommandNames.UPDATE_USER_PERMISSION.getName(), new UpdateUserPermission());
+            register(CommandNames.SHOW_USER_LIST.getName(), new ShowUserList());
         }};
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

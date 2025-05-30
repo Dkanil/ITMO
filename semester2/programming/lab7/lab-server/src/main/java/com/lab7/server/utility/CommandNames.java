@@ -22,7 +22,8 @@ public enum CommandNames {
     ADD_IF_MIN("add_if_min", "добавить новый элемент в коллекцию, если его значение меньше, чем у наименьшего элемента этой коллекции", PermissionType.USER),
     REMOVE_ALL_BY_GENRE("remove_all_by_genre", "удалить из коллекции все элементы, значение поля genre которого эквивалентно заданному", PermissionType.USER),
     SORT("sort", "отсортировать коллекцию в естественном порядке", PermissionType.MODERATOR),
-    UPDATE_USER_PERMISSION("update_user_permission", "обновить права пользователя в системе (команда доступна только администратору)", PermissionType.ADMIN);
+    SHOW_USER_LIST("show_user_list", "вывести список пользователей, зарегистрированных в системе", PermissionType.MODERATOR),
+    UPDATE_USER_PERMISSION("update_user_permission", "обновить права пользователя в системе", PermissionType.ADMIN);
 
     private final Pair<String, String> commandDescription;
     private final PermissionType requiredPermission;

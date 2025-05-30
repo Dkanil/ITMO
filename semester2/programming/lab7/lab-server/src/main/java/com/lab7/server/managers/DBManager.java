@@ -88,6 +88,20 @@ public class DBManager implements DBManagerInterface {
         }
     }
 
+    public ExecutionStatus showUserList(Pair<String, String> user) {
+        String query = "SELECT username, permissions FROM users;";
+        try (PreparedStatement p = connection.prepareStatement(query); ResultSet res = p.executeQuery()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Список пользователей:\n");
+            while (res.next()) {
+                stringBuilder.append(res.getString("username")).append(" - Permissions: ").append(res.getString("permissions")).append("\n");
+            }
+            return new ExecutionStatus(true, stringBuilder.toString());
+        } catch (SQLException | NullPointerException e) {
+            return new ExecutionStatus(false, "Ошибка при проверке пользователей в базе данных: " + e.getMessage());
+        }
+    }
+
     public ExecutionStatus checkPassword(Pair<String, String> user) {
         ExecutionStatus checkUserStatus = checkUser(user);
         if (checkUserStatus.isSuccess()) {
