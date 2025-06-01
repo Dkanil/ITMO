@@ -1,0 +1,16 @@
+show
+help
+info
+show
+add
+BAOBAB FROM SCRIPT
+12
+-123
+5
+38
+krytie
+JAZZ
+sTUDIO HOME
+Kronva
+show
+execute_script ddos.txt
