@@ -1,10 +1,14 @@
 package com.lab7.server.managers;
 
-import com.lab7.common.models.*;
+import com.lab7.common.models.MusicBand;
+import com.lab7.common.models.MusicGenre;
+import com.lab7.common.models.Coordinates;
+import com.lab7.common.models.Studio;
+import com.lab7.common.models.MusicBandBuilder;
 import com.lab7.common.utility.ExecutionStatus;
 import com.lab7.common.utility.Pair;
-import com.lab7.server.Server;
 import com.lab7.common.utility.PermissionType;
+import com.lab7.server.Server;
 import com.lab7.server.utility.Transactional;
 import com.lab7.server.utility.TransactionalProxy;
 
