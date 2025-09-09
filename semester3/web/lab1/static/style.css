@@ -1,0 +1,178 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+header {
+    background: linear-gradient(180deg, #0000ff, #ffff00, #0000ff);
+    background-size: 200% 200%;
+    animation: gradient-move 2s linear infinite;
+    padding: 2rem;
+    text-align: center;
+    font-family: fantasy !important;
+}
+
+header h1 {
+    font-size: 2em;
+    margin-bottom: 1rem;
+    background: linear-gradient(90deg, #ffffff, #0000ff, #ff0000, #ffffff);
+    background-size: 200% 200%;
+    animation: gradient-move 1s linear infinite, jump-text 0.8s ease-in-out infinite alternate;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+@keyframes jump-text {
+    0% {
+        transform: scale(0.5);
+    }
+    100% {
+        transform: scale(1.5);
+    }
+}
+@keyframes gradient-move {
+    0% {
+        background-position: 0 200%;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem;
+    justify-content: center;
+}
+
+.input-section {
+    flex: 1;
+    min-width: 300px;
+    background: #ececec;
+    padding: 2rem;
+}
+
+#x-buttons button {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2em;
+    margin: 4px;
+    border-radius: 10px;
+    border: 2px solid #f700ff;
+    background: #ffffff;
+    cursor: pointer;
+    transition: background 1s, border-color 1s;
+}
+
+#x-buttons button.selected {
+    background: #d000ff;
+    color: #fff;
+    border-color: #9100ae;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #353535;
+}
+
+.form-group input[type="text"],
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.form-group input[type="text"]:invalid {
+    border-color: #ff0000;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(120deg, #f700ff, #7bff00);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(120deg, #bc00c5, #5bc500, #bc00c5);
+    background-size: 200% 200%;
+    animation: gradient-move 1s linear infinite;
+}
+
+button[type="submit"]:active {
+    transform: translateY(2px);
+}
+
+.graph-section {
+    flex: 1;
+    min-width: 400px;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+#graphCanvas {
+    border: 2px solid #ddd;
+    border-radius: 5px;
+}
+
+.results-section {
+    flex-basis: 100%;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+table > thead > tr {
+    background: #667eea;
+    color: white;
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+table tbody tr:hover {
+    background-color: #d5d5d5;
+}
+

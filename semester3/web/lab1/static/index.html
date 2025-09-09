@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lab1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Козаченко Данил Александрович</h1>
+    <h1>Группа: P3212 Вариант: 466217</h1>
+</header>
+<main>
+    <section class="input-section">
+        <form id="pointForm">
+            <div class="form-group">
+                <label>Координата X:</label>
+                <div id="x-buttons">
+                    <button type="button" value="-3">-3</button>
+                    <button type="button" value="-2">-2</button>
+                    <button type="button" value="-1">-1</button>
+                    <button type="button" value="0" class="selected">0</button>
+                    <button type="button" value="1">1</button>
+                    <button type="button" value="2">2</button>
+                    <button type="button" value="3">3</button>
+                    <button type="button" value="4">4</button>
+                    <button type="button" value="5">5</button>
+                </div>
+                <input type="hidden" id="x" name="x" value="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="y">Координата Y:</label>
+                <input type="text" id="y" name="y" placeholder="-3...3" required>
+            </div>
+
+            <div class="form-group">
+                <label for="r">Радиус R:</label>
+                <select id="r" name="r" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <button type="submit">Проверить</button>
+        </form>
+    </section>
+
+    <section class="graph-section">
+        <canvas id="graphCanvas" width="400" height="400"></canvas>
+    </section>
+
+    <section class="results-section">
+        <h2>Результаты</h2>
+        <table id="resultsTable">
+            <thead>
+            <tr>
+                <th>X</th>
+                <th>Y</th>
+                <th>R</th>
+                <th>Результат</th>
+                <th>Время запроса</th>
+                <th>Время работы</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Results will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </section>
+</main>
+<script src="index.js"></script>
+</body>
+</html>
