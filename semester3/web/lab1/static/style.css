@@ -5,14 +5,14 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
+    font-family: 'Segoe UI', serif;
 }
 
 header {
-    background: linear-gradient(180deg, #0000ff, #ffff00, #0000ff);
-    background-size: 200% 200%;
-    animation: gradient-move 2s linear infinite;
+    background: #FFFF00;
+    background: linear-gradient(0deg, rgba(255, 255, 0, 1) 0%, rgba(0, 0, 255, 1) 25%, rgba(255, 255, 0, 1) 50%, rgba(0, 0, 255, 1) 75%, rgba(255, 255, 0, 1) 100%);
+    background-size: 400% 400%;
+    animation: gradient-move-Y 2s linear infinite;
     padding: 2rem;
     text-align: center;
     font-family: fantasy !important;
@@ -21,27 +21,46 @@ header {
 header h1 {
     font-size: 2em;
     margin-bottom: 1rem;
-    background: linear-gradient(90deg, #ffffff, #0000ff, #ff0000, #ffffff);
-    background-size: 200% 200%;
-    animation: gradient-move 1s linear infinite, jump-text 0.8s ease-in-out infinite alternate;
+    background: linear-gradient(90deg, #ffffff, #0000ff, #ff0000);
+    background-size: 400% 400%;
+    animation: gradient-move-X 2s linear infinite, jump-text 0.8s ease-in-out infinite alternate;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
+
+.results-section h2 {
+    margin-bottom: 1rem;
+}
+
 @keyframes jump-text {
     0% {
         transform: scale(0.5);
     }
-    100% {
+    50% {
         transform: scale(1.5);
     }
+    100% {
+        transform: scale(0.5);
+    }
 }
-@keyframes gradient-move {
+@keyframes gradient-move-Y {
     0% {
-        background-position: 0 200%;
+        background-position: 50% 0;
     }
     100% {
-        background-position: 200% 0;
+        background-position: 50% 67%;
+    }
+}
+@keyframes gradient-move-X {
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
     }
 }
 
@@ -50,19 +69,16 @@ main {
     flex-wrap: wrap;
     gap: 2rem;
     padding: 2rem;
-    justify-content: center;
 }
 
 .input-section {
-    flex: 1;
-    min-width: 300px;
     background: #ececec;
     padding: 2rem;
 }
 
 #x-buttons button {
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
     font-size: 1.2em;
     margin: 4px;
     border-radius: 10px;
@@ -73,6 +89,7 @@ main {
 }
 
 #x-buttons button.selected {
+    animation: jump-text 0.3s;
     background: #d000ff;
     color: #fff;
     border-color: #9100ae;
@@ -99,12 +116,6 @@ main {
     transition: border-color 0.3s ease;
 }
 
-.form-group input[type="text"]:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
 .form-group input[type="text"]:invalid {
     border-color: #ff0000;
 }
@@ -122,9 +133,9 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background: linear-gradient(120deg, #bc00c5, #5bc500, #bc00c5);
-    background-size: 200% 200%;
-    animation: gradient-move 1s linear infinite;
+    background: linear-gradient(120deg, #bc00c5, #5bc500);
+    background-size: 400% 400%;
+    animation: gradient-move-X 1s linear infinite, jump-text 0.8s infinite;
 }
 
 button[type="submit"]:active {
@@ -133,8 +144,7 @@ button[type="submit"]:active {
 
 .graph-section {
     flex: 1;
-    min-width: 400px;
-    padding: 2rem;
+    min-width: 300px;
     border-radius: 10px;
 }
 
@@ -144,8 +154,7 @@ button[type="submit"]:active {
 }
 
 .results-section {
-    flex-basis: 100%;
-    background: white;
+    background: #ececec;
     padding: 2rem;
     border-radius: 10px;
 }
@@ -153,26 +162,23 @@ button[type="submit"]:active {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
+    background: linear-gradient(to right, #25c481, #25b7c4);
 }
 
 table > thead > tr {
-    background: #667eea;
-    color: white;
+    background: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
 }
 
 table th,
 table td {
     padding: 12px;
     text-align: center;
-    border: 1px solid #ddd;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-table tbody tr:nth-child(even) {
-    background-color: #f8f9fa;
+.table-scroll {
+    max-height: 300px;
+    overflow-y: auto;
 }
-
-table tbody tr:hover {
-    background-color: #d5d5d5;
-}
-

@@ -3,9 +3,8 @@ class PointChecker {
         this.form = document.getElementById('pointForm');
         this.canvas = document.getElementById('graphCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.resultsTable = document.getElementById('resultsTable');
+        this.resultsTable = document.getElementById('table-content');
         this.xButtons = document.querySelectorAll('#x-buttons button');
-        this.xInput = document.getElementById('x');
         this.init();
     }
 
@@ -13,20 +12,21 @@ class PointChecker {
         this.drawGraph();
         this.loadResults();
         this.form.addEventListener('submit', e => this.handleSubmit(e));
-        this.xInput.addEventListener('input', e => this.validateX(e));
+        this.xButtons.forEach(btn => btn.addEventListener('click', e => this.selectX(e)));
         document.getElementById('y').addEventListener('input', e => this.validateY(e));
         document.getElementById('r').addEventListener('input', e => this.validateR(e));
-        this.xButtons.forEach(btn => btn.addEventListener('click', e => this.selectX(e)));
     }
 
     selectX(e) {
         this.xButtons.forEach(b => b.classList.remove('selected'));
         e.target.classList.add('selected');
-        this.xInput.value = e.target.value;
+        document.getElementById('x').value = e.target.value;
+        this.validateX();
     }
 
-    validateX(event) {
-        const input = event.target;
+    validateX() {
+        const input = document.getElementById('x');
+        const value = input.value;
         if (!/^-[321]$|^[012345]$/.test(value)) {
             input.setCustomValidity('КОВЫРЯТЬСЯ В КОДЕ ЭЛЕМЕНТА ПЛОХО.');
         } else {
@@ -46,7 +46,6 @@ class PointChecker {
 
     validateR(event) {
         const input = event.target;
-        const value = input.value.replace(',', '.');
         if (!/^[1-5]$/.test(value)) {
             input.setCustomValidity('R должен быть натуральным числом от 1 до 5');
         } else {
@@ -57,26 +56,27 @@ class PointChecker {
     async handleSubmit(event) {
         event.preventDefault();
         const data = {
-            x: this.xInput.value,
+            x: document.getElementById('x').value,
             y: document.getElementById('y').value,
             r: document.getElementById('r').value
         };
         if (!this.validateData(data)) {
-            alert('Проверьте данные');
+            alert('кОд ЭлЕмЕнТа мЕнЯтЬ пЛоХо');
             return;
         }
-        console.log('Trying to send data:', data);
         await this.sendData(data);
     }
 
     validateData(data) {
+        const x = parseInt(data.x);
         const y = parseFloat(data.y);
-        const r = parseFloat(data.r);
-        return !isNaN(y) && !isNaN(r) && y >= -3 && y <= 3 && r >= 1 && r <= 5;
+        const r = parseInt(data.r);
+        return !isNaN(x) && !isNaN(y) && !isNaN(r) && y > -3 && y < 3 && [1, 2, 3, 4, 5].includes(r) && [-3, -2, -1, 0, 1, 2, 3, 4, 5].includes(x);
     }
 
     async sendData(data) {
         try {
+            console.log('Trying to send data:', data);
             const response = await fetch("/fcgi-bin/app.jar", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -84,7 +84,7 @@ class PointChecker {
             });
             console.log('Response got:', response);
             if (!response.ok) throw new Error('Ошибка пока не обрабатывается');
-            const result = await response.json();
+            const result = await response.json(); // todo обработка ошибки от сервера
             this.addResultToTable(result);
             this.saveResult(result);
         } catch (error) {
@@ -93,15 +93,22 @@ class PointChecker {
     }
 
     addResultToTable(result) {
-        const row = this.resultsTable.insertRow(-1);
+        const tbody = this.resultsTable.querySelector('tbody');
+        const row = document.createElement('tr');
+        const gif = document.getElementById('submit-gif');
+        gif.style.display = 'block';
+        setTimeout(() => {
+            gif.style.display = 'none';
+        }, 1300);
         row.innerHTML = `
             <td>${result.x}</td>
             <td>${result.y}</td>
             <td>${result.r}</td>
-            <td>${result.hit}</td>
+            <td>${result.hit ? "POPAл" : "mOzIlA"}</td>
             <td>${new Date(result.timestamp).toLocaleString()}</td>
             <td>${result.execution_time}ms</td>
         `;
+        tbody.appendChild(row);
     }
 
     saveResult(result) {
@@ -124,59 +131,76 @@ class PointChecker {
         const w = this.canvas.width, h = this.canvas.height;
         const centerX = w / 2;
         const centerY = h / 2;
-        ctx.clearRect(0, 0, w, h);
 
-        // Оси
-        ctx.beginPath();
-        ctx.moveTo(20, centerY);
-        ctx.lineTo(w - 20, centerY);
-        ctx.moveTo(centerX, 20);
-        ctx.lineTo(centerX, h - 20);
-        ctx.strokeStyle = '#000000';
-        ctx.stroke();
+        const img = new Image();
+        img.src = '1.png';
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, w, h);
+            ctx.save();
+            ctx.globalAlpha = 0.5;
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, w, h);
+            ctx.restore();
 
-        for (let i = -2; i < 3; i++) {
-            if (i === 0) continue;
-            const x = centerX + i * 50;
+            // Оси
             ctx.beginPath();
-            ctx.moveTo(x, centerY + 5);
-            ctx.lineTo(x, centerY - 5);
-            const y = centerY + i * 50;
-            ctx.moveTo(centerX + 5, y);
-            ctx.lineTo(centerX  - 5, y);
+            ctx.moveTo(20, centerY);
+            ctx.lineTo(w - 20, centerY);
+            ctx.moveTo(centerX, 20);
+            ctx.lineTo(centerX, h - 20);
+            ctx.moveTo(centerX - 5, 30);
+            ctx.lineTo(centerX, 20);
+            ctx.lineTo(centerX + 5, 30);
+            ctx.moveTo(w - 30, centerY - 5);
+            ctx.lineTo(w - 20, centerY);
+            ctx.lineTo(w - 30, centerY + 5);
+            ctx.fillText('Y', centerX + 10, 30);
+            ctx.fillText('X', w - 30, centerY - 10);
+            ctx.strokeStyle = '#000000';
             ctx.stroke();
-            if (i === -1 || i === 1) {
-                ctx.fillText("R/2", x, centerY + 15);
-                ctx.fillText("R/2", centerX + 15, y);
+
+            for (let i = -2; i < 3; i++) {
+                if (i === 0) continue;
+                const x = centerX + i * 50;
+                ctx.beginPath();
+                ctx.moveTo(x, centerY + 5);
+                ctx.lineTo(x, centerY - 5);
+                const y = centerY + i * 50;
+                ctx.moveTo(centerX + 5, y);
+                ctx.lineTo(centerX - 5, y);
+                ctx.stroke();
+                if (i === -1 || i === 1) {
+                    ctx.fillText("R/2", x, centerY + 15);
+                    ctx.fillText("R/2", centerX + 15, y);
+                } else {
+                    ctx.fillText("R", x, centerY + 15);
+                    ctx.fillText("R", centerX + 15, y);
+                }
             }
-            else {
-                ctx.fillText("R", x, centerY + 15);
-                ctx.fillText("R", centerX + 15, y);
-            }
-        }
 
-        ctx.fillStyle = '#007cff';
+            ctx.fillStyle = '#7bff00';
 
-        // 1 четверть
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, 50, Math.PI * 1.5, 0);
-        ctx.closePath(); // Замыкаем путь
-        ctx.globalAlpha = 0.5;
-        ctx.fill();
+            // 1 четверть
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, 50, Math.PI * 1.5, 0);
+            ctx.closePath(); // Замыкаем путь
+            ctx.globalAlpha = 0.6;
+            ctx.fill();
 
-        // 2 четверть
-        ctx.fillRect(centerX, centerY,  100, 50);
+            // 2 четверть
+            ctx.fillRect(centerX, centerY, 100, 50);
 
-        // 3 четверть
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX - 50, centerY);
-        ctx.lineTo(centerX, centerY + 50);
-        ctx.closePath();
-        ctx.fill();
+            // 3 четверть
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX - 50, centerY);
+            ctx.lineTo(centerX, centerY + 50);
+            ctx.closePath();
+            ctx.fill();
 
-        ctx.globalAlpha = 1.0;
+            ctx.globalAlpha = 1.0;
+        };
     }
 }
 

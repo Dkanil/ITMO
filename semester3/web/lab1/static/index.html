@@ -47,30 +47,37 @@
             </div>
 
             <button type="submit">Проверить</button>
+            <img id="submit-gif" src="boom.gif" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;" alt="">
         </form>
     </section>
 
     <section class="graph-section">
-        <canvas id="graphCanvas" width="400" height="400"></canvas>
+        <h2>Карта боевых действий</h2>
+        <canvas id="graphCanvas" width="300" height="300"></canvas>
     </section>
 
     <section class="results-section">
         <h2>Результаты</h2>
-        <table id="resultsTable">
-            <thead>
-            <tr>
-                <th>X</th>
-                <th>Y</th>
-                <th>R</th>
-                <th>Результат</th>
-                <th>Время запроса</th>
-                <th>Время работы</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Results will be dynamically inserted here -->
-            </tbody>
-        </table>
+        <div class="resultsTable">
+            <table id="table-header">
+                <thead>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>R</th>
+                    <th>mOzIlA?</th>
+                    <th>Время запроса</th>
+                    <th>Время работы</th>
+                </tr>
+                </thead>
+            </table>
+            <div class="table-scroll">
+                <table id="table-content">
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </section>
 </main>
 <script src="index.js"></script>

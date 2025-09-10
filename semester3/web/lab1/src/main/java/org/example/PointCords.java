@@ -14,9 +14,25 @@ public class PointCords {
             throw new IllegalArgumentException("Query string cannot be null or empty");
         }
         Map<String, String> params = splitQuery(query);
-        this.x = Integer.parseInt(params.get("x"));
-        this.y = Double.parseDouble(params.get("y"));
-        this.r = Integer.parseInt(params.get("r"));
+        try {
+            this.x = Integer.parseInt(params.get("x"));
+            this.y = Double.parseDouble(params.get("y"));
+            this.r = Integer.parseInt(params.get("r"));
+            if (!validateParams(x, y, r)) {
+                throw new IllegalArgumentException("Parameter values are out of valid range");
+            }
+        }
+        catch (NumberFormatException | NullPointerException e) {
+            throw new IllegalArgumentException("Invalid parameter format");
+        }
+    }
+
+    private boolean validateParams(int x, double y, int r) {
+        try {
+            return Arrays.asList(-3, -2, -1, 0, 1, 2, 3, 4, 5).contains(x) && (y > -3 && y < 3) && Arrays.asList(1, 2, 3, 4, 5).contains(r);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Map<String, String> splitQuery(String query) {
