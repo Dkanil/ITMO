@@ -59,7 +59,7 @@ public class Main {
                 long endTime = System.nanoTime();
                 double execution_time = (double) (endTime - startTime) / 1_000_000;
 
-                // Locale.US чтобы у дробных чисел был . а не ,
+                // Locale.US чтобы у дробных чисел был '.' а не ','
                 String response = String.format(java.util.Locale.US, JSON_RESPONSE, x, y, r, hit, execution_time, timestamp);
                 System.out.printf(HTTP_RESPONSE, response.length(), response);
                 output.printf("Response sent: {{" + HTTP_RESPONSE + "}}\n", response.length(), response);
