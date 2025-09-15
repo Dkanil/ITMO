@@ -11,7 +11,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - "./httpd.conf:/usr/local/apache2/conf/httpd.conf"
+      - "./configs/httpd.conf:/usr/local/apache2/conf/httpd.conf"
       - "./static:/var/www"
     networks:
       backend:

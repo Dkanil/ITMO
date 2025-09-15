@@ -11,6 +11,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         final String HTTP_RESPONSE = """
+                HTTP/1.1 200 OK
                 Content-Type: application/json
                 Content-Length: %d
                 
@@ -57,7 +58,9 @@ public class Main {
 
                 long endTime = System.nanoTime();
                 double execution_time = (double) (endTime - startTime) / 1_000_000;
-                String response = JSON_RESPONSE.formatted(x, y, r, hit, execution_time, timestamp);
+
+                // Locale.US чтобы у дробных чисел был . а не ,
+                String response = String.format(java.util.Locale.US, JSON_RESPONSE, x, y, r, hit, execution_time, timestamp);
                 System.out.printf(HTTP_RESPONSE, response.length(), response);
                 output.printf("Response sent: {{" + HTTP_RESPONSE + "}}\n", response.length(), response);
                 output.println("----------End of FCGI request processing----------\n");
@@ -66,10 +69,12 @@ public class Main {
             }
             catch (Exception e) {
                 output.println("Error: " + e.getMessage() + "\n");
-                String response = JSON_ERROR.formatted(e.getMessage(), timestamp);
+                String response = String.format(java.util.Locale.US, JSON_ERROR, e.getMessage(), timestamp);
                 System.out.printf(HTTP_RESPONSE, response.length(), response);
                 output.flush();
             }
         }
+        output.println("Server stopped");
+        output.flush();
     }
 }

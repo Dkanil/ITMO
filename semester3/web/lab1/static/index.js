@@ -78,14 +78,14 @@ class PointChecker {
     async sendData(data) {
         try {
             console.log('Trying to send data:', data);
-            const response = await fetch("/fcgi-bin/app.jar", {
+            const response = await fetch("/fcgi-bin/lab1.jar", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams(data)
             });
             console.log('Response got:', response);
-            // if (!response.ok) throw new Error('Ошибка пока не обрабатывается');
-            const result = await response.json(); // todo обработка ошибки от сервера
+            if (!response.ok) throw new Error('Сервер вернул ошибку ' + response.status);
+            const result = await response.json();
             if (result.error !== undefined) {
                 alert(result.error);
                 return;
