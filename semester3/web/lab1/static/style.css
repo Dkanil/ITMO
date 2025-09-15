@@ -73,7 +73,7 @@ main {
 
 .input-section {
     background: #ececec;
-    padding: 2rem;
+    padding: 32px;
 }
 
 #x-buttons button {
@@ -96,12 +96,12 @@ main {
 }
 
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 8px;
     font-weight: bold;
     color: #353535;
 }
