@@ -46,6 +46,7 @@ class PointChecker {
 
     validateR(event) {
         const input = event.target;
+        const value = input.value;
         if (!/^[1-5]$/.test(value)) {
             input.setCustomValidity('R должен быть натуральным числом от 1 до 5');
         } else {
@@ -83,8 +84,17 @@ class PointChecker {
                 body: new URLSearchParams(data)
             });
             console.log('Response got:', response);
-            if (!response.ok) throw new Error('Ошибка пока не обрабатывается');
+            // if (!response.ok) throw new Error('Ошибка пока не обрабатывается');
             const result = await response.json(); // todo обработка ошибки от сервера
+            if (result.error !== undefined) {
+                alert(result.error);
+                return;
+            }
+            const gif = document.getElementById(result.hit ? 'boom-gif' : 'miss-gif');
+            gif.style.display = 'block';
+            setTimeout(() => {
+                gif.style.display = 'none';
+            }, result.hit ? 1710 : 1730);
             this.addResultToTable(result);
             this.saveResult(result);
         } catch (error) {
@@ -95,16 +105,11 @@ class PointChecker {
     addResultToTable(result) {
         const tbody = this.resultsTable.querySelector('tbody');
         const row = document.createElement('tr');
-        const gif = document.getElementById('submit-gif');
-        gif.style.display = 'block';
-        setTimeout(() => {
-            gif.style.display = 'none';
-        }, 1300);
         row.innerHTML = `
             <td>${result.x}</td>
             <td>${result.y}</td>
             <td>${result.r}</td>
-            <td>${result.hit ? "POPAл" : "mOzIlA"}</td>
+            <td>${result.hit ? "Прилёт" : "mOzIlA"}</td>
             <td>${new Date(result.timestamp).toLocaleString()}</td>
             <td>${result.execution_time}ms</td>
         `;

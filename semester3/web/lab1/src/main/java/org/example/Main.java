@@ -11,21 +11,27 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         final String HTTP_RESPONSE = """
-                HTTP/1.1 200 OK
-                Content-Length: %d
-                
-                %s
-                """;
-
-        final String HTTP_ERROR = """
-                HTTP/1.1 400 Bad Request
                 Content-Type: application/json
                 Content-Length: %d
                 
                 %s
+                
+                """;
+        final String JSON_RESPONSE = """
+                { "x": %d,
+                "y": %f,
+                "r": %d,
+                "hit": %s,
+                "execution_time": %f,
+                "timestamp": %d }
+                """;
+        final String JSON_ERROR = """
+                { "error": "%s",
+                "timestamp": %d }
                 """;
 
-        // Объявим свой логгер по документации тк библиотека доисторическое дерьмо и зажала System.out
+
+        // Объявим свой логгер по документации тк библиотека зажала System.out
         PrintStream output = new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out), 128), true);
 
         FCGIInterface fcgi = new FCGIInterface();
@@ -51,26 +57,17 @@ public class Main {
 
                 long endTime = System.nanoTime();
                 double execution_time = (double) (endTime - startTime) / 1_000_000;
-                String response = "{ \"x\": " + x +
-                        ", \"y\": " + y +
-                        ", \"r\": " + r +
-                        ", \"hit\": " + (hit ? "true" : "false") +
-                        ", \"execution_time\": " + execution_time +
-                        ", \"timestamp\": " + timestamp + " }";
-
-                //System.out.printf((HTTP_RESPONSE) + "%n", response.length(), response); // todo проверить мб накладываются заголовки
-                System.out.println(response);
-                output.println("Response sent: " + response);
+                String response = JSON_RESPONSE.formatted(x, y, r, hit, execution_time, timestamp);
+                System.out.printf(HTTP_RESPONSE, response.length(), response);
+                output.printf("Response sent: {{" + HTTP_RESPONSE + "}}\n", response.length(), response);
                 output.println("----------End of FCGI request processing----------\n");
                 output.flush();
                 System.out.flush();
             }
             catch (Exception e) {
                 output.println("Error: " + e.getMessage() + "\n");
-                String response = "{ \"error\": \"" + e.getMessage() + "\"" +
-                        ", \"timestamp\": " + timestamp + " }";
-                //System.out.println(HTTP_ERROR.formatted(response.length(), response));
-                System.out.println(response);
+                String response = JSON_ERROR.formatted(e.getMessage(), timestamp);
+                System.out.printf(HTTP_RESPONSE, response.length(), response);
                 output.flush();
             }
         }
