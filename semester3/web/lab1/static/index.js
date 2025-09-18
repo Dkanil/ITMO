@@ -21,11 +21,11 @@ class PointChecker {
         this.xButtons.forEach(b => b.classList.remove('selected'));
         e.target.classList.add('selected');
         document.getElementById('x').value = e.target.value;
-        this.validateX();
+        this.validateX(e);
     }
 
-    validateX() {
-        const input = document.getElementById('x');
+    validateX(event) {
+        const input = event.target;
         const value = input.value;
         if (!/^-[321]$|^[012345]$/.test(value)) {
             input.setCustomValidity('КОВЫРЯТЬСЯ В КОДЕ ЭЛЕМЕНТА ПЛОХО.');
@@ -58,7 +58,7 @@ class PointChecker {
         event.preventDefault();
         const data = {
             x: document.getElementById('x').value,
-            y: document.getElementById('y').value,
+            y: document.getElementById('y').value.replace(',', '.'),
             r: document.getElementById('r').value
         };
         if (!this.validateData(data)) {
@@ -72,7 +72,7 @@ class PointChecker {
         const x = parseInt(data.x);
         const y = parseFloat(data.y);
         const r = parseInt(data.r);
-        return !isNaN(x) && !isNaN(y) && !isNaN(r) && y > -3 && y < 3 && [1, 2, 3, 4, 5].includes(r) && [-3, -2, -1, 0, 1, 2, 3, 4, 5].includes(x);
+        return !isNaN(data.x) && !isNaN(data.y) && !isNaN(data.r) && y > -3 && y < 3 && [1, 2, 3, 4, 5].includes(r) && [-3, -2, -1, 0, 1, 2, 3, 4, 5].includes(x);
     }
 
     async sendData(data) {
