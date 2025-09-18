@@ -84,6 +84,10 @@ class PointChecker {
                 body: new URLSearchParams(data)
             });
             console.log('Response got:', response);
+            if (response.status === 400) {
+                window.location.href = 'https://псж.онлайн';
+                throw new Error('ААААААААААА ХАКЕРСКАЯ АТАКА ААААААААААААААААААААААААААА');
+            }
             if (!response.ok) throw new Error('Сервер вернул ошибку ' + response.status);
             const result = await response.json();
             if (result.error !== undefined) {

@@ -18,6 +18,14 @@ public class Main {
                 %s
                 
                 """;
+        final String HTTP_ERROR = """
+                HTTP/1.1 400 Bad Request
+                Content-Type: application/json
+                Content-Length: %d
+                
+                %s
+                
+                """;
         final String JSON_RESPONSE = """
                 { "x": %d,
                 "y": %f,
@@ -70,7 +78,7 @@ public class Main {
             catch (Exception e) {
                 output.println("Error: " + e.getMessage() + "\n");
                 String response = String.format(java.util.Locale.US, JSON_ERROR, e.getMessage(), timestamp);
-                System.out.printf(HTTP_RESPONSE, response.length(), response);
+                System.out.printf(HTTP_ERROR, response.length(), response);
                 output.flush();
             }
         }
