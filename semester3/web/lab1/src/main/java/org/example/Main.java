@@ -28,7 +28,7 @@ public class Main {
                 """;
         final String JSON_RESPONSE = """
                 { "x": %d,
-                "y": %f,
+                "y": %.15f,
                 "r": %d,
                 "hit": %s,
                 "execution_time": %f,
