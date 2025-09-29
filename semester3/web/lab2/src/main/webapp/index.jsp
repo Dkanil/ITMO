@@ -1,11 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="en"/>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lab1</title>
+    <title>lab2</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -46,19 +47,19 @@
                     </label>
                     <label>
                         1.5
-                        <input type="radio" name="r"  value="1.5">
+                        <input type="radio" name="r" value="1.5">
                     </label>
                     <label>
                         2
-                    <input type="radio" name="r"  value="2">
+                        <input type="radio" name="r" value="2">
                     </label>
                     <label>
                         2.5
-                    <input type="radio" name="r"  value="2.5">
+                        <input type="radio" name="r" value="2.5">
                     </label>
                     <label>
                         3
-                    <input type="radio" name="r"  value="3">
+                        <input type="radio" name="r" value="3">
                     </label>
                 </div>
                 <input type="hidden" id="r" name="r" value="1" required>
@@ -100,9 +101,11 @@
                     <jsp:useBean id="resultsBean" scope="session" class="org.example.models.ResultsBean"/>
                     <c:forEach var="resultsBean" items="${resultsBean.results}">
                         <tr>
-                            <td>${resultsBean.x}</td>
-                            <td><fmt:formatNumber value="${resultsBean.y}" minFractionDigits="0"/></td>
-                            <td>${resultsBean.r}</td>
+                            <td><fmt:formatNumber value="${resultsBean.x}" minFractionDigits="0"
+                                                  maxFractionDigits="15"/></td>
+                            <td><fmt:formatNumber value="${resultsBean.y}" minFractionDigits="0"
+                                                  maxFractionDigits="15"/></td>
+                            <td><fmt:formatNumber value="${resultsBean.r}" minFractionDigits="0"/></td>
                             <td>${resultsBean.hit ? "Прилёт" : "mOzIlA"}</td>
                             <td><fmt:formatDate value="${resultsBean.timestamp}" pattern="dd.MM.yyyy, HH:mm:ss"/></td>
                             <td>${resultsBean.executionTime}ms</td>

@@ -18,7 +18,7 @@ public class PointCords implements Serializable {
     private final Date timestamp;
     private double executionTime = 0.0;
 
-    public PointCords(String query) {
+    public PointCords(String query) throws IllegalArgumentException {
         if (query == null || query.isEmpty()) {
             throw new IllegalArgumentException("Query string cannot be null or empty");
         }

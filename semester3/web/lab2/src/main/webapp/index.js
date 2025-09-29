@@ -1,19 +1,21 @@
 class PointChecker {
-    constructor() {
-        this.form = document.getElementById('pointForm');
-        this.resultsTable = document.getElementById('table-content');
-        this.bgCanvas  = document.getElementById('bgCanvas');
+    constructor(lightMode) {
+        this.scale = 60;
+        this.bgCanvas = document.getElementById('bgCanvas');
         this.graphCanvas = document.getElementById('graphCanvas');
         this.bgCtx = this.bgCanvas.getContext('2d');
         this.graphCtx = this.graphCanvas.getContext('2d');
-        this.xButtons = document.querySelectorAll('#x-buttons button');
-        this.rButtons = document.querySelectorAll('#r-buttons input[type="radio"]');
-        this.scale = 30;
-        this.init();
+        if (!lightMode) {
+            this.form = document.getElementById('pointForm');
+            this.xButtons = document.querySelectorAll('#x-buttons button');
+            this.rButtons = document.querySelectorAll('#r-buttons input[type="radio"]');
+            this.scale = 30;
+            this.init();
+        }
+        this.drawGraphBackground();
     }
 
     init() {
-        this.drawGraphBackground();
         this.form.addEventListener('submit', e => this.handleSubmit(e));
         this.xButtons.forEach(btn => btn.addEventListener('click', e => this.selectX(e)));
         document.getElementById('y').addEventListener('input', e => this.validateY(e));
@@ -98,37 +100,26 @@ class PointChecker {
                 throw new Error('ААААААААААА ХАКЕРСКАЯ АТАКА ААААААААААААААААААААААААААА');
             }
             if (!response.ok) throw new Error('Сервер вернул ошибку ' + response.status);
-            const result = await response.json();
-            if (result.error !== undefined) {
-                alert(result.error);
-                return;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const result = await response.json();
+                throw result.error;
             }
-            this.drawPoint(result);
-            this.addResultToTable(result);
-            const gif = document.getElementById(result.hit ? 'boom-gif' : 'miss-gif');
-            gif.style.display = 'block';
-            setTimeout(() => {
-                gif.style.display = 'none';
-            }, result.hit ? 1710 : 1730);
+            else {
+                const html = await response.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                document.body.replaceChildren(...doc.body.childNodes);
+                const lastResult = document.getElementById('lastResult');
+                new PointChecker(true).drawPoint(lastResult);
+                const gif = document.getElementById(lastResult.hit ? 'boom-gif' : 'miss-gif');
+                gif.style.display = 'block';
+                setTimeout(() => {
+                    gif.style.display = 'none';
+                }, lastResult.hit ? 1710 : 1730);
+            }
         } catch (error) {
             alert(error.message);
         }
-    }
-
-    addResultToTable(result) {
-        const tbody = this.resultsTable.querySelector('tbody');
-        const row = document.createElement('tr');
-
-        const date = new Date(result.timestamp).toLocaleString('ru-RU', { hour12: false });
-        row.innerHTML = `
-            <td>${result.x}</td>
-            <td>${result.y}</td>
-            <td>${result.r}</td>
-            <td>${result.hit ? "Прилёт" : "mOzIlA"}</td>
-            <td>${date}</td>
-            <td>${result.execution_time}ms</td>
-        `;
-        tbody.appendChild(row);
     }
 
     drawPoint(result) {
@@ -136,17 +127,14 @@ class PointChecker {
         const w = this.graphCanvas.width, h = this.graphCanvas.height;
         const centerX = w / 2;
         const centerY = h / 2;
-        const r = document.getElementById('r').value;
-        if (!r) return;
+        const x = centerX + (result.dataset.x * this.scale);
+        const y = centerY - (result.dataset.y * this.scale);
+        const hit = result.dataset.hit === 'true';
 
-        const x = centerX + (result.x * this.scale);
-        const y = centerY - (result.y * this.scale);
-
-        ctx.fillStyle = result.hit ? '#00ff00' : '#ff0000';
+        ctx.fillStyle = hit ? '#00ff00' : '#ff0000';
         ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
         ctx.fill();
-
         ctx.lineWidth = 1;
         ctx.strokeStyle = '#000000';
         ctx.stroke();
@@ -178,7 +166,7 @@ class PointChecker {
         if (document.getElementById('pointForm').checkValidity()) {
             this.sendData({ x: x, y: y, r: r });
         } else {
-            alert('Некорректные координаты точки. Пожалуйста, введите допустимые значения X, Y.'); // todo выводить не в alert
+            alert('Некорректные координаты точки. Пожалуйста, введите допустимые значения X, Y.');
         }
     }
 
@@ -228,10 +216,10 @@ class PointChecker {
                 ctx.stroke();
                 if (i % 2 === 1 || i % 2 === -1) continue;
                 ctx.fillText(i, x, centerY + 15);
-                ctx.fillText(i, centerX + 10, y);
+                ctx.fillText(i, centerX - 15, y);
             }
         };
-        if (document.getElementById('r').value) this.drawGraph();
+        if (document.getElementById('r') !== null && document.getElementById('r').value || document.getElementById('lastResult') !== null) this.drawGraph();
     }
 
     drawGraph() {
@@ -239,8 +227,12 @@ class PointChecker {
         const w = this.graphCanvas.width, h = this.graphCanvas.height;
         const centerX = w / 2;
         const centerY = h / 2;
-        const r = document.getElementById('r').value;
-        if (!r) return;
+        let r;
+        if (document.getElementById('r') !== null) {
+            r = document.getElementById('r').value;
+        } else if (document.getElementById('lastResult') !== null) {
+            r = document.getElementById('lastResult').dataset.r;
+        } else return;
 
         ctx.clearRect(0, 0, w, h);
 
@@ -269,4 +261,4 @@ class PointChecker {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => new PointChecker());
+document.addEventListener('DOMContentLoaded', () => new PointChecker(false));

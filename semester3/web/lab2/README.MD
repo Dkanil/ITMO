@@ -3,8 +3,8 @@
 ### Для запуска локально:
 - Скачиваем "WildFly 37.0.1 Final" с https://www.wildfly.org
 - Собираем проект: ```mvn clean package```
-- Запускаем сервер: ```.\wildfly-37.0.1.Final\bin\standalone.bat```
 - Создаём пользователя для админки: ```.\wildfly-37.0.1.Final\bin\add-user.bat```
+- Запускаем сервер: ```.\wildfly-37.0.1.Final\bin\standalone.bat```
 - Подключаемся к http://localhost:9990
 - Открываем вкладку Deployments -> Add -> Select a deployment -> выбираем ```.\target\lab2.war```
 - Заходим на http://localhost:8080/lab2
@@ -12,21 +12,15 @@
 
 ### Для запуска на helios:
 - Грузим WildFly на гелиос ```scp -P 2222 wildfly-37.0.1.Final.zip s466217@se.ifmo.ru:/home/studs/s466217/web/lab2/```
-- хз дальше лабу не дописал
-
-
-- Собрать jar через ```.\gradlew jar```
-- Пробросить порты на гелиосе ```ssh -p 2222 s466217@helios.cs.ifmo.ru -L 4662:localhost:4662```
-- Создать на гелиосе кучу директорий со структурой хзхзхз:
-```
-| web/
-| - lab2/
-| - - httpd-root/
-| - - - conf/ (сюда httpd-conf-helios.conf)
-| - - - fcgi-bin/ (здесь jar)
-| - - - mutex-dir/
-| - - .www/ (здесь всё из static)
-```
-- ```httpd -f ~/web/lab1/httpd-root/conf/httpd-conf-helios.conf -k start```
-- ```java -jar -DFCGI_PORT=4663 httpd-root/fcgi-bin/lab1.jar```
-- Подключаемся в браузере к http://localhost:4662
+- Распаковываем ```unzip wildfly-37.0.1.Final.zip```
+- Создаём пользователя для админки: ```sh .\wildfly-37.0.1.Final\bin\add-user.sh```
+- Меняем в standalone.xml все 127.0.0.1 на 0.0.0.0
+- Меняем в standalone.xml все порты, кроме последнего на свои
+- Указываем другую версию джавы на гелиосе ```JAVA_VERSION=21```
+- Запускаем сервер: ```sh .\wildfly-37.0.1.Final\bin\standalone.sh```
+- Пробрасываем два порта на гелиос: http и http-management (их мы в standalone.xml указывали)
+- Собираем проект: ```mvn clean package```
+- Заходим на http://localhost:<http-management>
+- Открываем вкладку Deployments -> Add -> Select a deployment -> выбираем ```.\target\lab2.war```
+- Заходим на http://localhost:<http>/lab2
+- ГООООООЛ
