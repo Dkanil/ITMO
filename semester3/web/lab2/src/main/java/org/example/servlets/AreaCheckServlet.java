@@ -31,10 +31,10 @@ public class AreaCheckServlet extends HttpServlet {
             }
             Long startTime = System.nanoTime();
             PointCords point = new PointCords(req.getQueryString());
-            System.out.println("Processed point: " + point);
             resultsBean.addResult(point);
             Long endTime = System.nanoTime();
             point.setExecutionTime((endTime - startTime) / 1_000_000.0); // время в миллисекундах
+            System.out.println("Processed point: " + point);
 
             req.getRequestDispatcher("/result.jsp").forward(req, res);
             System.out.println("----- AreaCheckServlet Ends -----");
