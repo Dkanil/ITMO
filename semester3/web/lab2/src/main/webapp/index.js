@@ -19,7 +19,9 @@ class PointChecker {
         this.form.addEventListener('submit', e => this.handleSubmit(e));
         this.xButtons.forEach(btn => btn.addEventListener('click', e => this.selectX(e)));
         document.getElementById('y').addEventListener('input', e => this.validateY(e));
-        this.rButtons.forEach(radio => { radio.addEventListener('change', e => this.selectR(e));});
+        this.rButtons.forEach(radio => {
+            radio.addEventListener('change', e => this.selectR(e));
+        });
         document.getElementById('r').addEventListener('change', e => this.selectR(e));
         document.getElementById('graphCanvas').addEventListener('click', e => this.handleGraphClick(e));
     }
@@ -93,7 +95,7 @@ class PointChecker {
             const queryParams = new URLSearchParams(data);
             const response = await fetch(`controller?${queryParams}`, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             });
             if (response.status === 400) {
                 window.location.href = 'https://псж.онлайн';
@@ -104,18 +106,17 @@ class PointChecker {
             if (contentType && contentType.includes('application/json')) {
                 const result = await response.json();
                 throw result.error;
-            }
-            else {
+            } else {
                 const html = await response.text();
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 document.body.replaceChildren(...doc.body.childNodes);
                 const lastResult = document.getElementById('lastResult');
                 new PointChecker(true).drawPoint(lastResult);
-                const gif = document.getElementById(lastResult.hit ? 'boom-gif' : 'miss-gif');
+                const gif = document.getElementById(lastResult.dataset.hit === 'true' ? 'boom-gif' : 'miss-gif');
                 gif.style.display = 'block';
                 setTimeout(() => {
                     gif.style.display = 'none';
-                }, lastResult.hit ? 1710 : 1730);
+                }, lastResult.dataset.hit === 'true' ? 1710 : 1730);
             }
         } catch (error) {
             alert(error.message);
@@ -129,7 +130,7 @@ class PointChecker {
         const centerY = h / 2;
         const x = centerX + (result.dataset.x * this.scale);
         const y = centerY - (result.dataset.y * this.scale);
-        const hit = result.dataset.hit === 'true';
+        const hit = result.dataset.hit === 'true' || result.dataset.hit === true;
 
         ctx.fillStyle = hit ? '#00ff00' : '#ff0000';
         ctx.beginPath();
@@ -164,7 +165,7 @@ class PointChecker {
         this.xButtons.forEach(b => b.classList.remove('selected'));
 
         if (document.getElementById('pointForm').checkValidity()) {
-            this.sendData({ x: x, y: y, r: r });
+            this.sendData({x: x, y: y, r: r});
         } else {
             alert('Некорректные координаты точки. Пожалуйста, введите допустимые значения X, Y.');
         }
@@ -258,6 +259,18 @@ class PointChecker {
         ctx.fillRect(centerX, centerY, r * this.scale, r * this.scale / 2);
 
         ctx.globalAlpha = 1.0;
+
+        // Рисуем точки
+        results.filter(result => result.r == r).forEach(result => {
+            this.drawPoint({
+                dataset: {
+                    x: result.x,
+                    y: result.y,
+                    r: result.r,
+                    hit: result.hit
+                }
+            });
+        });
     }
 }
 

@@ -13,7 +13,7 @@
 <header>
     <h1>Козаченко Данил Александрович</h1>
     <h1>Группа: P3212 Вариант: 466217</h1>
-    <a href="index.jsp" style="margin: 10px 0; display: inline-block;">Пальнуть ещё разочек</a>
+    <a href="index.jsp" class="href-button" style="margin: 10px 0; display: inline-block;">Пальнуть ещё разочек</a>
 </header>
 <main>
     <section class="graph-section">

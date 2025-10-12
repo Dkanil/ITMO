@@ -117,6 +117,20 @@
         </div>
     </section>
 </main>
+<script>
+    const results = [
+        <c:forEach var="res" items="${resultsBean.results}" varStatus="loop">
+        {
+            x: ${res.x},
+            y: ${res.y},
+            r: ${res.r},
+            hit: ${res.hit ? 'true' : 'false'},
+            timestamp: "${res.timestamp}",
+            executionTime: ${res.executionTime}
+        }<c:if test="${!loop.last}">,</c:if>
+        </c:forEach>
+    ];
+</script>
 <script src="index.js"></script>
 </body>
 </html>
