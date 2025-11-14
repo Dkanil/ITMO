@@ -2,9 +2,11 @@ import ctypes
 import os
 import random
 
+
 class Point(ctypes.Structure):
     _fields_ = [("x", ctypes.c_int),
                 ("y", ctypes.c_int)]
+
 
 def download_library():
     # Определение имени файла библиотеки в зависимости от ОС
@@ -26,14 +28,15 @@ def download_library():
     c_lib.process.restype = None
     return c_lib
 
+
 if __name__ == "__main__":
     print("Start program")
-    
+
     c_lib = download_library()
 
     # 1. Создание файла с 1000 парами чисел
     f = open("test.txt", "w")
-    arr_len = 10 // 2 # Количество пар точек
+    arr_len = 10 // 2  # Количество пар точек
     range_min = -1000
     range_max = 1000
     for i in range(arr_len):
@@ -49,13 +52,14 @@ if __name__ == "__main__":
             data.append(Point(x2, y2))
 
     # 3. Массив содержит класс Point
-    ArrayType = Point * len(data)   # Создаем тип "массив из 2 * 1000 точек"
-    c_array = ArrayType(*data)      # Создаем экземпляр этого массива
+    ArrayType = Point * len(data)  # Создаем тип "массив из 2 * 1000 точек"
+    c_array = ArrayType(*data)  # Создаем экземпляр этого массива
 
     # 4. Передаём массив в функцию, написанную на C и возвращаем результат
     results = (ctypes.c_double * (len(c_array) // 2))()  # Массив для результатов
     c_lib.process(c_array, len(c_array), results)
 
     # 6. Результаты выводим из кода питона
-    for i in range(0, arr_len, 2):
-        print(f"Расстояние между точками ({c_array[i].x}, {c_array[i].y}) и ({c_array[i + 1].x}, {c_array[i + 1].y}) = {results[i // 2]}")
+    for i in range(0, arr_len * 2, 2):
+        print(
+            f"Расстояние между точками ({c_array[i].x}, {c_array[i].y}) и ({c_array[i + 1].x}, {c_array[i + 1].y}) = {results[i // 2]}")
