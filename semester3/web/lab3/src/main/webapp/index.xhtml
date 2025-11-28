@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>lab3 Main page</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <h:outputScript library="js" name="index.js"/>
+</h:head>
+<h:body>
+    <header>
+        <h1>Козаченко Данил Александрович</h1>
+        <h1>Группа: P3212 Вариант: 466217</h1>
+    </header>
+    <main>
+        <section class="input-section">
+            <h:form id="pointForm">
+                <h:panelGroup layout="block" style="margin-top:20px">
+                    <h:outputLabel value="Координата X:" for="xMenu"/>
+                    <h:selectOneMenu id="xMenu" value="#{pointBean.x}">
+                        <f:selectItems value="#{pointBean.xValues}" var="val" itemValue="#{val}" itemLabel="#{val}"/>
+                    </h:selectOneMenu>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" style="margin-top:20px">
+                    <h:outputLabel value="Координата Y:" for="yVal"/>
+                    <h:inputText id="yVal" value="#{pointBean.y}">
+                        <f:validateDoubleRange minimum="-5" maximum="5"/>
+                    </h:inputText>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" style="margin-top:20px">
+                    <h:outputLabel value="Радиус района дислокации ВСУ R:"/>
+                    <div style="margin-top:10px">
+                        <h:commandButton value="1" action="#{pointBean.setR(1)}"/>
+                        <h:commandButton value="2" action="#{pointBean.setR(2)}"/>
+                        <h:commandButton value="3" action="#{pointBean.setR(3)}"/>
+                        <h:commandButton value="4" action="#{pointBean.setR(4)}"/>
+                        <h:commandButton value="5" action="#{pointBean.setR(5)}"/>
+                    </div>
+                </h:panelGroup>
+
+                <h:commandButton value="Бахнуть орешником" action="#{pointBean.submit}"/>
+            </h:form>
+        </section>
+
+        <section class="graph-section"> <!-- fixme мб не заработает -->
+            <h2>Карта боевых действий</h2>
+            <div style="position: relative; width: 300px; height: 300px;">
+                <canvas id="bgCanvas" width="300" height="300" style="position:absolute; z-index:0;">
+                </canvas>
+                <canvas id="graphCanvas" width="300" height="300" style="position:absolute; z-index:1;">
+                </canvas>
+            </div>
+            <img src="#{resource['images/boom.gif']}" id="boom-gif"
+                 style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;"
+                 alt="">
+            </img>
+            <img src="#{resource['images/miss.gif']}" id="miss-gif"
+                 style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;"
+                 alt="">
+            </img>
+        </section>
+
+        <section class="results-section">
+            <h2>Результаты</h2>
+            <div class="resultsTable">
+                <h:dataTable value="#{pointBean.results}" var="p" border="1">
+                    <h:column>
+                        <f:facet name="header"><h:outputText value="X"/></f:facet>
+                        <h:outputText value="#{p.x}"/>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header"><h:outputText value="Y"/></f:facet>
+                        <h:outputText value="#{p.y}"/>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header"><h:outputText value="R"/></f:facet>
+                        <h:outputText value="#{p.r}"/>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header"><h:outputText value="Попадание"/></f:facet>
+                        <h:outputText value="#{p.hit ? 'Goida' : 'Potuzhno'}"/>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header"><h:outputText value="Время прилёта"/></f:facet>
+                        <h:outputText value="#{p.timestamp}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </h:column>
+                </h:dataTable>
+            </div>
+        </section>
+    </main>
+</h:body>
+</html>
