@@ -28,18 +28,12 @@
 ## Как запустить?
 - Придётся использовать Java 11 (ура лаба по легаси)
 ### Для запуска локально (легче было сразу в докере делать, но ладно):
-- Создайте файл dbconfig.properties, в котором будет следующее содержание:
-```
-db.url=
-db.user=
-db.password=
-```
 - Скачиваем "WildFly 20.0.0 Final" с https://www.wildfly.org
 - Создаём пользователя для админки: ```.\wildfly-20.0.0.Final\bin\add-user.bat```
 - Добавляем Datasource для PostgreSQL:
   - Открываем ```wildfly-20.0.0.Final\standalone\configuration\standalone.xml```
   - Ищем ```<datasources>```
-  - Меняем параметр jndi-name на ```java:/jdbc/PostgreDS```
+  - Меняем параметр jndi-name на ```java:/jboss/datasources/PostgreDS```
   - Меняем параметр pool-name на ```PostgreDS```
   - параметр statistics-enabled убираем
   - В секции ```<driver>``` указываем имя драйвера ```postgresql```
@@ -81,11 +75,15 @@ db.password=
 ### Для запуска на helios:
 - Грузим WildFly на гелиос ```scp -P 2222 wildfly-20.0.0.Final.zip s466217@se.ifmo.ru:/home/studs/s466217/web/lab3/```
 - Распаковываем ```unzip wildfly-20.0.0.Final.zip```
-- Создаём пользователя для админки: ```sh .\wildfly-20.0.0.Final\bin\add-user.sh```
-- Меняем в wildfly-20.0.0.Final\standalone\configuration\wilstandalone.xml все 127.0.0.1 на 0.0.0.0
-- Меняем в standalone.xml все порты, кроме последнего на свои
+- Создаём пользователя для админки: ```sh ./wildfly-20.0.0.Final/bin/add-user.sh```
+- Меняем в wildfly-20.0.0.Final\standalone\configuration\standalone.xml все 127.0.0.1 на 0.0.0.0
+- Добавляем Datasource для PostgreSQL (см. выше):
+  - В секции ```<connection-url>``` указываем URL ```jdbc:postgresql://pg/studs```
+  - В секции ```<user-name>``` указываем sXXXXXX
+  - В секции ```<password>``` указываем пароль из `.pgpass`
+- Меняем в конце файла standalone.xml все порты, кроме последнего на свои
 - Указываем другую версию джавы на гелиосе ```JAVA_VERSION=11```
-- Запускаем сервер: ```sh .\wildfly-20.0.0.Final\bin\standalone.sh```
+- Запускаем сервер: ```sh ./wildfly-20.0.0.Final/bin/standalone.sh```
 - Пробрасываем два порта на гелиос: http и http-management (их мы в standalone.xml указывали)
 - Собираем проект: ```mvn clean package```
 - Заходим на http://localhost:{http-management}
