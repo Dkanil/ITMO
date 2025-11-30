@@ -29,10 +29,6 @@ header h1 {
     color: transparent;
 }
 
-.results-section h2 {
-    margin-bottom: 1rem;
-}
-
 @keyframes jump-text {
     0% {
         transform: scale(0.5);
@@ -71,66 +67,30 @@ main {
     padding: 2rem;
 }
 
-.input-section {
+.input-section  {
     background: #ececec;
     padding: 32px;
-}
-
-#x-buttons button {
-    width: 36px;
-    height: 36px;
-    font-size: 1.2em;
-    margin: 4px;
-    border-radius: 10px;
-    border: 2px solid #f700ff;
-    background: #ffffff;
-    cursor: pointer;
-    transition: background 1s, border-color 1s;
-    appearance: none;
-}
-
-#r-buttons {
-    display: flex;
-}
-
-#r-buttons label {
-    margin: 15px;
-    font-size: 1.1em;
-}
-
-#r-buttons input[type="radio"] {
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
-    border: 2px solid #f700ff;
-    background: #ffffff;
-    cursor: pointer;
-    transition: background 1s, border-color 1s;
-    appearance: none;
-}
-
-#x-buttons button.selected,
-#r-buttons input[type="radio"]:checked {
-    animation: jump-text 0.3s;
-    background: #d000ff;
-    color: #fff;
-    border-color: #9100ae;
-    appearance: none;
-}
-
-
-.form-group {
     margin-bottom: 16px;
 }
 
-.form-group label {
+.input-section label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
     color: #353535;
 }
 
-.form-group input[type="text"] {
+.input-section select {
+    width: 100px;
+    padding: 8px;
+    font-size: 1em;
+    border-radius: 10px;
+    border: 2px solid #f700ff;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.input-section input[type="text"] {
     width: 100%;
     padding: 12px;
     border: 2px solid #f700ff;
@@ -140,13 +100,44 @@ main {
     transition: border-color 0.3s ease;
 }
 
-.form-group input[type="text"]:invalid {
-    border-color: #ff0000;
+.invalid-input {
+    color: #ff0000;
+    font-weight: bold;
+    margin-top: 5px;
+    display: block;
+    word-wrap: break-word;
 }
 
-button[type="submit"] {
+.rButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.rButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 2px solid #f700ff;
+    background: #ffffff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.rButton.selected {
+    background: #d000ff;
+    color: #ffffff;
+    border-color: #9100ae;
+}
+
+.rButton:active {
+    transform: scale(14, 88);
+}
+
+.submitButton {
     width: 100%;
     padding: 15px;
+    margin-top: 10px;
     background: linear-gradient(120deg, #f700ff, #7bff00);
     color: white;
     border: none;
@@ -156,13 +147,13 @@ button[type="submit"] {
     transition: background 0.3s ease;
 }
 
-button[type="submit"]:hover {
+.submitButton:hover {
     background: linear-gradient(120deg, #bc00c5, #5bc500);
     background-size: 400% 400%;
-    animation: gradient-move-X 1s linear infinite, jump-text 0.8s infinite;
+    animation: jump-text 0.8s infinite, gradient-move-X 1s linear infinite;
 }
 
-button[type="submit"]:active {
+.submitButton:active {
     transform: translateY(2px);
 }
 
@@ -183,6 +174,11 @@ button[type="submit"]:active {
     border-radius: 10px;
 }
 
+.results-section h2 {
+    margin-bottom: 1rem;
+}
+
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -202,7 +198,7 @@ table td {
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.table-scroll {
+.resultsTable {
     max-height: 300px;
     overflow-y: auto;
 }

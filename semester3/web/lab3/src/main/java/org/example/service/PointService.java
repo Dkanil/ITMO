@@ -6,8 +6,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Stateless
 public class PointService implements Serializable {
@@ -17,13 +15,13 @@ public class PointService implements Serializable {
 
     private boolean checkHit(double x, double y, double r) {
         if (x >= 0 && y >= 0) {
-            return y <= - x + r; // 1 четверть
+            return y <= - x + r / 2; // 1 четверть
         } else if (x <= 0 && y >= 0) {
-            return (x * x + y * y) <= (r * r / 4); // 2 четверть
-        } else if (x >= 0 && y <= 0) {
-            return (y >= - r / 2) && (x <= r); // 4 четверть
+            return (x * x + y * y) <= (r * r); // 2 четверть
+        } else if (x <= 0 && y <= 0) {
+            return (y >= - r) && (x >= - r / 2); // 3 четверть
         }
-        return false; // 3 четверть
+        return false; // 4 четверть
     }
 
     public PointCords savePoint(double x, double y, double r) {
@@ -31,11 +29,5 @@ public class PointService implements Serializable {
         PointCords point = new PointCords(x, y, r, isHit);
         em.persist(point);
         return point;
-    }
-
-    public ArrayList<PointCords> getAllPoints() {
-        List<PointCords> resultList = em.createQuery("SELECT p FROM PointCords p", PointCords.class)
-                .getResultList();
-        return new ArrayList<>(resultList);
     }
 }

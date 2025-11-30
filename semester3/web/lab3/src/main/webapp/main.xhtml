@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>lab3 Main page</title>
+    <h:outputStylesheet library="css" name="main.css"/>
+    <h:outputScript library="js" name="index.js" target="body"/>
+</h:head>
+<h:body>
+    <header>
+        <h1>Козаченко Данил Александрович</h1>
+        <h1>Группа: P3212 Вариант: 466217</h1>
+        <section>
+            <h:form>
+                <h:commandButton value="Перемоги не буде ;("
+                                 styleClass="submitButton"
+                                 action="goStart"/>
+            </h:form>
+        </section>
+    </header>
+    <main>
+        <section class="input-section">
+            <h:form id="pointForm">
+                <h:panelGroup layout="block">
+                    <h:outputLabel value="Координата X:" for="x"/>
+                    <h:selectOneMenu id="x" value="#{pointBean.x}">
+                        <f:selectItems value="#{pointBean.xValues}" var="val" itemValue="#{val}" itemLabel="#{val}"/>
+                    </h:selectOneMenu>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block">
+                    <h:outputLabel value="Координата Y:" for="y"/>
+                    <h:inputText id="y" value="#{pointBean.y}" placeholder="-5..5"
+                                 onkeypress="return /[0-5.\-]/.test(event.key)">
+                        <f:validateDoubleRange minimum="-5" maximum="5"/>
+                    </h:inputText>
+                    <h:message id="yMessage" for="y" styleClass="invalid-input"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="rContainer">
+                    <h:outputLabel value="Радиус района дислокации ВСУ R:" styleClass="rLabel"/>
+                    <h:panelGroup layout="block" styleClass="rButtons">
+                        <h:commandButton value="1"
+                                         styleClass="rButton selected"
+                                         action="#{pointBean.setR(1)}"
+                                         onclick="setRValue(this)">
+                            <f:ajax execute="@this"/>
+                        </h:commandButton>
+                        <h:commandButton value="2"
+                                         styleClass="rButton"
+                                         action="#{pointBean.setR(2)}"
+                                         onclick="setRValue(this)">
+                            <f:ajax execute="@this"/>
+                        </h:commandButton>
+                        <h:commandButton value="3"
+                                         styleClass="rButton"
+                                         action="#{pointBean.setR(3)}"
+                                         onclick="setRValue(this)">
+                            <f:ajax execute="@this"/>
+                        </h:commandButton>
+                        <h:commandButton value="4"
+                                         styleClass="rButton"
+                                         action="#{pointBean.setR(4)}"
+                                         onclick="setRValue(this)">
+                            <f:ajax execute="@this"/>
+                        </h:commandButton>
+                        <h:commandButton value="5"
+                                         styleClass="rButton"
+                                         action="#{pointBean.setR(5)}"
+                                         onclick="setRValue(this)">
+                            <f:ajax execute="@this"/>
+                        </h:commandButton>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:commandButton id="submitButton" value="Бахнуть орешником"
+                                 styleClass="submitButton"
+                                 action="#{pointBean.submit}">
+                    <f:ajax execute="x y" render="resultsTable scriptPanel yMessage"/>
+                </h:commandButton>
+
+                <h:inputHidden id="clickX" value="#{pointBean.x}"/>
+                <h:inputHidden id="clickY" value="#{pointBean.y}"/>
+                <h:inputHidden id="clickR" value="#{pointBean.r}"/>
+                <h:commandButton id="hiddenSubmit"
+                                 style="display:none"
+                                 action="#{pointBean.submit}">
+                    <f:ajax execute="clickX clickY clickR" render="resultsTable scriptPanel"/>
+                </h:commandButton>
+            </h:form>
+        </section>
+
+        <section class="graph-section">
+            <h2>Карта боевых действий</h2>
+            <div style="position: relative; width: 300px; height: 300px;">
+                <canvas id="bgCanvas" width="300" height="300" style="position:absolute; z-index:0;">
+                </canvas>
+                <canvas id="graphCanvas" width="300" height="300" style="position:absolute; z-index:1;">
+                </canvas>
+            </div>
+            <!-- fixme гифки чтобы были -->
+            <img src="#{resource['images/boom.gif']}" id="boom-gif"
+                 style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;"
+                 alt="">
+            </img>
+            <img src="#{resource['images/miss.gif']}" id="miss-gif"
+                 style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;"
+                 alt="">
+            </img>
+        </section>
+
+        <section class="results-section">
+            <h2>Результаты</h2>
+            <div class="resultsTable">
+                <h:dataTable id="resultsTable" value="#{pointBean.results}" var="p" border="1">
+                    <h:column>
+                        <f:facet name="header">X</f:facet>
+                        <h:outputText value="#{p.x}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Y</f:facet>
+                        <h:outputText value="#{p.y}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">R</f:facet>
+                        <h:outputText value="#{p.r}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Попадание</f:facet>
+                        <h:outputText value="#{p.hit ? 'Goida' : 'Potuzhno'}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Время прилёта</f:facet>
+                        <h:outputText value="#{p.timestamp}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </h:column>
+                </h:dataTable>
+            </div>
+        </section>
+        <h:panelGroup id="scriptPanel">
+            <h:outputScript>
+                window.results = '#{pointBean.resultsAsJson}';
+                if (typeof drawGraph === 'function') {
+                drawGraph();
+                }
+            </h:outputScript>
+        </h:panelGroup>
+    </main>
+</h:body>
+</html>

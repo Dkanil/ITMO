@@ -3,7 +3,7 @@ package org.example.beans;
 import org.example.models.PointCords;
 import org.example.service.PointService;
 
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Named("pointBean")
-@SessionScoped
+@ApplicationScoped
 public class PointBean implements Serializable {
 
     private double x;
@@ -20,7 +20,7 @@ public class PointBean implements Serializable {
     private double r = 1;
     private final List<Double> xValues = Arrays.asList(-5d, -4d, -3d, -2d, -1d, 0d, 1d, 2d, 3d);
 
-    private ArrayList<PointCords> results = new ArrayList<>();
+    private final ArrayList<PointCords> results = new ArrayList<>();
 
     @Inject
     private PointService pointService;
@@ -28,10 +28,6 @@ public class PointBean implements Serializable {
     public void submit() {
         PointCords p = pointService.savePoint(x, y, r);
         results.add(p);
-    }
-
-    public void loadResults() {
-        results = pointService.getAllPoints();
     }
 
     public List<Double> getxValues() { return xValues; }
@@ -47,4 +43,17 @@ public class PointBean implements Serializable {
 
     public ArrayList<PointCords> getResults() { return results; }
 
+    public String getResultsAsJson() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < results.size(); i++) {
+            PointCords p = results.get(i);
+            sb.append(String.format("{\"x\": %.5f, \"y\": %.5f, \"r\": %.0f, \"hit\": %b}", p.getX(), p.getY(), p.getR(), p.isHit()));
+            if (i < results.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }

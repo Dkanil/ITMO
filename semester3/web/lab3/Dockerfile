@@ -1,8 +1,9 @@
 FROM maven:3.9.11-eclipse-temurin-11 AS build
 WORKDIR /app
 COPY pom.xml .
+RUN mvn dependency:go-offline
 COPY src ./src
-RUN mvn clean package
+RUN mvn package -o
 
 FROM eclipse-temurin:11-jdk
 FROM jboss/wildfly:20.0.1.Final
