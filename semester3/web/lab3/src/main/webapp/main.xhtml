@@ -142,8 +142,12 @@
         <h:panelGroup id="scriptPanel">
             <h:outputScript>
                 window.results = '#{pointBean.resultsAsJson}';
+                window.lastHit = '#{pointBean.lastHit}';
                 if (typeof drawGraph === 'function') {
                 drawGraph();
+                }
+                if (typeof showGif === 'function') {
+                showGif(window.lastHit);
                 }
             </h:outputScript>
         </h:panelGroup>

@@ -140,6 +140,14 @@ function drawPoint(result) {
     ctx.stroke();
 }
 
+function showGif(isHit) {
+    const gif = document.getElementById(isHit === 'true' ? 'boom-gif' : 'miss-gif');
+    gif.style.display = 'block';
+    setTimeout(() => {
+        gif.style.display = 'none';
+    }, isHit === 'true' ? 1710 : 1730);
+}
+
 function handleGraphClick(event) {
     const rect = document.getElementById('graphCanvas').getBoundingClientRect();
     const w = document.getElementById('graphCanvas').width;

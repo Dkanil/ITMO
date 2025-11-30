@@ -18,6 +18,7 @@ public class PointBean implements Serializable {
     private double x;
     private double y;
     private double r = 1;
+    private boolean lastHit;
     private final List<Double> xValues = Arrays.asList(-5d, -4d, -3d, -2d, -1d, 0d, 1d, 2d, 3d);
 
     private final ArrayList<PointCords> results = new ArrayList<>();
@@ -28,6 +29,7 @@ public class PointBean implements Serializable {
     public void submit() {
         PointCords p = pointService.savePoint(x, y, r);
         results.add(p);
+        lastHit = p.isHit();
     }
 
     public List<Double> getxValues() { return xValues; }
@@ -42,6 +44,8 @@ public class PointBean implements Serializable {
     public void setR(double r) { this.r = r; }
 
     public ArrayList<PointCords> getResults() { return results; }
+
+    public boolean isLastHit() { return lastHit; }
 
     public String getResultsAsJson() {
         StringBuilder sb = new StringBuilder();
