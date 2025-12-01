@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @Named("pointBean")
 @ApplicationScoped
@@ -32,27 +33,53 @@ public class PointBean implements Serializable {
         lastHit = p.isHit();
     }
 
-    public List<Double> getxValues() { return xValues; }
+    public List<Double> getxValues() {
+        return xValues;
+    }
 
-    public double getX() { return x; }
-    public void setX(double x) { this.x = x; }
+    public double getX() {
+        return x;
+    }
 
-    public double getY() { return y; }
-    public void setY(double y) { this.y = y; }
+    public void setX(double x) {
+        this.x = x;
+    }
 
-    public double getR() { return r; }
-    public void setR(double r) { this.r = r; }
+    public double getY() {
+        return y;
+    }
 
-    public ArrayList<PointCords> getResults() { return results; }
+    public void setY(double y) {
+        this.y = y;
+    }
 
-    public boolean isLastHit() { return lastHit; }
+    public double getR() {
+        return r;
+    }
+
+    public void setR(double r) {
+        this.r = r;
+    }
+
+    public ArrayList<PointCords> getResults() {
+        return results;
+    }
+
+    public boolean isLastHit() {
+        return lastHit;
+    }
 
     public String getResultsAsJson() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < results.size(); i++) {
             PointCords p = results.get(i);
-            sb.append(String.format("{\"x\": %.5f, \"y\": %.5f, \"r\": %.0f, \"hit\": %b}", p.getX(), p.getY(), p.getR(), p.isHit()));
+            sb.append(String.format(Locale.US,
+                    "{\"x\": %.5f, \"y\": %.5f, \"r\": %.0f, \"hit\": %b}",
+                    p.getX(),
+                    p.getY(),
+                    p.getR(),
+                    p.isHit()));
             if (i < results.size() - 1) {
                 sb.append(", ");
             }

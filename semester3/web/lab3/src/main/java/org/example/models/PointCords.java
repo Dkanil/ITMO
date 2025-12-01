@@ -19,19 +19,19 @@ public class PointCords implements Serializable {
     private Long id;
 
     @Column(nullable = false)
-    private final double x;
+    private double x;
 
     @Column(nullable = false)
-    private final double y;
+    private double y;
 
     @Column(nullable = false)
-    private final double r;
+    private double r;
 
     @Column(nullable = false)
-    private final boolean isHit;
+    private boolean isHit;
 
     @Column(nullable = false)
-    private final Date timestamp;
+    private Date timestamp;
 
     public PointCords() {
         this.x = 0;
@@ -63,6 +63,26 @@ public class PointCords implements Serializable {
     }
     public Date getTimestamp() {
         return timestamp;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setR(double r) {
+        this.r = r;
+    }
+
+    public void setHit(boolean hit) {
+        isHit = hit;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override

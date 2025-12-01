@@ -83,9 +83,14 @@
   - В секции ```<password>``` указываем пароль из `.pgpass`
 - Меняем в конце файла standalone.xml все порты, кроме последнего на свои
 - Указываем другую версию джавы на гелиосе ```JAVA_VERSION=11```
+- Увеличиваем MetaspaceSize на гелиосе (без этого также не запустится) `export _JAVA_OPTIONS="-Xmx2G -XX:MaxMetaspaceSize=512m"`
 - Запускаем сервер: ```sh ./wildfly-20.0.0.Final/bin/standalone.sh```
 - Пробрасываем два порта на гелиос: http и http-management (их мы в standalone.xml указывали)
 - Собираем проект: ```mvn clean package```
 - Заходим на http://localhost:{http-management}
 - Открываем вкладку Deployments -> Add -> Select a deployment -> выбираем ```.\target\lab3.war```
 - Заходим на http://localhost:{http}/lab3
+- Если вылазит ошибка в логах при отправке точки, то создаём вручную последовательность:
+  - `psql -h pg -d studs`
+  - `CREATE SEQUENCE points_id_seq START 1 INCREMENT 1;`
+
