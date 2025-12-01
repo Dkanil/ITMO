@@ -3,6 +3,7 @@ package org.example.beans;
 import org.example.models.PointCords;
 import org.example.service.PointService;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,7 +23,12 @@ public class PointBean implements Serializable {
     private boolean lastHit;
     private final List<Double> xValues = Arrays.asList(-5d, -4d, -3d, -2d, -1d, 0d, 1d, 2d, 3d);
 
-    private final ArrayList<PointCords> results = new ArrayList<>();
+    private final List<PointCords> results = new ArrayList<>();
+
+    @PostConstruct
+    public void init() {
+        results.addAll(pointService.getAllPoints());
+    }
 
     @Inject
     private PointService pointService;
@@ -61,7 +67,7 @@ public class PointBean implements Serializable {
         this.r = r;
     }
 
-    public ArrayList<PointCords> getResults() {
+    public List<PointCords> getResults() {
         return results;
     }
 

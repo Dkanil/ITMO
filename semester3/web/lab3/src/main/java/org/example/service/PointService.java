@@ -6,6 +6,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
+import java.util.List;
 
 @Stateless
 public class PointService implements Serializable {
@@ -29,5 +30,9 @@ public class PointService implements Serializable {
         PointCords point = new PointCords(x, y, r, isHit);
         em.persist(point);
         return point;
+    }
+
+    public List<PointCords> getAllPoints() {
+        return em.createQuery("SELECT p FROM PointCords p", PointCords.class).getResultList();
     }
 }
