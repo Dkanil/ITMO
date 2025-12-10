@@ -36,7 +36,7 @@ public class AuthService {
         return new JwtResponse(jwt);
     }
 
-    public JwtResponse sigIn(AuthRequest request) {
+    public JwtResponse signIn(AuthRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
                 request.getPassword()

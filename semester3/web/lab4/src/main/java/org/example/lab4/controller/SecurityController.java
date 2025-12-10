@@ -24,6 +24,6 @@ class SecurityController {
 
     @PostMapping("/sign-in")
     public JwtResponse signIn(@RequestBody AuthRequest request) {
-        return authService.sigIn(request);
+        return authService.signIn(request);
     }
 }

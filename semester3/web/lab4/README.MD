@@ -56,6 +56,19 @@
 ## Как запустить?
 - Сгенерируйте в консоли секретный ключ: ```openssl rand -base64 64``` и вставьте его в application.properties 
 в поле `jwt.secret`
+- Качаем докер контейнер с Node.js для запуска Angular сервера: 
+  - ```docker pull node:24-alpine```
+  - ```docker run -it --rm --entrypoint sh node:24-alpine```
+- Внутри докер контейнера выполняем:
+  - ```npm install -g @angular/cli```
+
+
+  - ```ng new lab3-frontend --routing=true --style=css```
+  - Копируем содержимое папки frontend в созданный проект
+  - ```cd lab3-frontend```
+  - ```npm install```
+  - ```ng build --prod```
+  - Копируем сгенерированную папку dist/lab3-frontend в папку src/main/webapp нашего проекта
 
 ### Для запуска локально (легче было сразу в докере делать, но ладно):
 - Скачиваем "WildFly 20.0.0 Final" с https://www.wildfly.org

@@ -1,0 +1,19 @@
+<form [formGroup]="form">
+  <legend>Авторизация</legend>
+  <div class="form-field">
+    <label>Username:</label>
+    <input name="username" formControlName="username">
+  </div>
+
+  <div class="form-field">
+    <label>Пароль:</label>
+    <input name="password" formControlName="password"
+           type="password">
+  </div>
+
+  <div class="form-buttons">
+    <button class="button button-primary"
+            (click)="login()">Login
+    </button>
+  </div>
+</form>

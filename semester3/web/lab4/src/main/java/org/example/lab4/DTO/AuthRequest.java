@@ -4,8 +4,6 @@ public class AuthRequest {
     private String username;
     private String password;
 
-    // todo мб конструкторы
-
     public String getUsername() {
         return username;
     }
