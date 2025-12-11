@@ -1,10 +1,39 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [FormsModule, ReactiveFormsModule, DatePipe],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class HomeComponent {
+  form: FormGroup;
+  errorMessage = '';
+  xValues = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2];
+  rValues = [-0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+  points: Array<{ id: number, x: number, y: number, r: number, isHit: boolean, timestamp: string }> = [];
+
+  constructor(private formBuilder: FormBuilder,
+              private router: Router) {
+    this.form = this.formBuilder.group({
+      x: ['', Validators.required],
+      y: ['', Validators.required],
+      r: ['', Validators.required]
+    });
+    this.form.valueChanges.subscribe(() => {
+      this.errorMessage = '';
+    });
+  }
+
+  submit() {
+    // todo
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.router.navigate(['/auth']);
+  }
 }

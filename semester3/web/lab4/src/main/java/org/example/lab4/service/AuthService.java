@@ -32,8 +32,7 @@ public class AuthService {
 
         userService.create(user);
 
-        String jwt = jwtCore.generateToken(user);
-        return new JwtResponse(jwt);
+        return new JwtResponse(jwtCore.generateToken(user));
     }
 
     public JwtResponse signIn(AuthRequest request) {

@@ -9,79 +9,10 @@
         <h1>Группа: P3212 Вариант: 466217</h1>
     </header>
     <main>
-        <section class="input-section">
-            <form id="pointForm">
-                <panelGroup layout="block">
-                    <outputLabel value="Координата X:" for="x"/>
-                    <selectOneMenu id="x" value="#{pointBean.x}">
-                        <f:selectItems value="#{pointBean.xValues}" var="val" itemValue="#{val}" itemLabel="#{val}"/>
-                    </selectOneMenu>
-                </panelGroup>
-
-                <panelGroup layout="block">
-                    <outputLabel value="Координата Y:" for="y"/>
-                    <inputText id="y" value="#{pointBean.y}" placeholder="-5..5"
-                                 onkeypress="return /[0-5.\-]/.test(event.key)">
-                        <f:validateDoubleRange minimum="-5" maximum="5"/>
-                    </inputText>
-                    <message id="yMessage" for="y" styleClass="invalid-input"/>
-                </panelGroup>
-                <panelGroup layout="block" styleClass="rContainer">
-                    <outputLabel value="Радиус района дислокации ВСУ R:" styleClass="rLabel"/>
-                    <panelGroup layout="block" styleClass="rButtons">
-                        <commandButton value="1"
-                                         styleClass="rButton selected"
-                                         action="#{pointBean.setR(1)}"
-                                         onclick="setRValue(this)">
-                            <f:ajax execute="@this"/>
-                        </commandButton>
-                        <commandButton value="2"
-                                         styleClass="rButton"
-                                         action="#{pointBean.setR(2)}"
-                                         onclick="setRValue(this)">
-                            <f:ajax execute="@this"/>
-                        </commandButton>
-                        <commandButton value="3"
-                                         styleClass="rButton"
-                                         action="#{pointBean.setR(3)}"
-                                         onclick="setRValue(this)">
-                            <f:ajax execute="@this"/>
-                        </commandButton>
-                        <commandButton value="4"
-                                         styleClass="rButton"
-                                         action="#{pointBean.setR(4)}"
-                                         onclick="setRValue(this)">
-                            <f:ajax execute="@this"/>
-                        </commandButton>
-                        <commandButton value="5"
-                                         styleClass="rButton"
-                                         action="#{pointBean.setR(5)}"
-                                         onclick="setRValue(this)">
-                            <f:ajax execute="@this"/>
-                        </commandButton>
-                    </panelGroup>
-                </panelGroup>
-
-                <commandButton id="submitButton" value="Бахнуть орешником"
-                                 styleClass="submitButton"
-                                 action="#{pointBean.submit}">
-                    <f:ajax execute="x y" render="resultsTable scriptPanel yMessage"/>
-                </commandButton>
-
-                <inputHidden id="clickX" value="#{pointBean.x}"/>
-                <inputHidden id="clickY" value="#{pointBean.y}"/>
-                <inputHidden id="clickR" value="#{pointBean.r}"/>
-                <commandButton id="hiddenSubmit"
-                                 style="display:none"
-                                 action="#{pointBean.submit}">
-                    <f:ajax execute="clickX clickY clickR" render="resultsTable scriptPanel"/>
-                </commandButton>
-            </form>
-        </section>
 
         <section class="graph-section">
             <h2>Карта боевых действий</h2>
-            <div style="position: relative; widt 300px; height: 300px;">
+            <div style="position: relative; width: 300px; height: 300px;">
                 <canvas id="bgCanvas" width="300" height="300" style="position:absolute; z-index:0;">
                 </canvas>
                 <canvas id="graphCanvas" width="300" height="300" style="position:absolute; z-index:1;">

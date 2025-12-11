@@ -1,5 +1,14 @@
+<header>
+  <h1>Козаченко Данил Александрович</h1>
+  <h1>Группа: P3212 Вариант: 471346</h1>
+</header>
 <form [formGroup]="form">
   <legend>Авторизация</legend>
+  @if (errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+  }
   <div class="form-field">
     <label>Username:</label>
     <input name="username" formControlName="username">
@@ -10,10 +19,16 @@
     <input name="password" formControlName="password"
            type="password">
   </div>
+  <div class="form-field">
+    <label>
+      <input type="checkbox" formControlName="isRegistration">
+      Я новенький
+    </label>
+  </div>
 
   <div class="form-buttons">
-    <button class="button button-primary"
-            (click)="login()">Login
+    <button type="button" (click)="submit()">
+      {{ form.value.isRegistration ? 'Регистрация' : 'Вход' }}
     </button>
   </div>
 </form>

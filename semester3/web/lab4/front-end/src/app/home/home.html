@@ -1,1 +1,69 @@
-<p>home works!</p>
+<header>
+  <h1>Козаченко Данил Александрович</h1>
+  <h1>Группа: P3212 Вариант: 471346</h1>
+</header>
+<form [formGroup]="form">
+  <div class="button-row">
+    <label>Координата X:</label>
+    @for (val of xValues; track val) {
+      <button type="button" [class.active]="form.value.x === val"
+              (click)="form.patchValue({ x: val })">
+        {{ val }}
+      </button>
+    }
+  </div>
+  <div class="form-field">
+    <label>Координата Y:</label>
+    <input type="text"
+           name="y"
+           formControlName="y"
+           placeholder="-3..5"
+           inputmode="decimal"
+           pattern="^-?\d+(\.\d+)?$">
+  </div>
+  <div class="button-row">
+    <label>Радиус R:</label>
+    @for (val of rValues; track val) {
+      <button type="button" [class.active]="form.value.r === val"
+              (click)="form.patchValue({ r: val })">
+        {{ val }}
+      </button>
+    }
+  </div>
+  <div class="form-buttons">
+    <button type="button" (click)="submit()">
+      Бахнуть орешником
+    </button>
+  </div>
+</form>
+<div class="canvas">
+  <h2>Карта</h2>
+</div>
+<div class="results-table">
+  <h2>Результаты <!--todo добавить имя пользователя--></h2>
+  <table>
+    <thead>
+    <tr>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>Попал?</th>
+      <th>Время отправки</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (point of points; track point.id) {
+        <tr>
+          <td>{{ point.x }}</td>
+          <td>{{ point.y }}</td>
+          <td>{{ point.r }}</td>
+          <td>{{ point.isHit ? 'Гойдa' : 'Потужно' }}</td>
+          <td>{{ point.timestamp | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<button type="button" (click)="logout()">
+  Выйти
+</button>
