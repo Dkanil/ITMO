@@ -69,7 +69,7 @@
       </tr>
       </thead>
       <tbody>
-        @for (point of points; track point.id) {
+        @for (point of points; track $index) {
           <tr>
             <td>{{ point.x }}</td>
             <td>{{ point.y }}</td>

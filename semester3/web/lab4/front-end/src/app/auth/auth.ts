@@ -42,7 +42,7 @@ export class AuthComponent {
         next: (response) => {
           if (!response || !response.token) {
             this.errorMessage = 'Ошибка авторизации: Сервер не вернул токен';
-            this.cdr.detectChanges(); // todo нужно ли?
+            this.cdr.detectChanges();
             console.error(this.errorMessage);
             return;
           }
