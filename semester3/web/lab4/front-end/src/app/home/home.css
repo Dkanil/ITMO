@@ -1,0 +1,107 @@
+.main-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Форма */
+form {
+  background: #ececec;
+  padding: 3rem;
+  margin-bottom: 2rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+input {
+  width: 100%;
+  border: 2px solid #f700ff;
+  background: #fff;
+  border-radius: 5px;
+  font-size: 1.1em;
+  transition: border-color 0.3s ease;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #353535;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+}
+
+.button-row button {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 2px solid #f700ff;
+  background: #ffffff;
+  font-size: 1em;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+/* График todo */
+.canvas {
+  flex: 1;
+  min-width: 300px;
+  border-radius: 10px;
+}
+
+#bgCanvas {
+  border: 2px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Гифки */
+img {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  z-index:10;
+}
+
+/* Таблица */
+.results-table {
+  background: #ececec;
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+.results-table h2 {
+  margin-bottom: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: linear-gradient(to right, #25c481, #25b7c4);
+}
+
+table > thead > tr {
+  background: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+table th,
+table td {
+  padding: 10px;
+  text-align: center;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+tbody {
+  max-height: 300px;
+  overflow-y: auto;
+}

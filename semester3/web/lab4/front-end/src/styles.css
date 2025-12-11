@@ -1,1 +1,80 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', serif;
+}
+
+header {
+  background: #FFFF00;
+  background: linear-gradient(0deg, rgba(255, 255, 0, 1) 0%, rgba(0, 0, 255, 1) 25%, rgba(255, 255, 0, 1) 50%, rgba(0, 0, 255, 1) 75%, rgba(255, 255, 0, 1) 100%);
+  background-size: 400% 400%;
+  animation: gradient-move-Y 2s linear infinite;
+  padding: 2rem;
+  text-align: center;
+  font-family: fantasy !important;
+}
+
+header h1 {
+  font-size: 2em;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #ffffff, #0000ff, #ff0000);
+  background-size: 400% 400%;
+  animation: gradient-move-X 2s linear infinite, jump-text 0.8s ease-in-out infinite alternate;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes jump-text {
+  0% {
+    transform: scale(0.5);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(0.5);
+  }
+}
+
+@keyframes gradient-move-Y {
+  0% {
+    background-position: 50% 0;
+  }
+  100% {
+    background-position: 50% 67%;
+  }
+}
+
+@keyframes gradient-move-X {
+  0% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+.form-buttons button,
+header button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(120deg, #f700ff, #7bff00);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.form-buttons button:hover,
+header button:hover {
+  background: linear-gradient(120deg, #bc00c5, #5bc500);
+  background-size: 400% 400%;
+  animation: gradient-move-X 1s linear infinite, jump-text 0.8s infinite;
+}

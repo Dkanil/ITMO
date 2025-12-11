@@ -1,0 +1,47 @@
+form {
+  max-width: 400px;
+  margin: auto;
+  padding: 2rem;
+  background: #ffffff;
+  border: 2px solid #f700ff;
+  border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+form legend {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-field label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  border: 2px solid #f700ff;
+  background: #fff;
+  border-radius: 5px;
+  font-size: 1.1em;
+  transition: border-color 0.3s ease;
+}
+
+input[type="checkbox"] {
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+.error-message {
+  color: #da0000;
+  text-align: center;
+}
