@@ -54,85 +54,24 @@
 22. Angular: клиент-серверное взаимодействие, создание, отправка и валидация данных форм.
 
 ## Как запустить?
-- Сгенерируйте в консоли секретный ключ: ```openssl rand -base64 64``` и вставьте его в application.properties 
-в поле `jwt.secret`
-- Качаем докер контейнер с Node.js для запуска Angular сервера: 
-  - ```docker pull node:24-alpine```
-  - ```docker run -it --rm --entrypoint sh node:24-alpine```
-- Внутри докер контейнера выполняем:
-  - ```npm install -g @angular/cli```
+- Сгенерируйте в консоли секретный ключ: ```openssl rand -base64 64``` и вставьте его в application.properties в поле `jwt.secret`
+- Меняем в pom.xml и в application.properties параметры `url`, `username`, `password` на свои
 
-
-  - ```ng new lab3-frontend --routing=true --style=css```
-  - Копируем содержимое папки frontend в созданный проект
-  - ```cd lab3-frontend```
-  - ```npm install```
-  - ```ng build --prod```
-  - Копируем сгенерированную папку dist/lab3-frontend в папку src/main/webapp нашего проекта
-
-### Для запуска локально (легче было сразу в докере делать, но ладно):
-- Скачиваем "WildFly 20.0.0 Final" с https://www.wildfly.org
-- Создаём пользователя для админки: ```.\wildfly-20.0.0.Final\bin\add-user.bat```
-- Добавляем Datasource для PostgreSQL:
-    - Открываем ```wildfly-20.0.0.Final\standalone\configuration\standalone.xml```
-    - Ищем ```<datasources>```
-    - Меняем параметр jndi-name на ```java:/jboss/datasources/PostgreDS```
-    - Меняем параметр pool-name на ```PostgreDS```
-    - параметр statistics-enabled убираем
-    - В секции ```<driver>``` указываем имя драйвера ```postgresql```
-    - В секции ```<connection-url>``` указываем URL вашей базы данных, например ```jdbc:postgresql://localhost:5432/studs```
-    - В секции ```<user-name>``` указываем пользователя вашей базы данных
-    - В секции ```<password>``` указываем пароль пользователя вашей базы данных
-    - В секции ```<drivers>``` добавляем драйвер PostgreSQL:
-      ```xml                    
-      <driver name="postgresql" module="org.postgresql">
-      <driver-class>org.postgresql.Driver</driver-class>
-      </driver>
-      ```
-    - В ```<default-bindings>``` также меняем datasource на ```"java:jboss/datasources/PostgreDS"```
-    - Копируем postgresql-42.7.7.jar из скачанного с помощью maven в ```wildfly-20.0.0.Final\modules\org\postgresql\main```
-    - Создаём в той же директории файл module.xml со следующим содержимым:
-  ```xml
-  <?xml version="1.0" encoding="UTF-8"?>
-  <module xmlns="urn:jboss:module:1.5" name="org.postgresql">
-    <resources>
-      <resource-root path="postgresql-42.7.7.jar"/>
-    </resources>
-    <dependencies>
-      <module name="javax.api"/>
-      <module name="javax.transaction.api"/>
-    </dependencies>
-  </module>
-  ```
-- Теперь используем базу данных PostgreSQL с курса программирования прошлого семестра (вы же поднимали её локально там, да?)
-- Собираем проект ```mvn clean package```
-- Запускаем сервер: ```.\wildfly-20.0.0.Final\bin\standalone.bat```
-- Подключаемся к http://localhost:9990
-- Открываем вкладку Deployments -> Add -> Select a deployment -> выбираем ```.\target\lab3.war```
-- Заходим на http://localhost:8080/lab3
-
-### Для запуска в Docker:
-- Собираем Docker образ: ```docker-compose up --build```
-- Заходим на http://localhost:8080/lab3
+### Для запуска локально:
+- Качаем Node.js для запуска Angular сервера с официальной страницы
+- Запускаем фронт ```ng serve```
+- Собираем бэк ```mvn clean install```
+- Запускаем бэк ```java -jar .\target\lab4-4.0.0.jar```
+- Заходим на http://localhost:4200/
 
 ### Для запуска на helios:
-- Грузим WildFly на гелиос ```scp -P 2222 wildfly-20.0.0.Final.zip s466217@se.ifmo.ru:/home/studs/s466217/web/lab3/```
-- Распаковываем ```unzip wildfly-20.0.0.Final.zip```
-- Создаём пользователя для админки: ```sh ./wildfly-20.0.0.Final/bin/add-user.sh```
-- Меняем в wildfly-20.0.0.Final\standalone\configuration\standalone.xml все 127.0.0.1 на 0.0.0.0
-- Добавляем Datasource для PostgreSQL (см. выше):
-    - В секции ```<connection-url>``` указываем URL ```jdbc:postgresql://pg/studs```
-    - В секции ```<user-name>``` указываем sXXXXXX
-    - В секции ```<password>``` указываем пароль из `.pgpass`
-- Меняем в конце файла standalone.xml все порты, кроме последнего на свои
-- Указываем другую версию джавы на гелиосе ```JAVA_VERSION=11```
-- Увеличиваем MetaspaceSize на гелиосе (без этого также не запустится) `export _JAVA_OPTIONS="-Xmx2G -XX:MaxMetaspaceSize=512m"`
-- Запускаем сервер: ```sh ./wildfly-20.0.0.Final/bin/standalone.sh```
-- Пробрасываем два порта на гелиос: http и http-management (их мы в standalone.xml указывали)
-- Собираем проект: ```mvn clean package```
-- Заходим на http://localhost:{http-management}
-- Открываем вкладку Deployments -> Add -> Select a deployment -> выбираем ```.\target\lab3.war```
-- Заходим на http://localhost:{http}/lab3
-- Если вылазит ошибка в логах при отправке точки, то создаём вручную последовательность:
-    - `psql -h pg -d studs`
-    - `CREATE SEQUENCE points_id_seq START 1 INCREMENT 1;`
+- Поменять в pom.xml параметр внутри `inputSchema` на свой ИСУ: sXXXXXX
+- Кидаем все файлы src на helios
+- Пробрасываем порты: ```ssh -p 2222 sXXXXXX@helios.cs.ifmo.ru -L 8080:localhost:[port]```
+(вместо [port] любой свободный порт)
+- Создаём таблицы points и user на гелиосе
+- ```JAVA_VERSION=21```
+- Собираем бэк ```mvn clean install```
+- Запускаем бэк ```- java -jar target/lab4-4.0.0.jar --server.port=[port]```
+- Фронт всё равно локально запускаем через ```ng serve```
+- Заходим на http://localhost:4200/
