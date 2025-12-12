@@ -54,10 +54,17 @@ export class HomeComponent {
   }
 
   getAllPoints() {
-    this.homeService.getAllPoints().subscribe(points => {
-      this.points = points;
-      this.cdr.detectChanges();
-      this.drawGraph();
+    this.homeService.getAllPoints().subscribe({
+      next: points => {
+        this.points = points;
+        this.cdr.detectChanges();
+        this.drawGraph();
+      },
+      error: err => {
+        if (err.status === 401) {
+          this.logout();
+        }
+      }
     });
   }
 
@@ -207,7 +214,7 @@ export class HomeComponent {
     this.graphCtx.fillStyle = 'rgba(0,208,255,0.8)';
 
     // 1 четверть
-    this.graphCtx.fillRect(centerX, centerY, this.currentRadius * this.scale, - this.currentRadius * this.scale / 2);
+    this.graphCtx.fillRect(centerX, centerY, this.currentRadius * this.scale, -this.currentRadius * this.scale / 2);
 
     // 2 четверть
     this.graphCtx.beginPath();
