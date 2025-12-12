@@ -39,7 +39,7 @@ public class PointService {
                 System.currentTimeMillis());
 
         pointRepository.save(pointCords);
-        return new PointResponse(point, isHit);
+        return new PointResponse(point, isHit, System.currentTimeMillis());
     }
 
     public List<PointCords> findAllByUsername(String username) {

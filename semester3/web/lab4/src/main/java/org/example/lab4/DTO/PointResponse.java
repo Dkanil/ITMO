@@ -1,36 +1,34 @@
 package org.example.lab4.DTO;
 
-import java.util.Date;
-
 public class PointResponse extends PointRequest {
     private boolean isHit;
-    private Date timestamp;
+    private Long timestamp;
 
-    public PointResponse(double x, double y, double r, String username, boolean isHit) {
+    public PointResponse(double x, double y, double r, String username, boolean isHit, Long timestamp) {
         super(x, y, r, username);
         this.isHit = isHit;
-        this.timestamp = new Date();
+        this.timestamp = timestamp;
     }
 
-    public PointResponse(PointRequest pointRequest, boolean isHit) {
+    public PointResponse(PointRequest pointRequest, boolean isHit, Long timestamp) {
         super(pointRequest.getX(), pointRequest.getY(), pointRequest.getR(), pointRequest.getUsername());
         this.isHit = isHit;
-        this.timestamp = new Date();
+        this.timestamp = timestamp;
     }
 
-    public boolean isHit() {
+    public boolean getIsHit() {
         return isHit;
     }
 
-    public void setHit(boolean hit) {
+    public void setIsHit(boolean hit) {
         isHit = hit;
     }
 
-    public Date getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date currentTime) {
+    public void setTimestamp(Long currentTime) {
         this.timestamp = currentTime;
     }
 }

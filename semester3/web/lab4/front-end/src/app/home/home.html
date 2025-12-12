@@ -7,11 +7,16 @@
 </header>
 <div class="main-content">
   <form [formGroup]="form">
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
     <div class="form-field">
       <label>Координата X:</label>
       <div class="button-row">
         @for (val of xValues; track val) {
-          <button type="button" [class.active]="form.value.x === val"
+          <button type="button" [class.active]="form.value.x == val"
                   (click)="form.patchValue({ x: val })">
             {{ val }}
           </button>
@@ -32,8 +37,8 @@
       <label>Радиус R:</label>
       <div class="button-row">
         @for (val of rValues; track val) {
-          <button type="button" [class.active]="form.value.r === val"
-                  (click)="form.patchValue({ r: val })">
+          <button type="button" [class.active]="form.value.r == val"
+                  (click)="form.patchValue({ r: val }); handleRadiusChange()">
             {{ val }}
           </button>
         }
@@ -50,20 +55,21 @@
     <div style="position: relative; width: 300px; height: 300px;">
       <canvas id="bgCanvas" width="300" height="300" style="position:absolute; z-index:0;">
       </canvas>
-      <canvas id="graphCanvas" width="300" height="300" style="position:absolute; z-index:1;">
+      <canvas id="graphCanvas" (click)="handleGraphClick($event)" width="300" height="300" style="position:absolute; z-index:1;">
       </canvas>
     </div>
     <img src="assets/boom.gif" id="boom-gif" [hidden]="!showBoom" alt="" height="254" width="224">
     <img src="assets/miss.gif" id="miss-gif" [hidden]="!showMiss" alt="" height="270" width="480">
   </div>
   <div class="results-table">
-    <h2>Результаты <!--todo добавить имя пользователя--></h2>
+    <h2>Результаты</h2>
+    <div class="table-wrapper">
     <table>
       <thead>
       <tr>
         <th>X</th>
         <th>Y</th>
-        <th>Z</th>
+        <th>R</th>
         <th>Попал?</th>
         <th>Время отправки</th>
       </tr>
@@ -80,5 +86,6 @@
         }
       </tbody>
     </table>
+    </div>
   </div>
 </div>
