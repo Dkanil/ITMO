@@ -29,14 +29,21 @@ export class HomeComponent {
               private homeService: HomeService,
               private router: Router,
               private cdr: ChangeDetectorRef) {
-    this.form = this.formBuilder.group({ // todo валидацию
-      x: ['', Validators.required],
-      y: ['', Validators.required],
-      r: ['', Validators.required]
+    this.form = this.formBuilder.group({
+      x: ['', [Validators.required, Validators.min(-5), Validators.max(5)]],
+      y: ['', [Validators.required, Validators.pattern(/^-?\d+([.,]\d+)?$/), Validators.min(-5), Validators.max(5)]],
+      r: [this.currentRadius, Validators.required]
     });
     this.form.valueChanges.subscribe(() => {
       this.errorMessage = '';
     });
+  }
+
+  ngOnInit() {
+    const boomImg = new Image();
+    boomImg.src = 'assets/boom.gif';
+    const missImg = new Image();
+    missImg.src = 'assets/miss.gif';
   }
 
   ngAfterViewInit() {
@@ -49,19 +56,40 @@ export class HomeComponent {
   getAllPoints() {
     this.homeService.getAllPoints().subscribe(points => {
       this.points = points;
+      this.cdr.detectChanges();
       this.drawGraph();
     });
   }
 
   submit() {
     if (this.form.invalid) {
-      this.errorMessage = 'Некоторые поля заполнены неверно.'; // fixme валидация
+      const xControl = this.form.get('x');
+      const yControl = this.form.get('y');
+      const rControl = this.form.get('r');
+      if (xControl?.errors) {
+        if (xControl.errors['required']) {
+          this.errorMessage = 'Введите координату X\n';
+        } else {
+          this.errorMessage = 'Координата X должна быть числом в диапазоне -5..5\n';
+        }
+      }
+      if (yControl?.errors) {
+        if (yControl.errors['required']) {
+          this.errorMessage = 'Введите координату Y\n';
+        } else {
+          this.errorMessage = 'Координата Y должна быть числом в диапазоне -5..5\n';
+        }
+      }
+      if (rControl?.errors) {
+        if (rControl.errors['required']) {
+          this.errorMessage = 'Введите радиус R\n';
+        }
+      }
       return;
     }
     const x = parseFloat(this.form.value.x);
     const y = parseFloat(this.form.value.y);
     const r = parseFloat(this.form.value.r);
-    this.currentRadius = r; // fixme поменять
     this.homeService.submit(x, y, r).subscribe({
       next: (response) => {
         const point: Point = {
@@ -87,6 +115,7 @@ export class HomeComponent {
 
   triggerBoomGif() {
     this.showBoom = true;
+    this.cdr.detectChanges();
     setTimeout(() => {
       this.showBoom = false;
       this.cdr.detectChanges();
@@ -95,6 +124,7 @@ export class HomeComponent {
 
   triggerMissGif() {
     this.showMiss = true;
+    this.cdr.detectChanges();
     setTimeout(() => {
       this.showMiss = false;
       this.cdr.detectChanges();

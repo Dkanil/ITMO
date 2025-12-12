@@ -1,9 +1,26 @@
 package org.example.lab4.DTO;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class PointRequest {
+    @NotNull
+    @Min(value = -5)
+    @Max(value = 5)
     private double x;
+
+    @NotNull
+    @Min(value = -5)
+    @Max(value = 5)
     private double y;
+
+    @NotNull
+    @Min(value = 0)
+    @Max(value = 5)
     private double r;
+
+    @NotNull
     private String username;
 
     public PointRequest(double x, double y, double r, String username) {

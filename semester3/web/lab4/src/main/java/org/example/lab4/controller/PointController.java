@@ -4,8 +4,6 @@ import org.example.lab4.DTO.PointRequest;
 import org.example.lab4.DTO.PointResponse;
 import org.example.lab4.service.JwtCore;
 import org.example.lab4.service.PointService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class PointController {
     }
 
     @PostMapping("/submit")
-    public PointResponse submit(@RequestBody PointRequest point, @RequestHeader("Authorization") String authHeader) { // todo мб валидацию
+    public PointResponse submit(@Valid @RequestBody PointRequest point, @RequestHeader("Authorization") String authHeader) {
         String username = jwtCore.extractUsername(authHeader.replace("Bearer ", ""));
         return pointService.processAndSavePoint(point, username);
     }
