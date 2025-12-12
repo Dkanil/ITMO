@@ -1,6 +1,6 @@
 package org.example.lab4.service;
 
-import org.example.lab4.entity.User;
+import org.example.lab4.model.User;
 import org.example.lab4.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

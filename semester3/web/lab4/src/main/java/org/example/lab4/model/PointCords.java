@@ -1,35 +1,12 @@
-package org.example.lab4.entity;
+package org.example.lab4.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-
-@Entity
-@Table(name = "points")
 public class PointCords {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String username;
-
-    @Column(nullable = false)
     private double x;
-
-    @Column(nullable = false)
     private double y;
-
-    @Column(nullable = false)
     private double r;
-
-    @Column(nullable = false)
     private boolean isHit;
-
-    @Column(nullable = false)
     private Long timestamp;
 
     public PointCords() {
