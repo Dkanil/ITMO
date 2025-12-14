@@ -1,5 +1,6 @@
 .main-content {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   gap: 2rem;
   padding: 2rem;
@@ -120,4 +121,69 @@ img {
   text-align: center;
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 1154px) and (min-width: 890px) {
+  .main-content {
+    flex-direction: row;
+    justify-content: center;
+  }
+  form {
+    flex: 1 1 45%;
+  }
+  .canvas {
+    flex: 1 1 45%;
+  }
+  .results-table {
+    width: 100%;
+  }
+  header h1 {
+    font-size: 1.6em;
+  }
+}
+
+@media (max-width: 889px) {
+
+  .main-content {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  form {
+    padding: 1.5rem;
+  }
+
+  .button-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .button-row button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .canvas {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .results-table {
+    padding: 1rem;
+  }
+
+  header {
+    padding: 1rem;
+  }
+
+  header h1 {
+    font-size: 1.2em;
+  }
+
+  img {
+    max-width: 80%;
+    height: auto;
+  }
 }

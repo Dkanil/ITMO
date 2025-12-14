@@ -45,3 +45,20 @@ input[type="checkbox"] {
   color: #da0000;
   text-align: center;
 }
+
+@media (max-width: 889px) {
+  form {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  header h1 {
+    font-size: 1.2em;
+  }
+}
+
+@media (min-width: 890px) and (max-width: 1154px) {
+  form {
+    width: 70%;
+  }
+}
