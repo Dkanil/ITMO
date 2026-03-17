@@ -37,6 +37,9 @@ def quadratic_approximation(x1, dx, eps, iteration):
 
         new_points = sorted([(x1, f1), (x2, f2), (x3, f3), (x_bar, f_bar)])
 
+        if x_bar == new_points[0][0] or x_bar == new_points[3][0]:
+            return quadratic_approximation(x_bar, dx, eps, iteration)
+
         idx = 1
         for i in range(len(new_points)):
             if new_points[i][0] == (x_bar if f_bar < fmin else xmin):
