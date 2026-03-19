@@ -1,0 +1,81 @@
+@startuml
+left to right direction
+
+actor "Неавторизованный пользователь" as Guest
+actor "Соискатель" as Candidate
+actor "Рекрутер" as Recruiter
+actor "Модератор" as Admin
+
+rectangle {
+    usecase "Авторизация / Регистрация (3.1.1)" as UC1
+    usecase "Верификация аккаунта через Госуслуги (3.1.2)" as UC2
+
+    usecase "Создание резюме (3.1.3)" as UC3
+    usecase "Прохождение тестов (3.1.4)" as UC4
+    usecase "Настройка приватности резюме (3.1.5)" as UC5
+
+    usecase "Поиск вакансий по ключевым словам (3.1.6)" as UC6
+    usecase "Фильтрация и сортировка вакансий (3.1.7)" as UC7
+    usecase "Отклик на вакансию (3.1.8)" as UC8
+    usecase "Просмотр статусов откликов (3.1.9)" as UC9
+    usecase "Просмотр ленты рекомендаций (3.1.10)" as UC10
+    usecase "Кнопка 'Поднять резюме' (3.1.11)" as UC11
+    usecase "Добавление вакансии в избранное (3.1.12)" as UC12
+
+    usecase "Создание и публикация вакансии (3.1.13)" as UC13
+    usecase "Управление откликами (3.1.14)" as UC14
+    usecase "Поиск в базе резюме (3.1.15)" as UC15
+    usecase "Просмотр статистики вакансии (3.1.16)" as UC16
+
+    usecase "Проведение оплаты (3.1.17)" as UC17
+    usecase "Просмотр истории транзакций (3.1.18)" as UC18
+
+    usecase "Внутренний чат (3.1.19)" as UC19
+    usecase "Настройка уведомлений (3.1.20)" as UC20
+    usecase "Модерация контента (3.1.21)" as UC21
+    usecase "Оставление отзыва о компании (3.1.22)" as UC22
+    usecase "Просмотр местоположения компании (3.1.23)" as UC23
+}
+Recruiter --|> Guest
+Candidate --|> Guest
+
+Guest -- UC1
+Guest -- UC6
+Guest -- UC15
+
+Candidate -- UC3
+UC4 .up.> UC3 : <<extend>>
+Candidate -- UC5
+Candidate -- UC6
+UC7 .up.> UC6 : <<extend>>
+UC8 .up.> UC6 : <<extend>>
+UC9 .up.> UC8 : <<extend>>
+Candidate -- UC10
+UC8 .up.> UC10 : <<extend>>
+Candidate -- UC11
+UC12 .up.> UC6 : <<extend>>
+UC12 .up.> UC10 : <<extend>>
+
+
+Recruiter -- UC2
+Recruiter -- UC13
+UC14 .up.> UC13 : <<extend>>
+Recruiter -- UC15
+UC16 .up.> UC13 : <<extend>>
+
+UC11 ..> UC17 : <<include>>
+UC13 ..> UC17 : <<include>>
+UC18 .up.> UC17 : <<extend>>
+
+Recruiter --- UC19
+Candidate --- UC19
+Admin --- UC19
+
+Recruiter --- UC20
+Candidate --- UC20
+
+Admin -- UC21
+
+Candidate -- UC22
+UC23 .up.> UC6 : <<extend>>
+@enduml
