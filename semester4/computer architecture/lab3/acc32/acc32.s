@@ -1,7 +1,6 @@
     .data
 .org             0x000
-buf1:            .word  0x5F5F5F5F, 0x5F5F5F5F, 0x5F5F5F5F, 0x5F5F5F5F
-buf2:            .word  0x5F5F5F5F, 0x5F5F5F5F, 0x5F5F5F5F, 0x5F5F5F5F ; 32 bytes, with '_'
+buf:             .byte  '________________________________'
 
 c4:              .word  4
 c8:              .word  8
@@ -109,6 +108,6 @@ ouput_loop:
 
 handle_overflow:
     load_imm     0xCCCCCCCC                  ; acc = 0xCC
-    store_addr   0x84                        ; mem[mem[0x84]] = acc
+    store_addr   0x84
 end:
     halt

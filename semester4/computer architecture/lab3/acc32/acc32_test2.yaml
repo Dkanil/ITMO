@@ -4,6 +4,10 @@ memory_mapped_io:
   0x80: [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 10, 51]
   0x84: []
 reports:
+  - name: "Step-by-step log"
+    slice: all
+    view: |
+      {pc}: {instruction} {pc:label}
   - name: Check results
     slice: last
     filter:

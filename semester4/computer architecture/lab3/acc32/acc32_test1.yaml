@@ -1,10 +1,14 @@
 limit: 5000
 memory_size: 1024
 memory_mapped_io:
-  0x80: ["H", "e", "l", "L", "o", "\n"]
-  0x84: []
+  0x80: [ "H", "e", "l", "L", "o", "\n" ]
+  0x84: [ ]
 
 reports:
+  - name: "Step-by-step log"
+    slice: all
+    view: |
+      {pc}: {instruction} {pc:label}
   - name: "Final Result"
     slice: last
     view: |
