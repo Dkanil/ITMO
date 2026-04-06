@@ -78,6 +78,7 @@ def analyze_column(name, data, dist_type):
     print(f"Медиана: {s['median']:.3f}")
     print(f"Квартили: [{s['q1']:.2f}, {s['q3']:.2f}]")
 
+    x0 = (s['mean'] + s['std_unbiased'])
     if dist_type == 'Экспоненциальное':
         c_mmp = s['min']
         l_mmp = 1 / (s['mean'] - c_mmp)
@@ -85,13 +86,13 @@ def analyze_column(name, data, dist_type):
         c_mm = s['mean'] - (1 / l_mm)
         print(f"ММ:  lambda={l_mm:.4f}, c={c_mm:.4f}")
         print(f"ММП: lambda={l_mmp:.4f}, c={c_mmp:.4f}")
-        p_theo = np.exp(-l_mmp * ((s['mean'] + s['std_unbiased']) - c_mmp))
+        p_theo = np.exp(-l_mmp * (x0  - c_mmp))
 
     elif dist_type == 'Нормальное':
         a_mmp = s['mean']
         sig2_mmp = s['s2_biased']
         print(f"ММ и ММП: a={a_mmp:.4f}, sigma^2={sig2_mmp:.4f}")
-        p_theo = 1 - stats.norm.cdf(s['mean'] + s['std_unbiased'], loc=a_mmp, scale=np.sqrt(sig2_mmp))
+        p_theo = 1 - stats.norm.cdf(x0 , loc=a_mmp, scale=np.sqrt(sig2_mmp))
 
     elif dist_type == 'Равномерное':
         a_mm = s['mean'] - np.sqrt(3 * s['s2_biased'])
@@ -99,11 +100,9 @@ def analyze_column(name, data, dist_type):
         a_mmp, b_mmp = s['min'], s['max']
         print(f"ММ:  a={a_mm:.4f}, b={b_mm:.4f}")
         print(f"ММП: a={a_mmp:.4f}, b={b_mmp:.4f}")
-        x0 = s['mean'] + s['std_unbiased']
         p_theo = (b_mmp - x0) / (b_mmp - a_mmp) if x0 < b_mmp else 0
 
 
-    x0 = s['mean'] + s['std_unbiased']
     p_emp = np.mean(data > x0)
     print(f"4.4. P(X > {x0:.2f}): Эмпирич={p_emp:.3f}, Параметрич={p_theo:.3f}")
 
