@@ -1,3 +1,6 @@
 [submodule "semester2/programming/lab8"]
 	path = semester2/programming/lab8
 	url = https://github.com/wwwyssa/proga-laba8
+[submodule "semester3/web/lab4"]
+	path = semester3/web/lab4
+	url = https://github.com/Dkanil/Point-Area-Analyzer.git
