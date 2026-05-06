@@ -1,0 +1,27 @@
+name: "assert rle_compress('AAABBBBCCCC\n') == ('3A4B4C', '')"
+limit: 2000
+memory_size: 0x1000
+memory_mapped_io:
+  0x80: [65, 65, 65, 66, 66, 66, 66, 67, 67, 67, 67, 10]
+  0x84: []
+reports:
+  - name: step-by-step
+    slice: all
+    view: |
+      {pc}:	{instruction}	{pc:label}
+      {A0} {A1} {A2} {A3} {A4} {A5} {A6} {A7} 
+      {D0} {D1} {D2} {D3} {D4} {D5} {D6} {D7}
+  - name: Check results
+    slice: last
+    filter:
+      - state
+    view: |
+      numio[0x80]: {io:0x80:dec}
+      numio[0x84]: {io:0x84:dec}
+      symio[0x80]: {io:0x80:sym}
+      symio[0x84]: {io:0x84:sym}
+    assert: |
+      numio[0x80]: [] >>> []
+      numio[0x84]: [] >>> [51,65,52,66,52,67]
+      symio[0x80]: "" >>> ""
+      symio[0x84]: "" >>> "3A4B4C"
