@@ -116,12 +116,30 @@ A_opt, x0_opt, y0_opt, sigma_x_opt, sigma_y_opt, theta_opt, offset_opt = result.
 print("\n" + "="*50)
 print("РЕЗУЛЬТАТЫ")
 print("="*50)
-print(f"\nA = {A_opt:.4f}")
+print(f"\nОптимизированные параметры:")
+print(f"A = {A_opt:.4f}")
 print(f"x0 = {x0_opt:.4f}, y0 = {y0_opt:.4f}")
 print(f"sigma_x = {sigma_x_opt:.4f}, sigma_y = {sigma_y_opt:.4f}")
 print(f"theta = {theta_opt:.2f} рад = {np.degrees(theta_opt):.2f}°, offset = {offset_opt:.4f}")
 print(f"\nФинальная ошибка: {result.fun:.8f}")
 print(f"\nФинальный loss: {loss(result.x):.8f}")
+
+# ==============================================================================
+# АНАЛИТИЧЕСКИЙ ВИД ФУНКЦИИ
+# ==============================================================================
+print("\n" + "="*50)
+print("АНАЛИТИЧЕСКИЙ ВИД ОПТИМАЛЬНОЙ 2D ГАУССИАНЫ")
+print("="*50)
+
+if abs(theta_opt) < 1e-6:
+    print(f"\nz(x, y) = {A_opt:.4f} * exp(-((x - {x0_opt:.4f})² / (2 * {sigma_x_opt:.4f}²) + (y - {y0_opt:.4f})² / (2 * {sigma_y_opt:.4f}²))) + {offset_opt:.4f}")
+    print(f"\nУпрощённо:")
+    print(f"z(x, y) = {A_opt:.4f} * exp(-((x - {x0_opt:.4f})² / {2*sigma_x_opt**2:.4f} + (y - {y0_opt:.4f})² / {2*sigma_y_opt**2:.4f})) + {offset_opt:.4f}")
+else:
+    print(f"\nс поворотом на угол θ = {np.degrees(theta_opt):.2f}°:")
+    print(f"x_новое = (x - {x0_opt:.4f}) * cos({theta_opt:.4f}) + (y - {y0_opt:.4f}) * sin({theta_opt:.4f})")
+    print(f"y_новое = -(x - {x0_opt:.4f}) * sin({theta_opt:.4f}) + (y - {y0_opt:.4f}) * cos({theta_opt:.4f})")
+    print(f"\nz(x, y) = {A_opt:.4f} * exp(-(x_новое² / (2 * {sigma_x_opt:.4f}²) + y_новое² / (2 * {sigma_y_opt:.4f}²))) + {offset_opt:.4f}")
 
 # ==============================================================================
 # ЗАДАНИЕ 6: Проверка
