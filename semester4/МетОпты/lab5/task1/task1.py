@@ -164,7 +164,6 @@ ax2.set_xlabel('X', fontsize=10)
 ax2.set_ylabel('Y', fontsize=10)
 ax2.set_title('Линии уровня модельной функции и точки области задания исходной', fontsize=12, fontweight='bold')
 ax2.grid(True, alpha=0.3)
-ax2.legend()
 cbar = plt.colorbar(contour, ax=ax2, label='Z')
 cbar.ax.tick_params(labelsize=9)
 
