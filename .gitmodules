@@ -4,6 +4,3 @@
 [submodule "semester3/web/lab4"]
 	path = semester3/web/lab4
 	url = https://github.com/Dkanil/Point-Area-Analyzer.git
-[submodule "semester4/ВычМат"]
-	path = semester4/ВычМат
-	url = https://github.com/vch-math/computational-mathematics-labs-Dkanil.git
