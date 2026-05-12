@@ -72,7 +72,7 @@ def run_pytorch_momentum(x_start, alpha=1.0, beta=0.9, n_iter=100):
 
     for _ in range(n_iter):
         optimizer.zero_grad()
-        loss = 0.01 * (8 * xy[0] ** 2 + 2 * xy[0] * xy[1] + 17 * xy[0] + 4 * xy[1] + 2)
+        loss = func(xy[0], xy[1])
         loss.backward()
         optimizer.step()
 
