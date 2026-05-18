@@ -92,7 +92,7 @@ def main():
     print(f"a_pow = {a_pow:.4f}")
     print(f"b_pow = {b_pow:.4f}")
     y_pow = a_pow * x**b_pow
-    s_pow, r2_pow, a_err_pow, e_pow = errors(y, y_quad, n, tss)
+    s_pow, r2_pow, a_err_pow, e_pow = errors(y, y_pow, n, tss)
 
 
     print("\n" + "-" * 20 + " Сравнение моделей " + "-" * 20)
