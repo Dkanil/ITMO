@@ -7,3 +7,6 @@
 [submodule "semester4/ВычМат"]
 	path = semester4/ВычМат
 	url = https://github.com/vch-math/computational-mathematics-labs-Dkanil.git
+[submodule "semester4/МетОпты/hw"]
+	path = semester4/МетОпты/hw
+	url = https://github.com/Dkanil/OptimMethodsHW.git
