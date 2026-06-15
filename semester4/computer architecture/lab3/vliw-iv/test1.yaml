@@ -1,0 +1,26 @@
+limit: 1000
+memory_size: 0x1000
+memory_mapped_io:
+  0x80: [3, 2, 1, 1, 3, 2, 2, 1, 3]
+  0x84: []
+reports:
+  - name: Check results
+    slice: last
+    filter:
+      - state
+    view: |
+      numio[0x80]: {io:0x80:dec}
+      numio[0x84]: {io:0x84:dec}
+    assert: |
+      numio[0x80]: [] >>> []
+      numio[0x84]: [] >>> [18]
+  - name: Execution statistics
+    slice: last
+    view: |
+      sim:instruction-count: {sim:instruction-count}
+      layout:sections-size:  {layout:sections-size} (text {layout:text-sections-size} / data {layout:data-sections-size})
+      mem:instr-ranges:      {mem:instr-ranges}
+      mem:data-ranges:       {mem:data-ranges}
+      mem:io-ranges:         {mem:io-ranges}
+      {isa-specific}
+      {memory:table}
