@@ -10,3 +10,6 @@
 [submodule "semester4/МетОпты/hw"]
 	path = semester4/МетОпты/hw
 	url = https://github.com/Dkanil/OptimMethodsHW.git
+[submodule "semester4/computer architecture/lab4"]
+	path = semester4/computer architecture/lab4
+	url = https://github.com/Dkanil/CSA-lab4.git
