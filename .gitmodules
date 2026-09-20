@@ -13,3 +13,9 @@
 [submodule "semester4/computer architecture/lab4"]
 	path = semester4/computer architecture/lab4
 	url = https://github.com/Dkanil/CSA-lab4.git
+[submodule "semester5/information_systems/lab1"]
+	path = semester5/information_systems/lab1
+	url = https://github.com/Dkanil/information-system-lab1.git
+[submodule "semester5/information_systems/coursework"]
+	path = semester5/information_systems/coursework
+	url = https://github.com/Dkanil/information-system-coursework.git
