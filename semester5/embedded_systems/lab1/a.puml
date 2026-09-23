@@ -1,0 +1,37 @@
+@startuml
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Пользователь" as User
+participant "Клавиатура 4x3" as Keypad
+participant "STM32 (MCU)" as MCU
+participant "Дисплей TM1637" as Display
+participant "Светодиоды" as LEDs
+
+== 1. Ввод 4 цифр ==
+User -> Keypad: Нажатие цифр (0-9)
+MCU -> Keypad: Сканирование матрицы кнопок
+Keypad --> MCU: Считывание цифр
+MCU -> Display: Вывод цифр на экран
+
+== 2. Выбор действия ==
+alt Сохранение нового пароля (кнопка '*')
+    User -> Keypad: Нажатие '*'
+    MCU -> Keypad: Считывание кнопки '*'
+    MCU -> MCU: Сохранение введенных 4 цифр в память
+    MCU -> Display: Вывод "SEt"
+    MCU -> LEDs: Включение зеленого LED (PA9)
+
+else Проверка пароля (кнопка '#')
+    User -> Keypad: Нажатие '#'
+    MCU -> Keypad: Считывание кнопки '#'
+    alt Пароль совпал с сохраненным
+        MCU -> Display: Вывод "PASS"
+        MCU -> LEDs: Включение зеленого LED (PA9)
+    else Пароль не совпал
+        MCU -> Display: Вывод "FAIL"
+        MCU -> LEDs: Включение красного LED (PA15)
+    end
+end
+@enduml

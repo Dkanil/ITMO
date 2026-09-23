@@ -67,8 +67,7 @@ char readKey() {
   return '\0';
 }
 
-void scanKeyboard() {
-  // Сканируем клавиатуру каждые 100мс
+char scanKeyboard() {
   if (tickCount - lastScanTime > 100) {
     lastScanTime = tickCount;
     char currentKey = readKey();
@@ -76,8 +75,10 @@ void scanKeyboard() {
     if (currentKey != '\0' && currentKey != lastKey) {
       printf("Pressed: %c\n", currentKey);
       lastKey = currentKey;
+      return currentKey;
     } else if (currentKey == '\0') {
       lastKey = '\0';
     }
   }
+  return '\0';
 }

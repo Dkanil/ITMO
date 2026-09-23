@@ -1,5 +1,5 @@
-#ifndef TM1637_H
-#define TM1637_H
+#ifndef KEYBOARD_H
+#define KEYBOARD_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -9,7 +9,7 @@
 
 void initKeyboard();
 char readKey();
-void scanKeyboard();
+char scanKeyboard();
 
 extern char lastKey;
 extern uint32_t lastScanTime;

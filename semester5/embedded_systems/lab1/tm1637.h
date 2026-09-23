@@ -25,6 +25,7 @@ void tm1637_display_number(int number);
 void tm1637_clear(void);
 void delay_us(uint32_t us);
 void tm1637_update(void);
+void tm1637_show_text(const char *str);
 
 extern uint32_t last_display_update;
 extern uint16_t counter;

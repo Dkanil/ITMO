@@ -175,3 +175,29 @@ void tm1637_update(void) {
     if (counter > 9999) counter = 0;
   }
 }
+
+void tm1637_show_text(const char *str) {
+  uint8_t segs[4] = {0};
+  for (int i = 0; i < 4 && str[i] != '\0'; i++) {
+    if (str[i] >= '0' && str[i] <= '9') segs[i] = digit_codes[str[i] - '0'];
+    else if (str[i] == '-') segs[i] = 0x40;
+    else if (str[i] == 'P') segs[i] = 0x73;
+    else if (str[i] == 'A') segs[i] = 0x77;
+    else if (str[i] == 'S') segs[i] = 0x6D;
+    else if (str[i] == 'F') segs[i] = 0x71;
+    else if (str[i] == 'I') segs[i] = 0x06;
+    else if (str[i] == 'L') segs[i] = 0x38;
+    else if (str[i] == 't') segs[i] = 0x78;
+    else if (str[i] == 'E') segs[i] = 0x79;
+  }
+  tm1637_start();
+  tm1637_write_byte(0x40);
+  tm1637_stop();
+  tm1637_start();
+  tm1637_write_byte(0xC0);
+  for (int i = 0; i < 4; i++) tm1637_write_byte(segs[i]);
+  tm1637_stop();
+  tm1637_start();
+  tm1637_write_byte(0x8F);
+  tm1637_stop();
+}
