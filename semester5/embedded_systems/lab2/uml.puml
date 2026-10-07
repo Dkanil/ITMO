@@ -1,0 +1,60 @@
+@startuml
+autonumber
+
+actor "Пользователь" as User
+participant "Клавиатура 4x3\n(через PCA9538)" as Keypad
+participant "STM32 (MCU)" as MCU
+participant "OLED-дисплей" as Display
+
+== 1. Ввод первого операнда ==
+User -> Keypad: Нажатие цифры (0-9)
+MCU -> Keypad: Calculator_ReadKey():\nсканирование матрицы
+Keypad --> MCU: Код нажатой клавиши
+MCU -> MCU: Calculator_Poll(): устойчивое состояние 30 мс\nCalculator_Digit(): добавление цифры
+MCU -> Display: Calculator_Draw():\nвывод текущего числа
+
+== 2. Выбор операции ==
+User -> Keypad: Короткое нажатие '*'
+MCU -> Keypad: Считывание нажатия и отпускания
+Keypad --> MCU: Код '*', затем отсутствие нажатий
+MCU -> MCU: Calculator_Operation():\nсохранить A и выбрать '+'\nили переключить операцию: + -> - -> * -> +
+MCU -> Display: Показ первого операнда A,\nоперации OP и поля ввода B
+
+== 3. Ввод второго операнда и вычисление ==
+User -> Keypad: Ввод цифр B, короткое нажатие '#'
+MCU -> Keypad: Сканирование матрицы
+Keypad --> MCU: Коды цифр B, '#', затем отпускание
+MCU -> MCU: Calculator_Digit(): ввод B\nCalculator_Equals(): вычисление A OP B в int64_t
+alt Результат в диапазоне int32_t
+    MCU -> Display: Calculator_Draw():\nвывод результата с префиксом "= "
+else Переполнение результата
+    MCU -> Display: Вывод "OVERFLOW"\nи "Hold * to clear"
+end
+
+== 4. Длинные нажатия ==
+alt Удержание '*' не менее 700 мс
+    User -> Keypad: Удержание '*'
+    MCU -> Keypad: Повторное считывание клавиш
+    Keypad --> MCU: Клавиша '*' остаётся нажатой
+    MCU -> MCU: Calculator_Poll(): подтверждение удержания\nCalculator_Clear(): очистка состояния
+    MCU -> Display: Calculator_Draw(): начальный экран, число 0
+else Удержание '#' не менее 700 мс
+    User -> Keypad: Удержание '#'
+    MCU -> Keypad: Повторное считывание клавиш
+    Keypad --> MCU: Клавиша '#' остаётся нажатой
+    MCU -> MCU: Calculator_Poll(): подтверждение удержания\nCalculator_Sign(): смена знака текущего числа
+    alt Значение с новым знаком допустимо
+        MCU -> Display: Calculator_Draw(): число с новым знаком
+    else Попытка сменить знак -2147483648
+        MCU -> Display: Вывод "OVERFLOW"
+    end
+end
+
+note over MCU
+    Короткие '*' и '#' обрабатываются после
+    подтверждённого отпускания (30 мс).
+    Удержание отсчитывается от подтверждённого нажатия.
+    Длинное действие выполняется один раз;
+    короткое действие после него не выполняется.
+end note
+@enduml
