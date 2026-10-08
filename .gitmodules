@@ -19,3 +19,6 @@
 [submodule "semester5/information_systems/coursework"]
 	path = semester5/information_systems/coursework
 	url = https://github.com/Dkanil/information-system-coursework.git
+[submodule "semester5/noSQL/lab1"]
+	path = semester5/noSQL/lab1
+	url = https://github.com/Dkanil/noSQL-lab1.git
