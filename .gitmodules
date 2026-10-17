@@ -22,3 +22,6 @@
 [submodule "semester5/noSQL/lab1"]
 	path = semester5/noSQL/lab1
 	url = https://github.com/Dkanil/noSQL-lab1.git
+[submodule "semester5/os-course"]
+	path = semester5/os-course
+	url = https://github.com/Dkanil/os-course.git
