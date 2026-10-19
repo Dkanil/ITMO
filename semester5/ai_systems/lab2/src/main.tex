@@ -134,7 +134,7 @@ Fare & 891 & 32.20 & 49.69 & 0.00 & 7.91 & 14.45 & 31.00 & 512.33 \\
 \includegraphics[width=1.0\linewidth]{figures/missing_classes.png}
 \caption{Пропуски и распределение классов}
 \end{figure}
-Стратифицированное разбиение с \texttt{seed=42} даёт 713 обучающих объектов (439 класса 0 и 274 класса 1) и 178 тестовых (110 класса 0 и 68 класса 1), то есть приблизительно 80/20. Строки не пересекаются; состав разбиения сохранён по PassengerId.
+Стратифицированное разбиение с \texttt{seed=42} даёт 713 обучающих объектов (439 класса 0 и 274 класса 1) и 178 тестовых (110 класса 0 и 68 класса 1), то есть приблизительно 80/20. Отсутствие пересечений между частями проверяется по PassengerId.
 
 Числовые признаки --- Age, SibSp, Parch, Fare. Пропуски заполняются медианами train: соответственно 28, 0, 0 и 14.4542. Затем выполняется стандартизация $x'=(x-\mu_{train})/\sigma_{train}$, где $ddof=0$. Пропуски Embarked заполняются модой train (S). Pclass, Sex и Embarked кодируются с удалением одной базовой категории: базовые значения 1, female и C. После преобразования получены 9 признаков и свободный член.
 
@@ -260,8 +260,8 @@ PassengerId & Истинный класс & $p(y=1)$ & Прогноз \\
 \toprule
 Метод & Шагов & Train loss & $\|g\|_\infty$ & Время, мс \\
 \midrule
-GD & 1000 & 0.447638 & 6.37e-05 & 41.138 \\
-Newton & 5 & 0.447637 & 1.65e-11 & 0.557 \\
+GD & 1000 & 0.447638 & 6.37e-05 & 117.806 \\
+Newton & 5 & 0.447637 & 1.65e-11 & 1.710 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -286,54 +286,38 @@ Newton & 5 & 0.447637 & 1.65e-11 & 0.557 \\
 
 \section{Приложения}
 
-Ниже приведён полный код выполненных ячеек Jupyter-ноутбука в порядке запуска. Для вычислений модели используются NumPy и Pandas, для графиков --- Matplotlib; модули стандартной библиотеки обеспечивают чтение путей, сохранение результатов и измерение времени. Выполненная среда: Python 3.12, NumPy 2.5.4, Pandas 2.2.3.
+Ниже приведён полный код кодовых ячеек текущего Jupyter-ноутбука в порядке их расположения. Номера в комментариях соответствуют позициям ячеек в ноутбуке, включая текстовые ячейки. Для вычислений модели используются NumPy и Pandas, для графиков --- Matplotlib; модули стандартной библиотеки обеспечивают чтение путей, сохранение результатов и измерение времени. Для выполнения используются Python 3, NumPy, Pandas и Matplotlib.
 
-Для воспроизведения достаточно открыть \texttt{ai-system-lab2.ipynb} из корня проекта и выполнить все ячейки последовательно. Каталог \texttt{titanic} должен находиться рядом с ноутбуком. Код ноутбука самодостаточен и не требует импорта локальных Python-файлов.
+Ноутбук загружает \texttt{train.csv} из рабочего каталога ядра Jupyter. В проекте исходный файл находится в \texttt{titanic/train.csv}; для запуска его необходимо разместить в рабочем каталоге либо указать этот путь в ячейке загрузки. Затем все ячейки выполняются последовательно. Код не требует импорта локальных Python-файлов.
 
 \begin{minted}[fontsize=\footnotesize,breaklines,linenos,numbersep=5pt]{python}
 # Ячейка 1
-from pathlib import Path
-from itertools import product
-from time import perf_counter
-import json
-import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
-ROOT = Path.cwd()
-if not (ROOT / 'titanic/train.csv').exists():
-    raise FileNotFoundError('Запустите из корневой директории лабораторной')
-plt.rcParams.update({'font.size': 10, 'figure.dpi': 120})
-
-def save_plot(name):
-    fig = plt.gcf()
-    if 'ipykernel' in sys.modules:
-        from IPython.display import display
-        display(fig)
-    plt.close(fig)
-
-raw = pd.read_csv(ROOT / 'titanic/train.csv')
-external_test = pd.read_csv(ROOT / 'titanic/test.csv')
-print('Размеченные данные:', raw.shape)
-print('Неразмеченные данные:', external_test.shape)
-print('Повторяющиеся строки:', raw.duplicated().sum())
-assert raw.PassengerId.is_unique and raw.Survived.isin([0, 1]).all()
-
-
+from time import perf_counter
 
 # Ячейка 2
-stats = raw.describe(percentiles=[0.25, 0.5, 0.75]).T
-missing = raw.isna().sum().rename('missing').to_frame()
-missing['percent'] = missing['missing'] / len(raw) * 100
-print(stats.to_string())
-print('\nПропуски:\n', missing.to_string())
-print('\nКатегориальные признаки:\n', raw.describe(include='object').T.to_string())
+df = pd.read_csv('train.csv')
 
+print(f"Размер датасета: {df.shape[0]} строк, {df.shape[1]} столбцов")
+print(f"Повторяющиеся строки: {df.duplicated().sum()}")
+
+# Ячейка 4
+print("Статистика по датасету:")
+stats = df.describe(percentiles=[0.25, 0.5, 0.75]).T
+display(stats)
+
+print("Пропущенные значения:")
+missing = df.isna().sum().rename('Количество').to_frame()
+missing['Доля, %'] = missing['Количество'] / len(df) * 100
+display(missing)
+
+# Ячейка 5
 fig, axes = plt.subplots(2, 4, figsize=(13, 6))
 columns = ['Survived', 'Pclass', 'Age', 'SibSp', 'Parch', 'Fare', 'Sex', 'Embarked']
 for ax, col in zip(axes.flat, columns):
-    values = raw[col].dropna()
+    values = df[col].dropna()
     if col in ['Age', 'Fare']:
         ax.hist(values, bins=25, color='#3379a6', edgecolor='white')
     else:
@@ -342,39 +326,44 @@ for ax, col in zip(axes.flat, columns):
     ax.set_title(col)
     ax.set_ylabel('Количество')
 fig.tight_layout()
-save_plot('distributions')
+plt.show()
 
-# Графически показаны все запрошенные численные статистики.
+# Ячейка 6
 fig, axes = plt.subplots(2, 4, figsize=(13, 6))
 for ax, stat in zip(axes.flat, stats.columns):
     ax.barh(stats.index, stats[stat], color='#3379a6')
     ax.set_title(stat)
     ax.tick_params(axis='y', labelsize=8)
 fig.tight_layout()
-save_plot('statistics')
+plt.show()
 
 fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
-nonzero = missing[missing['missing'] > 0]
-axes[0].bar(nonzero.index, nonzero['percent'], color='#bc6940')
+nonzero = missing[missing['Количество'] > 0]
+axes[0].bar(nonzero.index, nonzero['Доля, %'], color='#bc6940')
 axes[0].set_ylabel('Доля пропусков, %')
 axes[0].set_title('Пропущенные значения')
-class_counts = raw.Survived.value_counts().sort_index()
+class_counts = df.Survived.value_counts().sort_index()
 axes[1].bar(['Не выжил (0)', 'Выжил (1)'], class_counts, color=['#bc6940', '#3379a6'])
 axes[1].set_ylabel('Количество пассажиров')
 axes[1].set_title('Баланс классов')
 for i, n in enumerate(class_counts):
     axes[1].text(i, n + 5, str(n), ha='center')
 fig.tight_layout()
-save_plot('missing_classes')
+plt.show()
 
+# Ячейка 7
+target_col = 'Survived'
+numeric_features = ['Age', 'SibSp', 'Parch', 'Fare']
+categorical_features = ['Pclass', 'Sex', 'Embarked']
+features = numeric_features + categorical_features
 
+X_full = df[features].copy()
+y_full = df[target_col].copy()
 
-# Ячейка 3
-"""Логистическая регрессия, предобработка и метрики: только NumPy и Pandas."""
-import numpy as np
-import pandas as pd
+print(f"Числовые признаки: {numeric_features}")
+print(f"Категориальные признаки: {categorical_features}")
 
-
+# Ячейка 9
 def stratified_split(y, test_size=0.2, random_state=42):
     rng = np.random.default_rng(random_state)
     train, test = [], []
@@ -384,7 +373,6 @@ def stratified_split(y, test_size=0.2, random_state=42):
         test.extend(indices[:n_test])
         train.extend(indices[n_test:])
     return rng.permutation(train), rng.permutation(test)
-
 
 class TitanicPreprocessor:
     numeric = ['Age', 'SibSp', 'Parch', 'Fare']
@@ -417,8 +405,28 @@ class TitanicPreprocessor:
                 parts.append((values == value).to_numpy(float)[:, None])
         return np.column_stack(parts)
 
+train_idx, test_idx = stratified_split(df.Survived.to_numpy(), random_state=42)
+train, test = df.iloc[train_idx].copy(), df.iloc[test_idx].copy()
+assert not set(train.PassengerId) & set(test.PassengerId)
+preprocessor = TitanicPreprocessor().fit(train)
+X_train, X_test = preprocessor.transform(train), preprocessor.transform(test)
+y_train, y_test = train.Survived.to_numpy(), test.Survived.to_numpy()
+assert np.isfinite(X_train).all() and np.isfinite(X_test).all()
+assert np.allclose(X_train[:, :4].mean(axis=0), 0, atol=1e-12)
+assert np.allclose(X_train[:, :4].std(axis=0), 1)
+split_info = pd.DataFrame({
+    'size': [len(train), len(test)],
+    'not_survived': [(y_train == 0).sum(), (y_test == 0).sum()],
+    'survived': [(y_train == 1).sum(), (y_test == 1).sum()],
+}, index=['train', 'test'])
+print(f"Размер обучающей выборки (Train): {X_train.shape[0]} строк")
+print(f"Размер тестовой выборки (Test):   {X_test.shape[0]} строк")
+display(split_info)
+print('Признаки:', preprocessor.feature_names)
+print('Медианы train:', preprocessor.medians.to_dict())
 
-class LogisticRegression:
+# Ячейка 10
+class CustomLogisticRegression:
     def __init__(self, learning_rate=0.1, max_iter=1000,
                  optimizer='gd', tol=1e-8):
         if learning_rate <= 0 or max_iter < 1 or optimizer not in ('gd', 'newton'):
@@ -440,7 +448,6 @@ class LogisticRegression:
 
     @staticmethod
     def log_loss(y, logits):
-        # log(1 + exp(z)) - y*z, without overflow or log(0).
         return float(np.mean(np.logaddexp(0, logits) - y * logits))
 
     def fit(self, X, y):
@@ -461,7 +468,6 @@ class LogisticRegression:
             else:
                 curvature = probabilities * (1 - probabilities)
                 hessian = design.T @ (design * curvature[:, None]) / len(y)
-                # SVD pseudoinverse also handles a singular Hessian.
                 direction = np.linalg.pinv(hessian) @ gradient
             self.weights -= self.learning_rate * direction
             loss = self.log_loss(y, design @ self.weights)
@@ -483,6 +489,14 @@ class LogisticRegression:
     def predict(self, X):
         return (self.predict_proba(X) >= 0.5).astype(int)
 
+    def print_equation(self, feature_names):
+        equation = f"z = {self.weights[0]:.4f}"
+        for name, weight in zip(feature_names, self.weights[1:]):
+            sign = '+' if weight >= 0 else '-'
+            equation += f" {sign} {abs(weight):.4f}*{name}"
+        print("Логистическая модель в скалярном виде:")
+        print(equation)
+        print("p(y=1) = 1 / (1 + exp(-z))")
 
 def classification_metrics(y, prediction):
     y, prediction = np.asarray(y), np.asarray(prediction)
@@ -496,89 +510,117 @@ def classification_metrics(y, prediction):
     return dict(accuracy=(tp + tn) / len(y), precision=precision,
                 recall=recall, f1=f1, tp=tp, tn=tn, fp=fp, fn=fn)
 
-
-# Ячейка 4
-assert np.allclose(LogisticRegression.sigmoid(np.array([-1000., 0., 1000.])), [0, .5, 1])
-assert np.isfinite(LogisticRegression.log_loss(np.array([0, 1]), np.array([-1000., 1000.])))
-rng = np.random.default_rng(7)
-D = np.column_stack([np.ones(12), rng.normal(size=(12, 3))])
-y_check = rng.integers(0, 2, 12)
-w_check = rng.normal(size=4)
-eps = 1e-5
-p_check = LogisticRegression.sigmoid(D @ w_check)
-g_check = D.T @ (p_check - y_check) / len(D)
-H_check = D.T @ (D * (p_check * (1-p_check))[:, None]) / len(D)
-g_numeric = np.empty(4)
-H_numeric = np.empty((4, 4))
-for j in range(4):
-    delta = np.eye(4)[j] * eps
-    g_numeric[j] = (LogisticRegression.log_loss(y_check, D @ (w_check+delta))
-                    - LogisticRegression.log_loss(y_check, D @ (w_check-delta))) / (2*eps)
-    p_plus = LogisticRegression.sigmoid(D @ (w_check+delta))
-    p_minus = LogisticRegression.sigmoid(D @ (w_check-delta))
-    H_numeric[:, j] = D.T @ (p_plus-p_minus) / (2*eps*len(D))
-assert np.allclose(g_check, g_numeric, atol=1e-8)
-assert np.allclose(H_check, H_numeric, atol=1e-8)
-m_check = classification_metrics([0, 0, 1, 1], [0, 1, 0, 1])
-assert all(m_check[k] == .5 for k in ['accuracy', 'precision', 'recall', 'f1'])
-print('Проверки сигмоиды, log loss, градиента, гессиана и метрик пройдены.')
-
-# Ячейка 5
-train_idx, test_idx = stratified_split(raw.Survived.to_numpy(), random_state=42)
-train, test = raw.iloc[train_idx].copy(), raw.iloc[test_idx].copy()
-assert not set(train.PassengerId) & set(test.PassengerId)
-preprocessor = TitanicPreprocessor().fit(train)
-X_train, X_test = preprocessor.transform(train), preprocessor.transform(test)
-y_train, y_test = train.Survived.to_numpy(), test.Survived.to_numpy()
-assert np.isfinite(X_train).all() and np.isfinite(X_test).all()
-assert np.allclose(X_train[:, :4].mean(axis=0), 0, atol=1e-12)
-assert np.allclose(X_train[:, :4].std(axis=0), 1)
-split_info = pd.DataFrame({
-    'size': [len(train), len(test)],
-    'not_survived': [(y_train == 0).sum(), (y_test == 0).sum()],
-    'survived': [(y_train == 1).sum(), (y_test == 1).sum()],
-}, index=['train', 'test'])
-print(split_info.to_string())
-print('Признаки:', preprocessor.feature_names)
-print('Медианы train:', preprocessor.medians.to_dict())
-
-
-
-# Ячейка 6
+# Ячейка 11
 LEARNING_RATES = [0.01, 0.1, 0.5, 1.0]
 ITERATIONS = [10, 100, 1000]
 OPTIMIZERS = ['gd', 'newton']
 records, models = [], {}
-for optimizer, learning_rate, max_iter in product(OPTIMIZERS, LEARNING_RATES, ITERATIONS):
-    model = LogisticRegression(learning_rate, max_iter, optimizer)
-    start = perf_counter()
-    model.fit(X_train, y_train)
-    elapsed = perf_counter() - start
-    metrics = classification_metrics(y_test, model.predict(X_test))
-    key = (optimizer, learning_rate, max_iter)
-    models[key] = model
-    records.append(dict(optimizer=optimizer, learning_rate=learning_rate,
-                        max_iter=max_iter, n_iter=model.n_iter,
-                        converged=model.converged,
-                        gradient_norm=model.gradient_norm,
-                        train_log_loss=model.loss_history[-1],
-                        test_log_loss=model.log_loss(y_test, model.decision_function(X_test)),
-                        time_ms=elapsed * 1000, **metrics))
-results = pd.DataFrame(records)
-assert len(results) == 24
-assert np.isfinite(results.select_dtypes(include='number')).all().all()
-# Основная метрика F1; далее accuracy, меньший test log loss и бюджет итераций.
-ranked = results.sort_values(['f1', 'accuracy', 'test_log_loss', 'max_iter'],
-                            ascending=[False, False, True, True], kind='stable')
+
+for learning_rate in LEARNING_RATES:
+    for max_iter in ITERATIONS:
+        model = CustomLogisticRegression(learning_rate, max_iter, 'gd')
+        start = perf_counter()
+        model.fit(X_train, y_train)
+        elapsed = (perf_counter() - start) * 1000
+        y_pred = model.predict(X_test)
+        metrics = classification_metrics(y_test, y_pred)
+        models[('gd', learning_rate, max_iter)] = model
+        records.append(dict(
+            optimizer='gd', learning_rate=learning_rate,
+            max_iter=max_iter, n_iter=model.n_iter, converged=model.converged,
+            gradient_norm=model.gradient_norm, time_ms=elapsed,
+            train_log_loss=model.loss_history[-1],
+            test_log_loss=model.log_loss(y_test, model.decision_function(X_test)),
+            **metrics
+        ))
+
+print("Градиентнаый спуск")
+results_gd = pd.DataFrame([r for r in records if r['optimizer'] == 'gd'])
+display(results_gd[[
+    'learning_rate', 'max_iter', 'n_iter', 'accuracy',
+    'precision', 'recall', 'f1', 'test_log_loss'
+]].round(6))
+
+# Ячейка 12
+for learning_rate in LEARNING_RATES:
+    for max_iter in ITERATIONS:
+        model = CustomLogisticRegression(learning_rate, max_iter, 'newton')
+        start = perf_counter()
+        model.fit(X_train, y_train)
+        elapsed = (perf_counter() - start) * 1000
+        y_pred = model.predict(X_test)
+        metrics = classification_metrics(y_test, y_pred)
+        models[('newton', learning_rate, max_iter)] = model
+        records.append(dict(
+            optimizer='newton', learning_rate=learning_rate,
+            max_iter=max_iter, n_iter=model.n_iter, converged=model.converged,
+            gradient_norm=model.gradient_norm, time_ms=elapsed,
+            train_log_loss=model.loss_history[-1],
+            test_log_loss=model.log_loss(y_test, model.decision_function(X_test)),
+            **metrics
+        ))
+
+print("Метод Ньютона")
+results_newton = pd.DataFrame([r for r in records if r['optimizer'] == 'newton'])
+display(results_newton[[
+    'learning_rate', 'max_iter', 'n_iter', 'accuracy',
+    'precision', 'recall', 'f1', 'test_log_loss'
+]].round(6))
+
+# Ячейка 13
+summary_df = pd.DataFrame(records)
+results = summary_df
+ranked = summary_df.sort_values(
+    ['f1', 'accuracy', 'test_log_loss', 'max_iter'],
+    ascending=[False, False, True, True], kind='stable'
+)
 best = ranked.iloc[0]
-best_key = (best.optimizer, float(best.learning_rate), int(best.max_iter))
-best_model = models[best_key]
-print(results.round(6).to_string(index=False))
-print('\nЛучшая исследованная конфигурация:\n', best.to_string())
+best_model = models[(best.optimizer, float(best.learning_rate), int(best.max_iter))]
+y_pred = best_model.predict(X_test)
 
+print("Итоговое сравнение")
+display(summary_df[[
+    'optimizer', 'learning_rate', 'max_iter', 'n_iter',
+    'accuracy', 'precision', 'recall', 'f1', 'test_log_loss'
+]].round(6))
 
+print("--- Наилучшая конфигурация ---")
+print(f"Метод: {best.optimizer}")
+print(f"Коэффициент обучения: {best.learning_rate:g}")
+print(f"Количество итераций: {int(best.max_iter)}")
+print(f"Признаки: {preprocessor.feature_names}")
+best_model.print_equation(preprocessor.feature_names)
+print("\nОценки параметров (Вектор B):")
+print(f"Свободный член (a): {best_model.weights[0]:.4f}")
+for name, weight in zip(preprocessor.feature_names, best_model.weights[1:]):
+    print(f"Коэффициент при {name}: {weight:.4f}")
+print("-" * 30)
+print(f"Accuracy:  {best.accuracy:.5f}")
+print(f"Precision: {best.precision:.5f}")
+print(f"Recall:    {best.recall:.5f}")
+print(f"F1-Score:  {best.f1:.5f}")
+print("Первые 5 вероятностей:      ", np.round(best_model.predict_proba(X_test)[:5], 4))
+print("Первые 5 предсказаний:      ", y_pred[:5])
+print("Первые 5 реальных значений:", y_test[:5])
 
-# Ячейка 7
+benchmarks = []
+for optimizer in OPTIMIZERS:
+    times, counts = [], []
+    for repeat in range(7):
+        model = CustomLogisticRegression(1.0, 1000, optimizer)
+        start = perf_counter()
+        model.fit(X_train, y_train)
+        times.append((perf_counter() - start) * 1000)
+        counts.append(model.n_iter)
+    benchmarks.append(dict(optimizer=optimizer, learning_rate=1.0, max_iter=1000,
+                           median_time_ms=float(np.median(times)),
+                           n_iter=counts[-1], train_log_loss=model.loss_history[-1],
+                           gradient_norm=model.gradient_norm, converged=model.converged))
+benchmark = pd.DataFrame(benchmarks)
+print('\nСравнение времени (медиана 7 запусков):')
+display(benchmark)
+
+# Ячейка 14
 fig, axes = plt.subplots(2, 4, figsize=(14, 6))
 for row, optimizer in enumerate(OPTIMIZERS):
     for col, metric in enumerate(['accuracy', 'precision', 'recall', 'f1']):
@@ -597,7 +639,7 @@ for row, optimizer in enumerate(OPTIMIZERS):
                 ax.text(j, i, f'{v:.3f}', ha='center', va='center',
                         color='white' if v > 0.7 else 'black', fontsize=8)
 fig.tight_layout()
-save_plot('hyperparameters')
+plt.show()
 
 fig, axes = plt.subplots(1, 2, figsize=(11, 4))
 for ax, optimizer in zip(axes, OPTIMIZERS):
@@ -611,11 +653,8 @@ for ax, optimizer in zip(axes, OPTIMIZERS):
     ax.legend()
     ax.grid(alpha=0.2)
 fig.tight_layout()
-save_plot('convergence')
+plt.show()
 
-
-
-# Ячейка 8
 prediction = best_model.predict(X_test)
 metrics = classification_metrics(y_test, prediction)
 confusion = np.array([[metrics['tn'], metrics['fp']], [metrics['fn'], metrics['tp']]])
@@ -625,48 +664,12 @@ ax.set_xticks([0, 1], ['Не выжил', 'Выжил'])
 ax.set_yticks([0, 1], ['Не выжил', 'Выжил'])
 ax.set_xlabel('Предсказанный класс')
 ax.set_ylabel('Истинный класс')
-ax.set_title('Матрица ошибок лучшей конфигурации')
+ax.set_title('Матрица ошибок наилучшей конфигурации')
 for (i, j), value in np.ndenumerate(confusion):
     ax.text(j, i, str(value), ha='center', va='center', fontsize=16,
             color='white' if value > confusion.max() / 2 else 'black')
 fig.tight_layout()
-save_plot('confusion')
-
-examples = test[['PassengerId', 'Pclass', 'Sex', 'Age', 'Survived']].copy()
-examples['probability'] = best_model.predict_proba(X_test)
-examples['prediction'] = prediction
-print('\nПервые предсказания:\n', examples.head(8).round(4).to_string(index=False))
-coefficients = pd.DataFrame({'feature': ['intercept'] + preprocessor.feature_names,
-                             'weight': best_model.weights})
-# Один замер времени зависит от нагрузки: дополнительно медиана 7 запусков.
-benchmarks = []
-for optimizer in OPTIMIZERS:
-    times, counts = [], []
-    for repeat in range(7):
-        model = LogisticRegression(1.0, 1000, optimizer)
-        start = perf_counter()
-        model.fit(X_train, y_train)
-        times.append((perf_counter() - start) * 1000)
-        counts.append(model.n_iter)
-    benchmarks.append(dict(optimizer=optimizer, learning_rate=1.0, max_iter=1000,
-                           median_time_ms=float(np.median(times)),
-                           n_iter=counts[-1], train_log_loss=model.loss_history[-1],
-                           gradient_norm=model.gradient_norm, converged=model.converged))
-benchmark = pd.DataFrame(benchmarks)
-print('\nСравнение времени (медиана 7 запусков):\n', benchmark.to_string(index=False))
-summary = dict(best={k: (v.item() if isinstance(v, np.generic) else v)
-                    for k, v in best.to_dict().items()},
-               features=preprocessor.feature_names,
-               medians=preprocessor.medians.to_dict(),
-               modes=preprocessor.modes,
-               train_size=len(train), test_size=len(test),
-               confusion=confusion.tolist(), seed=42,
-               numpy=np.__version__, pandas=pd.__version__)
-print('\nЗамечание: гиперпараметры сравнивались на test по заданию; максимум F1')
-print('является исследовательской оценкой и требует независимой проверки.')
-
-print(json.dumps(summary, ensure_ascii=False, indent=2, default=lambda v: v.item() if isinstance(v, np.generic) else str(v)))
-
+plt.show()
 \end{minted}
 
 
