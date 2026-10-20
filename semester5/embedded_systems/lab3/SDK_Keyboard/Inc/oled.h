@@ -26,6 +26,7 @@ extern I2C_HandleTypeDef OLED_I2C_PORT;
 uint8_t oled_Init(void);
 void oled_Fill(OLED_COLOR color);
 void oled_UpdateScreen(void);
+HAL_StatusTypeDef oled_UpdatePage(uint8_t page);
 void oled_DrawVLine(uint8_t x1, uint8_t x2, uint8_t y, OLED_COLOR color);
 void oled_DrawHLine(uint8_t y1, uint8_t y2, uint8_t x, OLED_COLOR color);
 void oled_DrawSquare(uint8_t x1, uint8_t x2, uint8_t y1, uint8_t y2, OLED_COLOR color);

@@ -26,11 +26,17 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "semphr.h"
 #include "kb.h"
 #include "sdk_uart.h"
 #include "pca9538.h"
 #include "oled.h"
 #include "fonts.h"
+#include "audio_clip.h"
+#include "audio_adpcm.h"
 #include <stdint.h>
 #include <limits.h>
 #include <stdio.h>
@@ -61,8 +67,8 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-static void Calculator_Init(void);
-static void Calculator_Poll(void);
+static void Pong_InitRTOS(void);
+static void Audio_Init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -102,8 +108,9 @@ int main(void)
   MX_I2C1_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-  oled_Init();
-  Calculator_Init();
+  if (!oled_Init() || Set_Keyboard() != HAL_OK) Error_Handler();
+  Audio_Init();
+  Pong_InitRTOS();
 
   /* USER CODE END 2 */
  
@@ -117,8 +124,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  Calculator_Poll();
-	  HAL_Delay(5); /* Короткий опрос: клавиатура остаётся отзывчивой. */
+      /* The FreeRTOS scheduler owns execution after Pong_InitRTOS(). */
 
   }
   /* USER CODE END 3 */
@@ -167,262 +173,490 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-/* CALCULATOR CORE BEGIN
- * Два операнда int32_t: от -2147483648 до 2147483647.
- * Промежуточные вычисления выполняем в int64_t, чтобы обнаружить
- * переполнение ДО преобразования результата к int32_t.
- */
-/* Различаем переполнение и деление на ноль для сообщения на экране. */
-enum {
-  CALC_ERROR_NONE = 0,
-  CALC_ERROR_OVERFLOW = 1,
-  CALC_ERROR_DIV_ZERO = 2
-};
+/* PONG CORE BEGIN: hardware-independent rules, coordinates in 1/512 pixel (ball speed halved). */
+#define KEY_1    (1u << 0)
+#define KEY_2    (1u << 1)
+#define KEY_3    (1u << 2)
+#define KEY_5    (1u << 4)
+#define KEY_7    (1u << 6)
+#define KEY_0    (1u << 10)
+#define KEY_9    (1u << 8)
+#define Q 512
+#define FIELD_TOP 14
+#define FIELD_BOTTOM 62
+#define PADDLE_HEIGHT 14
+#define WIN_SCORE 7
+#define GAME_PERIOD_MS 10
 
+typedef enum { MENU, COUNTDOWN, PLAYING, PAUSED, FINISHED } GameMode;
 typedef struct {
-  int32_t left;
-  int64_t magnitude;       /* Модуль набираемого числа (включая 2147483648). */
-  uint8_t negative;
-  uint8_t entered;
-  uint8_t pending;         /* Уже выбрана операция, вводим второй операнд. */
-  uint8_t result;
-  uint8_t error;          /* Код ошибки из перечисления CALC_ERROR_*. */
-  char operation;
-} Calculator;
+  GameMode mode;
+  int32_t left_y, right_y, ball_x, ball_y, vx, vy;
+  uint32_t deadline;
+  uint16_t rally, best_rally;
+  uint8_t left_score, right_score, winner, serve_id, countdown;
+  int8_t serve_direction;
+} Pong;
 
-static Calculator calc;
-
-static void Calculator_Clear(void)
+static int32_t Clamp(int32_t value, int32_t low, int32_t high)
 {
-  memset(&calc, 0, sizeof(calc));
-  calc.operation = '+';
+  return value < low ? low : value > high ? high : value;
 }
 
-static int64_t Calculator_Value(void)
+static void Pong_Serve(Pong *g, uint32_t now, uint32_t delay)
 {
-  return calc.negative ? -calc.magnitude : calc.magnitude;
+  g->ball_x = 64 * Q;
+  g->ball_y = 38 * Q;
+  g->vx = g->serve_direction * 230;
+  g->vy = (g->serve_id++ & 1u) ? 115 : -115;
+  g->rally = 0;
+  g->deadline = now + delay;
+  g->countdown = (uint8_t)((delay + 999u) / 1000u);
+  g->mode = COUNTDOWN;
 }
 
-static void Calculator_Digit(uint8_t digit)
+static void Pong_Init(Pong *g)
 {
-  if (calc.error || calc.result) Calculator_Clear();
-  int64_t next = calc.magnitude * 10 + digit;
-  int64_t limit = calc.negative ? (int64_t)INT32_MAX + 1 : INT32_MAX;
-  if (next > limit) {
-    calc.error = CALC_ERROR_OVERFLOW;
-    return;
+  memset(g, 0, sizeof(*g));
+  g->left_y = g->right_y = 31 * Q;
+  g->ball_x = 64 * Q;
+  g->ball_y = 38 * Q;
+  g->serve_direction = 1;
+  g->mode = MENU;
+}
+
+static void Pong_Start(Pong *g, uint32_t now)
+{
+  uint16_t best = g->best_rally;
+  Pong_Init(g);
+  g->best_rally = best;
+  Pong_Serve(g, now, 3000);
+}
+
+static void Pong_MovePaddles(Pong *g, uint16_t keys)
+{
+  int32_t step = 840; /* 164 pixels/second, independent of OLED refresh. */
+  int left = !!(keys & KEY_7) - !!(keys & KEY_1);
+  int right = !!(keys & KEY_9) - !!(keys & KEY_3);
+  g->left_y = Clamp(g->left_y + left * step, FIELD_TOP * Q,
+                     (FIELD_BOTTOM - PADDLE_HEIGHT + 1) * Q);
+  g->right_y = Clamp(g->right_y + right * step, FIELD_TOP * Q,
+                      (FIELD_BOTTOM - PADDLE_HEIGHT + 1) * Q);
+}
+
+static void Pong_Bounce(Pong *g, int32_t paddle_y, int direction)
+{
+  int32_t speed = g->vx < 0 ? -g->vx : g->vx;
+  int32_t offset = g->ball_y - (paddle_y + (PADDLE_HEIGHT / 2) * Q);
+  speed = Clamp(speed + 22, 230, 650); /* Faster on every return, with a cap. */
+  g->vx = direction * speed;
+  g->vy = Clamp(offset * speed / (8 * Q), -500, 500);
+  if (g->vy > -65 && g->vy < 65) g->vy = offset < 0 ? -65 : 65;
+  ++g->rally;
+  if (g->rally > g->best_rally) g->best_rally = g->rally;
+}
+
+/* Returns the player who scored (0 = no goal). */
+static uint8_t Pong_Physics(Pong *g, uint32_t now)
+{
+  int32_t old_x = g->ball_x, old_y = g->ball_y;
+  int32_t next_x = old_x + g->vx, next_y = old_y + g->vy;
+  int32_t top = (FIELD_TOP + 1) * Q, bottom = (FIELD_BOTTOM - 1) * Q;
+  if (next_y < top) { next_y = 2 * top - next_y; g->vy = -g->vy; }
+  if (next_y > bottom) { next_y = 2 * bottom - next_y; g->vy = -g->vy; }
+  g->ball_y = next_y;
+
+  /* Test the crossed paddle plane; interpolate Y to prevent tunnelling. */
+  int32_t plane = g->vx < 0 ? 7 * Q : 120 * Q;
+  if ((g->vx < 0 && old_x >= plane && next_x <= plane) ||
+      (g->vx > 0 && old_x <= plane && next_x >= plane)) {
+    int32_t hit_y = old_y + (next_y - old_y) * (plane - old_x) / (next_x - old_x);
+    int32_t paddle = g->vx < 0 ? g->left_y : g->right_y;
+    if (hit_y + Q >= paddle && hit_y - Q <= paddle + (PADDLE_HEIGHT - 1) * Q) {
+      int direction = g->vx < 0 ? 1 : -1;
+      g->ball_y = hit_y;
+      Pong_Bounce(g, paddle, direction);
+      next_x = plane + direction * Q;
+    }
   }
-  calc.magnitude = next;
-  calc.entered = 1;
-}
-
-static void Calculator_Sign(void)
-{
-  if (calc.error) return;
-  /* -INT32_MIN не помещается в int32_t. */
-  if (calc.negative && calc.magnitude > INT32_MAX) {
-    calc.error = CALC_ERROR_OVERFLOW;
-    return;
+  g->ball_x = next_x;
+  uint8_t scorer = 0;
+  if (next_x < -Q) { ++g->right_score; scorer = 2; g->serve_direction = -1; }
+  if (next_x > 128 * Q) { ++g->left_score; scorer = 1; g->serve_direction = 1; }
+  if (scorer) {
+    if (g->left_score >= WIN_SCORE || g->right_score >= WIN_SCORE) {
+      g->winner = scorer;
+      g->mode = FINISHED;
+    } else {
+      Pong_Serve(g, now, 1500);
+    }
   }
-  calc.negative = !calc.negative;
-  if (calc.result) calc.left = (int32_t)Calculator_Value();
+  return scorer;
 }
 
-static void Calculator_Operation(void)
+static uint8_t Pong_Tick(Pong *g, uint16_t held, uint16_t pressed, uint32_t now)
 {
-  if (calc.error) return;
-  if (!calc.pending) {
-    if (!calc.entered) return;
-    calc.left = (int32_t)Calculator_Value();
-    calc.magnitude = 0;
-    calc.negative = 0;
-    calc.entered = 0;
-    calc.result = 0;
-    calc.pending = 1;
-    calc.operation = '+';
-  } else {
-    /* Повторные короткие нажатия *: сложение, вычитание,
-     * умножение, целочисленное деление, снова сложение. */
-    calc.operation = calc.operation == '+' ? '-' :
-                     calc.operation == '-' ? '*' :
-                     calc.operation == '*' ? '/' : '+';
+  if (pressed & KEY_5) { g->mode = MENU; return 0; }
+  if (g->mode == MENU || g->mode == FINISHED) {
+    if (pressed & KEY_2) Pong_Start(g, now);
+    return 0;
   }
-}
-
-static void Calculator_Equals(void)
-{
-  if (calc.error || !calc.pending || !calc.entered) return;
-  int64_t right = Calculator_Value();
-  int64_t answer;
-  switch (calc.operation) {
-    case '+': answer = (int64_t)calc.left + right; break;
-    case '-': answer = (int64_t)calc.left - right; break;
-    case '*': answer = (int64_t)calc.left * right; break;
-    case '/':
-      /* Проверяем делитель ДО деления, чтобы не делить на ноль. */
-      if (right == 0) {
-        calc.error = CALC_ERROR_DIV_ZERO;
-        return;
-      }
-      /* В C целочисленное деление отбрасывает дробную часть к нулю:
-       * 7 / 3 = 2, -7 / 3 = -2. int64_t позволяет безопасно вычислить
-       * INT32_MIN / -1; общая проверка ниже обнаружит переполнение. */
-      answer = (int64_t)calc.left / right;
-      break;
-    default: return;
+  if (pressed & KEY_0) {
+    if (g->mode == PLAYING) g->mode = PAUSED;
+    else if (g->mode == PAUSED) g->mode = PLAYING;
+    return 0;
   }
-  if (answer < INT32_MIN || answer > INT32_MAX) {
-    calc.error = CALC_ERROR_OVERFLOW;
-    return;
+  if (g->mode == PAUSED) return 0;
+  Pong_MovePaddles(g, held);
+  if (g->mode == COUNTDOWN) {
+    if ((int32_t)(now - g->deadline) >= 0) { g->mode = PLAYING; g->countdown = 0; }
+    else g->countdown = (uint8_t)((g->deadline - now + 999u) / 1000u);
+    return 0;
   }
-  calc.left = (int32_t)answer;
-  calc.negative = answer < 0;
-  calc.magnitude = answer < 0 ? -answer : answer;
-  calc.pending = 0;
-  calc.result = 1;
-  /* Результат можно использовать как первый операнд следующего расчёта. */
+  return Pong_Physics(g, now);
 }
-/* CALCULATOR CORE END */
+/* PONG CORE END */
 
-static void Calculator_Line(uint8_t y, char *text)
-{
-  oled_SetCursor(0, y);
-  oled_WriteString(text, Font_7x10, White);
-}
-
-static void Calculator_Draw(void)
-{
-  char line[19]; /* На дисплее помещается 18 символов шрифта 7x10. */
-  oled_Fill(Black);
-  Calculator_Line(0, "INTEGER CALC");
-  if (calc.error) {
-    Calculator_Line(12, calc.error == CALC_ERROR_DIV_ZERO ?
-                    "DIVIDE BY ZERO" : "OVERFLOW");
-    Calculator_Line(24, "Hold * to clear");
-  } else if (calc.pending) {
-    snprintf(line, sizeof(line), "A: %ld", (long)calc.left);
-    Calculator_Line(12, line);
-    snprintf(line, sizeof(line), "OP: %c", calc.operation);
-    Calculator_Line(24, line);
-    if (calc.entered)
-      snprintf(line, sizeof(line), "B: %ld", (long)Calculator_Value());
-    else
-      snprintf(line, sizeof(line), "B: %s_", calc.negative ? "-" : "");
-    Calculator_Line(36, line);
-  } else {
-    snprintf(line, sizeof(line), "%s%ld", calc.result ? "= " : "",
-             (long)Calculator_Value());
-    Calculator_Line(12, line);
-    if (calc.negative && !calc.entered) Calculator_Line(12, "-_");
-    Calculator_Line(24, "*: + - * /");
-    Calculator_Line(36, "#: equals");
-  }
-  Calculator_Line(52, "Hold: * C  # +/-");
-  oled_UpdateScreen();
-}
-
-/* Читаем всю матрицу. Неактивные строки оставляем входами,
- * активную строку тянем к нулю: нет конфликта выходов при двух кнопках.
- * ROW1 — верхний ряд, P4/P5/P6 — левый/средний/правый столбец.
- * Физическая раскладка: 1 2 3 / 4 5 6 / 7 8 9 / * 0 #.
- * 0 = нет кнопок, 0xFF = несколько кнопок или ошибка I2C.
+/* AUDIO PLAYER BEGIN: 8 kHz IMA ADPCM in Flash, 40 kHz PWM on PA5.
+ * TIM6 updates one sample per interrupt. No busy wait or audio RAM buffer.
+ * TIM2_CH1/PA5 is the sound output used by the SDK_Buzzer example.
  */
-static uint8_t Calculator_ReadKey(void)
+#define AUDIO_PWM_RATE 40000u
+static ADPCMState audio_decoder;
+static uint32_t audio_pwm_period;
+static volatile uint32_t audio_sample_pos, audio_playing, audio_completed;
+
+/* May run from the audio interrupt; it never calls the FreeRTOS API. */
+static void Audio_Disable(void)
+{
+  TIM6->DIER = 0;
+  TIM6->CR1 = 0;
+  TIM6->SR = 0;
+  TIM2->CCER = 0;
+  TIM2->CR1 &= ~TIM_CR1_CEN;
+  TIM2->CCR1 = 0;
+  audio_playing = 0;
+}
+
+static void Audio_Init(void)
+{
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_TIM2_CLK_ENABLE();
+  __HAL_RCC_TIM6_CLK_ENABLE();
+  GPIO_InitTypeDef pin = {0};
+  pin.Pin = GPIO_PIN_5;
+  pin.Mode = GPIO_MODE_AF_PP;
+  pin.Pull = GPIO_NOPULL;
+  pin.Speed = GPIO_SPEED_FREQ_HIGH;
+  pin.Alternate = GPIO_AF1_TIM2;
+  HAL_GPIO_Init(GPIOA, &pin);
+
+  uint32_t timer_clock = HAL_RCC_GetPCLK1Freq();
+  if ((RCC->CFGR & RCC_CFGR_PPRE1) != 0) timer_clock *= 2;
+  audio_pwm_period = timer_clock / AUDIO_PWM_RATE;
+  if (audio_pwm_period < 2 || timer_clock % AUDIO_SAMPLE_RATE != 0 ||
+      timer_clock / AUDIO_SAMPLE_RATE > 65536) Error_Handler();
+  TIM2->CR1 = TIM_CR1_ARPE;
+  TIM2->PSC = 0;
+  TIM2->ARR = audio_pwm_period - 1;
+  TIM2->CCR1 = 0;
+  TIM2->CCMR1 = TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1PE;
+  TIM2->CCER = 0;
+  TIM2->EGR = TIM_EGR_UG;
+  TIM2->SR = 0;
+
+  TIM6->CR1 = 0;
+  TIM6->PSC = 0;
+  TIM6->ARR = timer_clock / AUDIO_SAMPLE_RATE - 1;
+  TIM6->DIER = 0;
+  TIM6->EGR = TIM_EGR_UG;
+  TIM6->SR = 0;
+  /* Lower urgency than the FreeRTOS interrupt ceiling, above SysTick. */
+  HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
+}
+
+static void Audio_Stop(void)
+{
+  taskENTER_CRITICAL();
+  Audio_Disable();
+  taskEXIT_CRITICAL();
+}
+
+static void Audio_Start(void)
+{
+  taskENTER_CRITICAL();
+  Audio_Disable();
+  audio_decoder.predictor = audio_decoder.index = 0;
+  audio_sample_pos = 0;
+  TIM2->CNT = 0;
+  TIM2->CCR1 = audio_pwm_period / 2;
+  TIM2->EGR = TIM_EGR_UG;
+  TIM2->SR = 0;
+  TIM2->CCER = TIM_CCER_CC1E;
+  TIM2->CR1 |= TIM_CR1_CEN;
+  TIM6->CNT = 0;
+  TIM6->EGR = TIM_EGR_UG;
+  TIM6->SR = 0;
+  audio_playing = 1;
+  TIM6->DIER = TIM_DIER_UIE;
+  TIM6->CR1 = TIM_CR1_CEN;
+  taskEXIT_CRITICAL();
+}
+
+void TIM6_DAC_IRQHandler(void)
+{
+  if (!(TIM6->SR & TIM_SR_UIF)) return;
+  TIM6->SR = 0;
+  if (!audio_playing) return;
+  uint32_t position = audio_sample_pos;
+  if (position >= AUDIO_SAMPLE_COUNT) {
+    Audio_Disable();
+    ++audio_completed;
+    return;
+  }
+  uint8_t packed = audio_clip[position / 2];
+  uint8_t code = (position & 1u) ? packed >> 4 : packed & 15u;
+  int16_t pcm = ADPCM_Decode(&audio_decoder, code);
+  TIM2->CCR1 = ((uint32_t)((int32_t)pcm + 32768) * audio_pwm_period) >> 16;
+  audio_sample_pos = position + 1;
+}
+
+/* Only a transition to FINISHED starts the clip, once per completed match. */
+static void Audio_OnModeChange(GameMode before, GameMode after)
+{
+  if (before == after) return;
+  if (after == FINISHED) Audio_Start();
+  else if (before == FINISHED || after == MENU) Audio_Stop();
+}
+/* AUDIO PLAYER END */
+
+/* Each task owns its data. Only copies pass through the queues. */
+typedef struct { uint16_t held; uint32_t sampled_at; } InputState;
+static QueueHandle_t input_queue, frame_queue, log_queue;
+static SemaphoreHandle_t i2c_mutex;
+static TaskHandle_t keyboard_task, game_task, display_task;
+static volatile uint32_t keyboard_scans, game_ticks, display_frames, i2c_errors;
+
+static void Pong_Log(const char *message)
+{
+  char copy[64] = {0};
+  snprintf(copy, sizeof(copy), "%s", message);
+  (void)xQueueSend(log_queue, copy, 0);
+}
+
+/* Scan all 12 keys as a bit mask: both players can hold keys at once.
+ * Only the active row is an output driven low; other rows are inputs.
+ * Three or more keys can produce ghosting on a matrix without diodes. */
+static uint16_t Pong_ReadKeys(void)
 {
   static const uint8_t rows[4] = {ROW1, ROW2, ROW3, ROW4};
-  static const uint8_t keys[4][3] = {{'1','2','3'}, {'4','5','6'},
-                                  {'7','8','9'}, {'*','0','#'}};
-  uint8_t found = 0, count = 0, input = 0x70;
+  uint16_t result = 0;
+  uint8_t idle = 0xFF;
+  uint8_t failed = 0, count = 0;
+  xSemaphoreTake(i2c_mutex, portMAX_DELAY);
   for (uint8_t row = 0; row < 4; ++row) {
-    uint8_t config = rows[row];
-    if (PCA9538_Write_Register(0xE2, CONFIG, &config) != HAL_OK)
-      return 0xFF;
-    /* Даём сигналам матрицы установиться после смены строки. */
-    HAL_Delay(1);
-    if (PCA9538_Read_Inputs(0xE2, &input) != HAL_OK) return 0xFF;
+    uint8_t config = rows[row], input = 0x70;
+    if (PCA9538_Write_Register(0xE2, CONFIG, &config) != HAL_OK) {
+      failed = 1; break;
+    }
+    vTaskDelay(pdMS_TO_TICKS(1)); /* Matrix settling, yields the CPU. */
+    if (PCA9538_Read_Inputs(0xE2, &input) != HAL_OK) { failed = 1; break; }
     for (uint8_t column = 0; column < 3; ++column) {
       if (!(input & (0x10u << column))) {
-        found = keys[row][column];
+        result |= 1u << (row * 3 + column);
         ++count;
       }
     }
   }
-  uint8_t idle = 0xFF;
-  if (PCA9538_Write_Register(0xE2, CONFIG, &idle) != HAL_OK) return 0xFF;
-  return count > 1 ? 0xFF : found;
+  if (PCA9538_Write_Register(0xE2, CONFIG, &idle) != HAL_OK) failed = 1;
+  xSemaphoreGive(i2c_mutex);
+  if (failed) { ++i2c_errors; return 0; }
+  return count > 2 ? 0 : result;
 }
 
-static void Calculator_Init(void)
+static void KeyboardTask(void *argument)
 {
-  Calculator_Clear();
-  if (Set_Keyboard() != HAL_OK) {
-    oled_Fill(Black);
-    Calculator_Line(12, "KEYBOARD I2C ERROR");
-    oled_UpdateScreen();
-    Error_Handler();
-  }
-  Calculator_Draw();
-}
-
-static void Calculator_Key(uint8_t key, uint8_t held)
-{
-  if (key >= '0' && key <= '9') Calculator_Digit(key - '0');
-  else if (key == '*') {
-    if (held) Calculator_Clear();
-    else Calculator_Operation();
-  } else if (key == '#') {
-    if (held) Calculator_Sign();
-    else Calculator_Equals();
-  }
-  Calculator_Draw();
-}
-
-static void Calculator_Poll(void)
-{
-  static uint8_t candidate, stable, pressed, long_done, blocked;
-  static uint32_t changed_at, pressed_at;
-  uint8_t raw = Calculator_ReadKey();
-  uint32_t now = HAL_GetTick();
-  if (raw == 0xFF) {
-    /* После ошибки/нескольких кнопок ждём полного отпускания. */
-    blocked = 1;
-    pressed = 0;
-  }
-  if (raw != candidate) {
-    candidate = raw;
-    changed_at = now;
-  }
-  /* Изменение принимается только после 30 мс устойчивого состояния. */
-  if (now - changed_at >= 30 && stable != candidate) {
-    stable = candidate;
-    if (!stable) {
-      if (pressed && !long_done && !blocked &&
-          (pressed == '*' || pressed == '#'))
-        Calculator_Key(pressed, 0);
-      pressed = 0;
-      blocked = 0;
-    } else if (!blocked) {
-      if (pressed) {
-        /* Смена клавиши без отпускания не должна порождать второй ввод. */
-        blocked = 1;
-        pressed = 0;
-      } else {
-        pressed = stable;
-        pressed_at = now;
-        long_done = 0;
-        if (pressed >= '0' && pressed <= '9') Calculator_Key(pressed, 0);
+  (void)argument;
+  TickType_t wake = xTaskGetTickCount();
+  uint16_t stable = 0, candidate = 0;
+  uint32_t changed[12] = {0};
+  for (;;) {
+    uint16_t raw = Pong_ReadKeys();
+    uint32_t now = HAL_GetTick();
+    for (uint8_t key = 0; key < 12; ++key) {
+      uint16_t bit = 1u << key;
+      if ((raw ^ candidate) & bit) { candidate ^= bit; changed[key] = now; }
+      if (now - changed[key] >= 20) {
+        stable = (stable & ~bit) | (candidate & bit);
       }
     }
+    InputState state = { stable, now };
+    xQueueOverwrite(input_queue, &state);
+    ++keyboard_scans;
+    vTaskDelayUntil(&wake, pdMS_TO_TICKS(10));
   }
-  /* Цифра вводится один раз при нажатии. У * и # короткое действие
-   * выполняется при отпускании, длинное — через 700 мс удержания.
-   * Поэтому очистка/смена знака не вызывают ещё и выбор операции/равно.
-   */
-  if (pressed && !blocked && !long_done && raw == pressed &&
-      (pressed == '*' || pressed == '#') && now - pressed_at >= 700) {
-    long_done = 1;
-    Calculator_Key(pressed, 1);
+}
+
+static void GameTask(void *argument)
+{
+  (void)argument;
+  Pong game;
+  Pong_Init(&game);
+  TickType_t wake = xTaskGetTickCount();
+  uint16_t previous = 0;
+  for (;;) {
+    InputState input = {0};
+    uint32_t now = HAL_GetTick();
+    (void)xQueuePeek(input_queue, &input, 0);
+    if (now - input.sampled_at > 100) input.held = 0;
+    uint16_t pressed = input.held & ~previous;
+    previous = input.held;
+    GameMode old_mode = game.mode;
+    uint8_t goal = Pong_Tick(&game, input.held, pressed, now);
+    Audio_OnModeChange(old_mode, game.mode);
+    if (goal) {
+      char line[64];
+      snprintf(line, sizeof(line), "P%u scores! %u:%u; best rally %u\r\n",
+               goal, game.left_score, game.right_score, game.best_rally);
+      Pong_Log(line);
+    }
+    if (old_mode != game.mode) {
+      static const char * const modes[] = {"MENU", "COUNTDOWN", "PLAYING", "PAUSED", "FINISHED"};
+      Pong_Log(modes[game.mode]);
+    }
+    xQueueOverwrite(frame_queue, &game);
+    ++game_ticks;
+    vTaskDelayUntil(&wake, pdMS_TO_TICKS(GAME_PERIOD_MS));
   }
+}
+
+static void Text(uint8_t x, uint8_t y, const char *text)
+{
+  oled_SetCursor(x, y);
+  oled_WriteString((char *)text, Font_7x10, White);
+}
+
+static void Center(uint8_t y, const char *text)
+{
+  size_t width = strlen(text) * 7;
+  Text(width < OLED_WIDTH ? (OLED_WIDTH - width) / 2 : 0, y, text);
+}
+
+static void FillRect(int x, int y, int width, int height)
+{
+  for (int yy = y; yy < y + height; ++yy)
+    for (int xx = x; xx < x + width; ++xx)
+      if (xx >= 0 && yy >= 0 && xx < OLED_WIDTH && yy < OLED_HEIGHT)
+        oled_DrawPixel((uint8_t)xx, (uint8_t)yy, White);
+}
+
+static void Pong_Draw(const Pong *g)
+{
+  char line[19];
+  oled_Fill(Black);
+  if (g->mode == MENU) {
+    Center(0, "PONG - FIRST TO 7");
+    Text(0, 11, "P1 1:UP 7:DOWN");
+    Text(0, 22, "P2 3:UP 9:DOWN");
+    Text(0, 33, "2:START 0:PAUSE");
+    snprintf(line, sizeof(line), "5:EXIT  BEST:%u", g->best_rally);
+    Text(0, 44, line);
+    Center(54, "HOLD KEYS TO MOVE");
+    return;
+  }
+  if (g->mode == FINISHED) {
+    Center(0, "MATCH COMPLETE!");
+    snprintf(line, sizeof(line), "PLAYER %u WINS", g->winner);
+    Center(13, line);
+    snprintf(line, sizeof(line), "%u : %u", g->left_score, g->right_score);
+    Center(25, line);
+    snprintf(line, sizeof(line), "BEST RALLY: %u", g->best_rally);
+    Center(37, line);
+    Center(51, "2:REMATCH 5:MENU");
+    return;
+  }
+  snprintf(line, sizeof(line), "P1 %u", g->left_score);
+  Text(0, 0, line);
+  snprintf(line, sizeof(line), "%u P2", g->right_score);
+  Text(93, 0, line);
+  Text(50, 0, "PONG");
+  oled_DrawHLine(0, 127, 12, White);
+  oled_DrawHLine(0, 127, 63, White);
+  for (uint8_t y = FIELD_TOP; y < FIELD_BOTTOM; y += 6) FillRect(63, y, 1, 3);
+  FillRect(3, g->left_y / Q, 3, PADDLE_HEIGHT);
+  FillRect(122, g->right_y / Q, 3, PADDLE_HEIGHT);
+  if (g->mode == COUNTDOWN) {
+    FillRect(37, 24, 54, 24);
+    oled_SetCursor(43, 26);
+    oled_WriteString("READY", Font_7x10, Black);
+    snprintf(line, sizeof(line), "%u", g->countdown);
+    oled_SetCursor(60, 37);
+    oled_WriteString(line, Font_7x10, Black);
+  } else if (g->mode == PAUSED) {
+    FillRect(22, 25, 84, 24);
+    oled_SetCursor(43, 26);
+    oled_WriteString("PAUSE", Font_7x10, Black);
+    oled_SetCursor(29, 37);
+    oled_WriteString("0:CONTINUE", Font_7x10, Black);
+  } else {
+    FillRect(g->ball_x / Q - 1, g->ball_y / Q - 1, 3, 3);
+  }
+}
+
+static void DisplayTask(void *argument)
+{
+  (void)argument;
+  Pong frame;
+  Pong_Init(&frame);
+  TickType_t wake = xTaskGetTickCount();
+  for (;;) {
+    (void)xQueuePeek(frame_queue, &frame, 0);
+    Pong_Draw(&frame);
+    /* Release the I2C mutex between OLED pages, so keyboard scans can run. */
+    for (uint8_t page = 0; page < 8; ++page) {
+      xSemaphoreTake(i2c_mutex, portMAX_DELAY);
+      if (oled_UpdatePage(page) != HAL_OK) ++i2c_errors;
+      xSemaphoreGive(i2c_mutex);
+    }
+    ++display_frames;
+    vTaskDelayUntil(&wake, pdMS_TO_TICKS(40));
+  }
+}
+
+static void LogTask(void *argument)
+{
+  (void)argument;
+  char line[64];
+  for (;;) {
+    if (xQueueReceive(log_queue, line, portMAX_DELAY) == pdPASS) {
+      HAL_UART_Transmit(&huart6, (uint8_t *)line, strlen(line), 20);
+      HAL_UART_Transmit(&huart6, (uint8_t *)"\r\n", 2, 20);
+    }
+  }
+}
+
+static void Pong_InitRTOS(void)
+{
+  input_queue = xQueueCreate(1, sizeof(InputState));
+  frame_queue = xQueueCreate(1, sizeof(Pong));
+  log_queue = xQueueCreate(8, 64);
+  i2c_mutex = xSemaphoreCreateMutex();
+  if (!input_queue || !frame_queue || !log_queue || !i2c_mutex) Error_Handler();
+  if (xTaskCreate(KeyboardTask, "Keyboard", 384, NULL, 3, &keyboard_task) != pdPASS ||
+      xTaskCreate(GameTask, "Pong", 512, NULL, 2, &game_task) != pdPASS ||
+      xTaskCreate(DisplayTask, "OLED", 512, NULL, 1, &display_task) != pdPASS ||
+      xTaskCreate(LogTask, "UART", 256, NULL, 1, NULL) != pdPASS) Error_Handler();
+  Pong_Log("PONG FreeRTOS: 1/7=P1 3/9=P2 2=start 0=pause 5=menu");
+  vTaskStartScheduler();
+  Error_Handler();
+}
+
+void vApplicationMallocFailedHook(void) { Error_Handler(); }
+void vApplicationStackOverflowHook(TaskHandle_t task, char *name)
+{
+  (void)task; (void)name;
+  Error_Handler();
 }
 /* USER CODE END 4 */
 

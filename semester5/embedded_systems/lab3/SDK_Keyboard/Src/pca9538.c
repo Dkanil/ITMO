@@ -4,12 +4,12 @@
 #include "pca9538.h"
 
 HAL_StatusTypeDef PCA9538_Read_Register(uint16_t addr, pca9538_regs_t reg, uint8_t* buf) {
-	return HAL_I2C_Mem_Read(&hi2c1, addr | 1, reg, 1, buf, 1, 100);
+	return HAL_I2C_Mem_Read(&hi2c1, addr | 1, reg, 1, buf, 1, 5);
 }
 
 
 HAL_StatusTypeDef PCA9538_Write_Register(uint16_t addr, pca9538_regs_t reg, uint8_t* buf) {
-	return HAL_I2C_Mem_Write(&hi2c1, addr & 0xFFFE, reg, 1, buf, 1, 100);
+	return HAL_I2C_Mem_Write(&hi2c1, addr & 0xFFFE, reg, 1, buf, 1, 5);
 }
 
 HAL_StatusTypeDef PCA9538_Read_Config(uint16_t addr, uint8_t* buf) {

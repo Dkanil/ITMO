@@ -6,53 +6,23 @@ static uint8_t OLED_Buffer[1024];
 static OLED_t OLED;
 
 
-static void oled_WriteCommand(uint8_t command) {
-	HAL_I2C_Mem_Write(&hi2c1,OLED_I2C_ADDR,0x00,1,&command,1,10);
+static HAL_StatusTypeDef oled_WriteCommand(uint8_t command) {
+	return HAL_I2C_Mem_Write(&hi2c1,OLED_I2C_ADDR,0x00,1,&command,1,10);
 }
 
 
 uint8_t oled_Init(void) {
-	HAL_Delay(100);
-
-	oled_WriteCommand(0xAE);
-	oled_WriteCommand(0x20);
-	oled_WriteCommand(0x10);
-	oled_WriteCommand(0xB0);
-	oled_WriteCommand(0xC8);
-	oled_WriteCommand(0x00);
-	oled_WriteCommand(0x10);
-	oled_WriteCommand(0x40);
-	oled_WriteCommand(0x81);
-	oled_WriteCommand(0xFF);
-	oled_WriteCommand(0xA1);
-	oled_WriteCommand(0xA6);
-	oled_WriteCommand(0xA8);
-	oled_WriteCommand(0x3F);
-	oled_WriteCommand(0xA4);
-	oled_WriteCommand(0xD3);
-	oled_WriteCommand(0x00);
-	oled_WriteCommand(0xD5);
-	oled_WriteCommand(0xF0);
-	oled_WriteCommand(0xD9);
-	oled_WriteCommand(0x22);
-	oled_WriteCommand(0xDA);
-	oled_WriteCommand(0x12);
-	oled_WriteCommand(0xDB);
-	oled_WriteCommand(0x20);
-	oled_WriteCommand(0x8D);
-	oled_WriteCommand(0x14);
-	oled_WriteCommand(0xAF);
-
-	oled_Fill(Black);
-
-	oled_UpdateScreen();
-
-	OLED.CurrentX = 0;
-	OLED.CurrentY = 0;
-
-	OLED.Initialized = 1;
-
-	return 1;
+  static const uint8_t commands[] = {0xAE, 0x20, 0x10, 0xB0, 0xC8, 0x00, 0x10, 0x40, 0x81, 0xFF, 0xA1, 0xA6, 0xA8, 0x3F, 0xA4, 0xD3, 0x00, 0xD5, 0xF0, 0xD9, 0x22, 0xDA, 0x12, 0xDB, 0x20, 0x8D, 0x14, 0xAF};
+  HAL_Delay(100); /* Power-on settling, before the scheduler starts. */
+  if (HAL_I2C_IsDeviceReady(&hi2c1, OLED_I2C_ADDR, 2, 10) != HAL_OK) return 0;
+  for (unsigned i = 0; i < sizeof(commands); ++i)
+    if (oled_WriteCommand(commands[i]) != HAL_OK) return 0;
+  oled_Fill(Black);
+  for (uint8_t page = 0; page < 8; ++page)
+    if (oled_UpdatePage(page) != HAL_OK) return 0;
+  OLED.CurrentX = OLED.CurrentY = 0;
+  OLED.Initialized = 1;
+  return 1;
 }
 
 void oled_Fill(OLED_COLOR color) {
@@ -64,16 +34,18 @@ void oled_Fill(OLED_COLOR color) {
 }
 
 
+/* The caller holds the bus mutex for one page, then releases it. */
+HAL_StatusTypeDef oled_UpdatePage(uint8_t page) {
+  if (page >= 8) return HAL_ERROR;
+  if (oled_WriteCommand(0xB0 + page) != HAL_OK ||
+      oled_WriteCommand(0x00) != HAL_OK ||
+      oled_WriteCommand(0x10) != HAL_OK) return HAL_ERROR;
+  return HAL_I2C_Mem_Write(&hi2c1, OLED_I2C_ADDR, 0x40, 1,
+                           &OLED_Buffer[OLED_WIDTH * page], OLED_WIDTH, 10);
+}
+
 void oled_UpdateScreen(void) {
-	uint8_t i;
-
-	for (i = 0; i < 8; i++) {
-		oled_WriteCommand(0xB0 + i);
-		oled_WriteCommand(0x00);
-		oled_WriteCommand(0x10);
-
-		HAL_I2C_Mem_Write(&hi2c1,OLED_I2C_ADDR,0x40,1,&OLED_Buffer[OLED_WIDTH * i],OLED_WIDTH,100);
-	}
+  for (uint8_t page = 0; page < 8; ++page) (void)oled_UpdatePage(page);
 }
 
 void oled_DrawPixel(uint8_t x, uint8_t y, OLED_COLOR color) {
