@@ -1,0 +1,18 @@
+# STM32CubeIDE and build output
+**/Debug/
+**/Release/
+**/.metadata/
+**/.settings/
+**/*.launch
+**/*.log
+# LaTeX intermediate files
+*.aux
+*.toc
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+_minted*/
+
+# Local editor settings
+**/.idea/
