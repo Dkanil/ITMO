@@ -417,8 +417,11 @@ void TIM6_DAC_IRQHandler(void)
   }
   uint8_t packed = audio_clip[position / 2];
   uint8_t code = (position & 1u) ? packed >> 4 : packed & 15u;
-  int16_t pcm = ADPCM_Decode(&audio_decoder, code);
-  TIM2->CCR1 = ((uint32_t)((int32_t)pcm + 32768) * audio_pwm_period) >> 16;
+  /* Deliberate hard clipping for a loud, distorted overdrive effect. */
+  int32_t pcm = (int32_t)ADPCM_Decode(&audio_decoder, code) * 8;
+  if (pcm > 32767) pcm = 32767;
+  if (pcm < -32768) pcm = -32768;
+  TIM2->CCR1 = ((uint32_t)(pcm + 32768) * audio_pwm_period) >> 16;
   audio_sample_pos = position + 1;
 }
 
