@@ -25,3 +25,6 @@
 [submodule "semester5/os-course"]
 	path = semester5/os-course
 	url = https://github.com/Dkanil/os-course.git
+[submodule "semester5/xv6-riscv"]
+	path = semester5/xv6-riscv
+	url = https://github.com/Dkanil/xv6-riscv.git
