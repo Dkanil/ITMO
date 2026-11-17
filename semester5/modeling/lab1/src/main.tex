@@ -190,18 +190,16 @@ $\OriginalMaxACF$ для заданной ЧП и $\GeneratedMaxACF$ для сг
 $V\approx\OriginalCV$. Значение $V$ близко к $1/\sqrt{2}$, поэтому выбрано
 распределение Эрланга второго порядка.
 
-Параметры оценены по среднему и дисперсии. Эти оценки соответствуют первым двум
-начальным моментам через соотношение $\mathrm{E}[X^2]=\mathrm{Var}(X)+(\mathrm{E}[X])^2$.
-Для распределения Эрланга с порядком $k$ и интенсивностью $\lambda$ среднее
-равно $k/\lambda$, а дисперсия~--- $k/\lambda^2$. Отсюда
+Для закона Эрланга среднее равно $k/\lambda$, а дисперсия~--- $k/\lambda^2$.
+При оценке по $\bar{x}$ и $s^2$ порядок $k$ округляем до целого.
 \[
   k=\operatorname{round}\!\left(\frac{\bar{x}^2}{s^2}\right)
     =\operatorname{round}(\UnroundedOrder)=\ErlangOrder,\qquad
   \lambda=\frac{k}{\bar{x}}\approx\ErlangRate.
 \]
-При целочисленном $k$ среднее аппроксимирующего закона совпадает с выборочным,
-а теоретическая дисперсия $\TheoreticalVariance$ близка к оценке
-$\OriginalVariance$.
+После округления $k$ среднее точно равно $\bar{x}$, а второй начальный момент
+$k(k+1)/\lambda^2$ выше выборочного $\bar{x}^2+\tfrac{n-1}{n}s^2$ на $0{,}95\,\%$.
+Теоретическая дисперсия равна $\TheoreticalVariance$, выборочная оценка~--- $\OriginalVariance$.
 
 \begin{figure}[H]
   \centering
